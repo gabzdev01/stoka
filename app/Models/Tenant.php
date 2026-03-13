@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
-use Stancl\Contracts\Tenancy\Database\Models\TenantWithDatabase;
+use Stancl\Tenancy\Contracts\TenantWithDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
 
