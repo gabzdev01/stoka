@@ -31,35 +31,35 @@
         border-radius: 10px;
         padding: 16px 14px;
         background: var(--surface);
-        transition: border-color 0.13s, background 0.13s;
+        transition: border-color 0.15s, background 0.15s;
         display: flex;
         flex-direction: column;
         gap: 5px;
+        user-select: none;
     }
-    .type-card input[type="radio"] {
-        position: absolute;
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-    .type-card.selected {
-        border-color: var(--terracotta);
-        background: var(--parchment);
-    }
-    .type-card-name {
-        font-size: 13.5px;
-        font-weight: 600;
-        color: var(--espresso);
-        display: block;
-    }
-    .type-card-desc {
-        font-size: 12px;
-        color: var(--muted);
-        line-height: 1.4;
-        display: block;
-    }
+    .type-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .type-card.selected { border-color: var(--terracotta); background: var(--parchment); }
+    .type-card-name { font-size: 13.5px; font-weight: 600; color: var(--espresso); display: block; }
+    .type-card-desc { font-size: 12px; color: var(--muted); line-height: 1.4; display: block; }
 
-    /* ── Form layout ─────────────────────────────────────── */
+    /* ── Measured hint box ───────────────────────────────── */
+    .measured-hint {
+        display: none;
+        align-items: flex-start;
+        gap: 12px;
+        background: #FDF5EC;
+        border: 1px solid #EDD9BC;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #7A5020;
+        line-height: 1.5;
+    }
+    .measured-hint.visible { display: flex; }
+    .measured-hint svg { flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Form cards ──────────────────────────────────────── */
     .form-card {
         background: var(--parchment);
         border: 1px solid var(--border);
@@ -74,11 +74,7 @@
         color: var(--espresso);
         margin-bottom: 18px;
     }
-    .form-grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-    }
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .form-group { margin-bottom: 18px; }
     .form-group:last-child { margin-bottom: 0; }
 
@@ -92,9 +88,15 @@
         margin-bottom: 7px;
     }
     .form-label .required { color: var(--clay); margin-left: 2px; }
+    .form-label-note {
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0;
+        font-size: 11px;
+        color: var(--muted);
+    }
 
-    .form-input,
-    .form-select {
+    .form-input, .form-select {
         width: 100%;
         padding: 10px 13px;
         background: var(--surface);
@@ -107,123 +109,170 @@
         transition: border-color 0.13s, background 0.13s;
         box-sizing: border-box;
     }
-    .form-input:focus,
-    .form-select:focus {
-        border-color: var(--terracotta);
-        background: var(--parchment);
-    }
-    .form-input.is-error,
-    .form-select.is-error { border-color: var(--clay); }
+    .form-input:focus, .form-select:focus { border-color: var(--terracotta); background: var(--parchment); }
+    .form-input.is-error, .form-select.is-error { border-color: var(--clay); }
 
     /* Price field */
     .price-wrap { position: relative; }
     .price-prefix {
-        position: absolute;
-        left: 13px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 12.5px;
-        color: var(--muted);
-        font-family: "DM Mono", monospace;
-        pointer-events: none;
-        line-height: 1;
+        position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+        font-size: 12.5px; color: var(--muted); font-family: "DM Mono", monospace;
+        pointer-events: none; line-height: 1;
     }
-    .price-wrap .form-input {
-        padding-left: 46px;
-        font-family: "DM Mono", monospace;
-    }
+    .price-wrap .form-input { padding-left: 46px; font-family: "DM Mono", monospace; }
 
-    .field-error {
-        display: block;
-        font-size: 12px;
-        color: var(--clay);
-        margin-top: 5px;
-    }
+    .field-error { display: block; font-size: 12px; color: var(--clay); margin-top: 5px; }
 
-    /* ── Toggle switch ───────────────────────────────────── */
-    .toggle-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 0;
-    }
+    /* ── Toggle ──────────────────────────────────────────── */
+    .toggle-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; }
     .toggle-switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
     .toggle-track {
-        position: absolute;
-        inset: 0;
-        background: var(--border);
-        border-radius: 11px;
-        cursor: pointer;
-        transition: background 0.15s;
+        position: absolute; inset: 0; background: var(--border);
+        border-radius: 11px; cursor: pointer; transition: background 0.15s;
     }
     .toggle-track::before {
-        content: '';
-        position: absolute;
-        width: 16px; height: 16px;
-        background: white;
-        border-radius: 50%;
-        top: 3px; left: 3px;
-        transition: transform 0.15s;
+        content: ''; position: absolute; width: 16px; height: 16px;
+        background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.15s;
     }
     .toggle-switch input:checked + .toggle-track { background: var(--forest); }
     .toggle-switch input:checked + .toggle-track::before { transform: translateX(18px); }
     .toggle-label { font-size: 13.5px; color: var(--espresso); cursor: pointer; line-height: 1.3; }
     .toggle-sublabel { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-    /* ── Variant rows ────────────────────────────────────── */
-    .variant-headers {
-        display: grid;
-        grid-template-columns: 1fr 1fr 90px 36px;
-        gap: 10px;
-        margin-bottom: 6px;
+    /* ── Floor price slide-in ────────────────────────────── */
+    .floor-price-wrap {
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: max-height 0.28s ease, opacity 0.22s ease, margin-top 0.28s ease;
+        margin-top: 0;
     }
-    .variant-col-head {
-        font-size: 11px;
+    .floor-price-wrap.visible {
+        max-height: 100px;
+        opacity: 1;
+        margin-top: 16px;
+    }
+
+    /* ── Chips ───────────────────────────────────────────── */
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+    .chip {
+        padding: 7px 15px;
+        border: 1.5px solid var(--border);
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+        background: var(--surface);
+        cursor: pointer;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        transition: border-color 0.13s, color 0.13s, background 0.13s;
+        line-height: 1.4;
+    }
+    .chip:hover { border-color: var(--terracotta); color: var(--terracotta); background: var(--parchment); }
+    .chip.active { background: var(--terracotta); border-color: var(--terracotta); color: #fff; }
+    .chip-add {
+        padding: 7px 13px;
+        border: 1.5px dashed var(--border);
+        border-radius: 20px;
+        font-size: 13px;
+        color: var(--muted);
+        background: none;
+        cursor: pointer;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        transition: border-color 0.13s, color 0.13s;
+        line-height: 1.4;
+    }
+    .chip-add:hover { border-color: var(--terracotta); color: var(--terracotta); }
+
+    /* ML chips are single-select */
+    .ml-chips .chip.active { background: #4A6741; border-color: #4A6741; }
+
+    /* ── Chip stock rows ─────────────────────────────────── */
+    .chip-stocks {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+    }
+    .chip-stock-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 12px;
+    }
+    .chip-stock-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--espresso);
+        min-width: 28px;
+    }
+    .chip-stock-input {
+        width: 62px;
+        padding: 5px 8px;
+        background: var(--parchment);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-family: "DM Mono", monospace;
+        font-size: 13px;
+        color: var(--espresso);
+        outline: none;
+        text-align: center;
+        transition: border-color 0.13s;
+    }
+    .chip-stock-input:focus { border-color: var(--terracotta); }
+    .chip-stock-unit { font-size: 12px; color: var(--muted); }
+
+    /* ── Custom chip input ───────────────────────────────── */
+    .custom-chip-wrap {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    .custom-chip-wrap.visible { display: flex; }
+    .custom-chip-input {
+        padding: 8px 11px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13px;
+        color: var(--espresso);
+        outline: none;
+        width: 160px;
+        transition: border-color 0.13s;
+    }
+    .custom-chip-input:focus { border-color: var(--terracotta); }
+    .btn-add-chip {
+        padding: 8px 14px;
+        background: var(--espresso);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 12.5px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        transition: opacity 0.13s;
+    }
+    .btn-add-chip:hover { opacity: 0.8; }
+
+    /* ── Section divider label ───────────────────────────── */
+    .subsection-label {
+        font-size: 11.5px;
         font-weight: 600;
         color: var(--muted);
         text-transform: uppercase;
         letter-spacing: 0.07em;
-    }
-    .variant-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr 90px 36px;
-        gap: 10px;
-        align-items: center;
         margin-bottom: 10px;
+        margin-top: 20px;
+        display: block;
     }
-    .btn-remove {
-        width: 36px;
-        height: 38px;
-        background: none;
-        border: 1px solid var(--border);
-        border-radius: 7px;
-        color: var(--muted);
-        cursor: pointer;
-        font-size: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background 0.13s, border-color 0.13s, color 0.13s;
-        padding: 0;
-        flex-shrink: 0;
-    }
-    .btn-remove:hover { background: #F9E8E4; border-color: var(--clay); color: var(--clay); }
-    .btn-add-variant {
-        width: 100%;
-        background: none;
-        border: 1px dashed var(--border);
-        border-radius: 8px;
-        padding: 10px;
-        font-size: 13px;
-        color: var(--muted);
-        cursor: pointer;
-        font-family: "Plus Jakarta Sans", sans-serif;
-        transition: border-color 0.13s, color 0.13s;
-        text-align: center;
-        margin-top: 4px;
-    }
-    .btn-add-variant:hover { border-color: var(--terracotta); color: var(--terracotta); }
+    .subsection-label:first-child { margin-top: 0; }
 
     /* ── Conditional sections ────────────────────────────── */
     .conditional-section { display: none; }
@@ -231,11 +280,8 @@
 
     /* ── Error banner ────────────────────────────────────── */
     .error-banner {
-        background: #F9E8E4;
-        border: 1px solid #ECC9C2;
-        border-radius: 8px;
-        padding: 12px 14px;
-        margin-bottom: 20px;
+        background: #F9E8E4; border: 1px solid #ECC9C2;
+        border-radius: 8px; padding: 12px 14px; margin-bottom: 20px;
     }
 
     /* ── Form actions ────────────────────────────────────── */
@@ -244,8 +290,6 @@
     @media (max-width: 580px) {
         .type-cards { grid-template-columns: 1fr; }
         .form-grid-2 { grid-template-columns: 1fr; }
-        .variant-headers { grid-template-columns: 1fr 1fr 70px 34px; }
-        .variant-row     { grid-template-columns: 1fr 1fr 70px 34px; }
     }
 </style>
 @endsection
@@ -254,31 +298,50 @@
 @php
     $isEdit      = isset($product);
     $currentType = old('type', $isEdit ? $product->type : 'unit');
+    $currentCat  = old('category', $isEdit ? ($product->category ?? '') : '');
+
+    $unitCats     = ['Bags & Handbags','Caps & Hats','Shoes','Jewellery','Perfumes (Bottled)','Empty Bottles','Body Sprays','Hair Products','Accessories','Other'];
+    $measuredCats = ['Perfumes (Bulk)','Body Oils','Fragrance Oils','Other'];
+    $variantCats  = ['Dresses','Tops & Blouses','Trousers & Shorts','Shirts','Shoes','Jackets & Coats','Other'];
+    $allCatsByType = ['unit' => $unitCats, 'measured' => $measuredCats, 'variant' => $variantCats];
+    $typeCats = $allCatsByType[$currentType] ?? $unitCats;
+
+    $presetSizes   = ['XS','S','M','L','XL','XXL'];
+    $presetColours = ['Black','White','Brown','Beige','Navy','Red','Green'];
+    $presetMls     = [30, 50, 100, 200, 500];
 
     if (old('variants')) {
-        $initVariants = old('variants');
+        $rawVariants = old('variants');
     } elseif ($isEdit && $product->variants->count()) {
-        $initVariants = $product->variants->map(fn($v) => [
-            'size'   => $v->size,
-            'colour' => $v->colour,
-            'stock'  => $v->stock,
-        ])->toArray();
+        $rawVariants = $product->variants->map(fn($v) => ['size' => $v->size, 'colour' => $v->colour, 'stock' => $v->stock])->toArray();
     } else {
-        $initVariants = [['size' => '', 'colour' => '', 'stock' => '']];
+        $rawVariants = [];
+    }
+    $initSizes = $initColours = $customSizes = $customColours = [];
+    foreach ($rawVariants as $v) {
+        $sz = $v['size'] ?? ''; $cl = $v['colour'] ?? ''; $st = (int)($v['stock'] ?? 0);
+        if ($sz) { if (in_array($sz, $presetSizes)) $initSizes[$sz] = $st; else $customSizes[$sz] = $st; }
+        if ($cl) { if (in_array($cl, $presetColours)) $initColours[$cl] = $st; else $customColours[$cl] = $st; }
     }
 
     $activeBottle   = $isEdit ? $product->bottles->firstWhere('active', true) : null;
-    $initTotalMl    = old('total_ml',    $activeBottle?->total_ml    ?? '');
+    $initTotalMl    = (int) old('total_ml', $activeBottle?->total_ml ?? 0);
     $initPricePerMl = old('price_per_ml', $activeBottle?->price_per_ml ?? '');
+    $selectedMlPreset = in_array($initTotalMl, $presetMls) ? $initTotalMl : null;
+    $isCustomMl = $initTotalMl > 0 && !$selectedMlPreset;
+
+    $isBargainable = (bool) old('is_bargainable', $isEdit ? ($product->is_bargainable ?? false) : false);
+    $trackStock    = (bool) old('track_stock',    $isEdit ? ($product->track_stock    ?? true)  : true);
+
+    // Is the current category "Other" (not in type list)?
+    $catIsOther = $currentCat && !in_array($currentCat, $typeCats);
 @endphp
 
 @if($errors->any())
 <div class="error-banner">
     <p style="font-size:13px; font-weight:600; color:var(--clay); margin-bottom:6px;">Please fix the following:</p>
     <ul style="font-size:12.5px; color:var(--clay); padding-left:16px; margin:0;">
-        @foreach($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
+        @foreach($errors->all() as $error) <li>{{ $error }}</li> @endforeach
     </ul>
 </div>
 @endif
@@ -289,26 +352,39 @@
     @csrf
     @if($isEdit) @method('PUT') @endif
 
-    {{-- ── Type ─────────────────────────────────────────── --}}
+    {{-- Hidden category value — JS keeps it synced --}}
+    <input type="hidden" name="category" id="f-category" value="{{ $currentCat }}">
+
+    {{-- ── What are you selling? ────────────────────────── --}}
     <div class="form-card">
-        <p class="section-title" style="margin-bottom:14px;">Product Type</p>
-        <div class="type-cards" id="type-cards">
-            @php
-                $types = [
-                    'unit'     => ['Unit Item',    'Bags, shoes, jewellery — sold as one piece'],
-                    'measured' => ['Measured',     'Perfumes, oils — sold by ml or weight'],
-                    'variant'  => ['Has Variants', 'Clothing, footwear — comes in sizes or colours'],
-                ];
-            @endphp
-            @foreach($types as $val => [$label, $desc])
-            <label class="type-card {{ $currentType === $val ? 'selected' : '' }}" data-type="{{ $val }}">
-                <input type="radio" name="type" value="{{ $val }}" {{ $currentType === $val ? 'checked' : '' }}>
-                <span class="type-card-name">{{ $label }}</span>
-                <span class="type-card-desc">{{ $desc }}</span>
+        <p class="section-title" style="margin-bottom:14px;">What are you selling?</p>
+        <div class="type-cards">
+            <label class="type-card {{ $currentType === 'unit' ? 'selected' : '' }}" data-type="unit">
+                <input type="radio" name="type" value="unit" {{ $currentType === 'unit' ? 'checked' : '' }}>
+                <span class="type-card-name">By the piece</span>
+                <span class="type-card-desc">A bag, a cap, a sealed perfume bottle, an empty bottle</span>
             </label>
-            @endforeach
+            <label class="type-card {{ $currentType === 'measured' ? 'selected' : '' }}" data-type="measured">
+                <input type="radio" name="type" value="measured" {{ $currentType === 'measured' ? 'checked' : '' }}>
+                <span class="type-card-name">By ml — bulk / decant</span>
+                <span class="type-card-desc">You pour from your supply into the customer's bottle</span>
+            </label>
+            <label class="type-card {{ $currentType === 'variant' ? 'selected' : '' }}" data-type="variant">
+                <input type="radio" name="type" value="variant" {{ $currentType === 'variant' ? 'checked' : '' }}>
+                <span class="type-card-name">Comes in sizes or colours</span>
+                <span class="type-card-desc">A dress in S, M, L — or shoes in different colours</span>
+            </label>
         </div>
         @error('type') <span class="field-error" style="margin-top:10px; display:block;">{{ $message }}</span> @enderror
+    </div>
+
+    {{-- ── Measured context note ────────────────────────── --}}
+    <div class="measured-hint {{ $currentType === 'measured' ? 'visible' : '' }}" id="measured-hint">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="color:#C17F4A; margin-top:1px;">
+            <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M8 7v4M8 5h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span>This is for perfume you sell by pouring into the customer's bottle. Add it once — each time you restock a new bottle, you record it under Restocks. For sealed bottles sold whole, use <strong>By the piece</strong> instead.</span>
     </div>
 
     {{-- ── Product Details ──────────────────────────────── --}}
@@ -320,26 +396,47 @@
             <input class="form-input {{ $errors->has('name') ? 'is-error' : '' }}"
                    type="text" id="f-name" name="name"
                    value="{{ old('name', $isEdit ? $product->name : '') }}"
-                   placeholder="e.g. Floral Silk Dress" autocomplete="off">
+                   placeholder="{{ $currentType === 'measured' ? 'e.g. Versace Eros Bulk, Chanel No.5 Oil' : ($currentType === 'variant' ? 'e.g. Floral Midi Dress, Men\'s Oxford Shirt' : 'e.g. Leather Handbag, Cap, Empty 50ml Bottle') }}"
+                   autocomplete="off">
             @error('name') <span class="field-error">{{ $message }}</span> @enderror
         </div>
 
         <div class="form-grid-2">
             <div class="form-group">
-                <label class="form-label" for="f-category">Category</label>
-                <input class="form-input {{ $errors->has('category') ? 'is-error' : '' }}"
-                       type="text" id="f-category" name="category"
-                       value="{{ old('category', $isEdit ? $product->category : '') }}"
-                       placeholder="e.g. Dresses, Perfumes" autocomplete="off">
+                <label class="form-label" for="f-category-select">Category</label>
+
+                <select class="form-select {{ $errors->has('category') ? 'is-error' : '' }}"
+                        id="f-category-select"
+                        onchange="onCategorySelect(this.value)">
+                    <option value="">— Choose a category —</option>
+                    @foreach($typeCats as $cat)
+                        @if($cat !== 'Other')
+                        <option value="{{ $cat }}" {{ (!$catIsOther && $currentCat === $cat) ? 'selected' : '' }}>{{ $cat }}</option>
+                        @endif
+                    @endforeach
+                    <option value="__other__" {{ $catIsOther ? 'selected' : '' }}>Other…</option>
+                </select>
+
+                <div class="custom-chip-wrap {{ $catIsOther ? 'visible' : '' }}" id="category-other-wrap" style="margin-top:8px;">
+                    <input type="text"
+                           class="form-input custom-chip-input"
+                           id="f-category-other"
+                           value="{{ $catIsOther ? $currentCat : '' }}"
+                           placeholder="e.g. Swimwear, Socks"
+                           style="width:100%;"
+                           oninput="document.getElementById('f-category').value = this.value">
+                </div>
+
                 @error('category') <span class="field-error">{{ $message }}</span> @enderror
             </div>
+
             <div class="form-group">
                 <label class="form-label" for="f-supplier">Supplier</label>
                 <select class="form-select" id="f-supplier" name="supplier_id">
                     <option value="">— No supplier —</option>
                     @foreach($suppliers as $s)
                         <option value="{{ $s->id }}"
-                            {{ (int) old('supplier_id', $isEdit ? $product->supplier_id : '') === $s->id ? 'selected' : '' }}>
+                            {{ (int) old('supplier_id', $isEdit ? $product->supplier_id : 0) === $s->id ? 'selected' : '' }}>
                             {{ $s->name }}
                         </option>
                     @endforeach
@@ -352,55 +449,64 @@
     <div class="form-card">
         <p class="section-title">Pricing</p>
 
-        <div class="form-grid-2">
-            <div class="form-group">
-                <label class="form-label" for="f-shelf-price">Selling Price <span class="required">*</span></label>
-                <div class="price-wrap">
-                    <span class="price-prefix">KSh</span>
-                    <input class="form-input {{ $errors->has('shelf_price') ? 'is-error' : '' }}"
-                           type="number" id="f-shelf-price" name="shelf_price"
-                           value="{{ old('shelf_price', $isEdit ? $product->shelf_price : '') }}"
-                           placeholder="0.00" step="0.01" min="0">
-                </div>
-                @error('shelf_price') <span class="field-error">{{ $message }}</span> @enderror
+        <div class="form-group">
+            <label class="form-label" id="shelf-price-label" for="f-shelf-price">
+                <span id="shelf-price-label-text">{{ $currentType === 'measured' ? 'Price per ml' : 'Selling Price' }}</span>
+                <span class="required">*</span>
+            </label>
+            <div class="price-wrap" style="max-width:220px;">
+                <span class="price-prefix">KSh</span>
+                <input class="form-input {{ $errors->has('shelf_price') ? 'is-error' : '' }}"
+                       type="number" id="f-shelf-price" name="shelf_price"
+                       value="{{ old('shelf_price', $isEdit ? $product->shelf_price : '') }}"
+                       placeholder="{{ $currentType === 'measured' ? '0.00  (e.g. 16.50 per ml)' : '0.00' }}"
+                       step="0.01" min="0"
+                       oninput="document.getElementById('f-price-per-ml-mirror').value = this.value">
             </div>
-            <div class="form-group">
-                <label class="form-label" for="f-floor-price">Floor Price
-                    <span style="font-weight:400; text-transform:none; letter-spacing:0; font-size:11px;">(minimum)</span>
-                </label>
-                <div class="price-wrap">
-                    <span class="price-prefix">KSh</span>
-                    <input class="form-input {{ $errors->has('floor_price') ? 'is-error' : '' }}"
-                           type="number" id="f-floor-price" name="floor_price"
-                           value="{{ old('floor_price', $isEdit ? $product->floor_price : '') }}"
-                           placeholder="0.00" step="0.01" min="0">
-                </div>
-                @error('floor_price') <span class="field-error">{{ $message }}</span> @enderror
-            </div>
+            @error('shelf_price') <span class="field-error">{{ $message }}</span> @enderror
         </div>
 
-        <div class="toggle-row" style="border-top:1px solid var(--border); padding-top:14px; margin-top:6px;">
+        {{-- Mirror shelf_price into price_per_ml for measured type --}}
+        <input type="hidden" id="f-price-per-ml-mirror" name="price_per_ml"
+               value="{{ old('price_per_ml', $initPricePerMl ?: ($isEdit ? ($product->shelf_price ?? '') : '')) }}">
+
+        <div class="toggle-row" style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px;">
             <label class="toggle-switch">
                 <input type="checkbox" name="is_bargainable" id="f-bargainable" value="1"
-                       {{ old('is_bargainable', $isEdit ? $product->is_bargainable : false) ? 'checked' : '' }}>
+                       {{ $isBargainable ? 'checked' : '' }}
+                       onchange="toggleBargaining(this.checked)">
                 <span class="toggle-track"></span>
             </label>
             <div>
                 <label class="toggle-label" for="f-bargainable">Allow bargaining</label>
-                <p class="toggle-sublabel">Staff can negotiate price down to the floor price</p>
+                <p class="toggle-sublabel">Staff can negotiate down to a minimum price you set</p>
             </div>
+        </div>
+
+        {{-- Floor price — hidden until bargaining is on --}}
+        <div class="floor-price-wrap {{ $isBargainable ? 'visible' : '' }}" id="floor-price-wrap">
+            <label class="form-label" for="f-floor-price">
+                Minimum (floor) price <span class="form-label-note">— staff cannot go below this</span>
+            </label>
+            <div class="price-wrap" style="max-width:220px;">
+                <span class="price-prefix">KSh</span>
+                <input class="form-input {{ $errors->has('floor_price') ? 'is-error' : '' }}"
+                       type="number" id="f-floor-price" name="floor_price"
+                       value="{{ old('floor_price', $isEdit ? $product->floor_price : '') }}"
+                       placeholder="0.00" step="0.01" min="0">
+            </div>
+            @error('floor_price') <span class="field-error">{{ $message }}</span> @enderror
         </div>
     </div>
 
-    {{-- ── Stock (unit type only) ───────────────────────── --}}
-    <div class="form-card conditional-section {{ $currentType === 'unit' ? 'visible' : '' }}"
-         id="section-stock">
+    {{-- ── Stock (unit type) ────────────────────────────── --}}
+    <div class="form-card conditional-section {{ $currentType === 'unit' ? 'visible' : '' }}" id="section-stock">
         <p class="section-title">Stock</p>
 
         <div class="toggle-row" style="margin-bottom:16px;">
             <label class="toggle-switch">
                 <input type="checkbox" name="track_stock" id="f-track-stock" value="1"
-                       {{ old('track_stock', $isEdit ? $product->track_stock : true) ? 'checked' : '' }}
+                       {{ $trackStock ? 'checked' : '' }}
                        onchange="toggleStockFields(this.checked)">
                 <span class="toggle-track"></span>
             </label>
@@ -410,17 +516,17 @@
             </div>
         </div>
 
-        <div id="stock-fields">
+        <div id="stock-fields" style="{{ !$trackStock ? 'opacity:0.4; pointer-events:none;' : '' }}">
             <div class="form-grid-2">
                 <div class="form-group">
-                    <label class="form-label" for="f-stock">Current Stock</label>
+                    <label class="form-label" for="f-stock">How many do you have right now?</label>
                     <input class="form-input" style="font-family:'DM Mono',monospace;"
                            type="number" id="f-stock" name="stock"
                            value="{{ old('stock', $isEdit ? $product->stock : 0) }}"
                            placeholder="0" min="0">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="f-threshold">Low Stock Alert At</label>
+                    <label class="form-label" for="f-threshold">Alert me when stock falls below</label>
                     <input class="form-input" style="font-family:'DM Mono',monospace;"
                            type="number" id="f-threshold" name="low_stock_threshold"
                            value="{{ old('low_stock_threshold', $isEdit ? $product->low_stock_threshold : 5) }}"
@@ -430,51 +536,137 @@
         </div>
     </div>
 
-    {{-- ── Variants (variant type only) ────────────────── --}}
-    <div class="form-card conditional-section {{ $currentType === 'variant' ? 'visible' : '' }}"
-         id="section-variants">
-        <p class="section-title">Variants</p>
-        <p style="font-size:12.5px; color:var(--muted); margin-bottom:18px;">
-            Each size or colour option with its own stock count.
+    {{-- ── Bottle size (measured type) ──────────────────── --}}
+    <div class="form-card conditional-section {{ $currentType === 'measured' ? 'visible' : '' }}" id="section-bottle">
+        <p class="section-title">Bottle size</p>
+        <p style="font-size:12.5px; color:var(--muted); margin-bottom:18px; line-height:1.5;">
+            How large is the bottle or container you're selling from? This lets Stoka track how much is left.
         </p>
 
-        <div class="variant-headers">
-            <span class="variant-col-head">Size</span>
-            <span class="variant-col-head">Colour</span>
-            <span class="variant-col-head">Stock</span>
-            <span></span>
+        <label class="form-label" style="margin-bottom:10px;">Select bottle size</label>
+        <div class="chip-group ml-chips" id="ml-chips">
+            @foreach($presetMls as $ml)
+            <button type="button" class="chip {{ $selectedMlPreset === $ml ? 'active' : '' }}"
+                    data-value="{{ $ml }}"
+                    onclick="selectMlChip(this)">{{ $ml }}ml</button>
+            @endforeach
+            <button type="button" class="chip {{ $isCustomMl ? 'active' : '' }}"
+                    data-value="custom"
+                    onclick="selectMlChip(this)">Custom</button>
         </div>
 
-        <div id="variant-rows"></div>
+        <div id="custom-ml-wrap" style="margin-top:12px; {{ $isCustomMl ? '' : 'display:none;' }}">
+            <div style="display:flex; align-items:center; gap:10px; max-width:220px;">
+                <input class="form-input" style="font-family:'DM Mono',monospace;"
+                       type="number" id="f-total-ml-custom" placeholder="e.g. 750"
+                       value="{{ $isCustomMl ? $initTotalMl : '' }}"
+                       step="1" min="1"
+                       oninput="document.getElementById('f-total-ml').value = this.value">
+                <span style="font-size:13px; color:var(--muted); white-space:nowrap;">ml</span>
+            </div>
+        </div>
 
-        <button type="button" class="btn-add-variant" onclick="addVariantRow()">
-            + Add another variant
-        </button>
+        <input type="hidden" id="f-total-ml" name="total_ml"
+               value="{{ $initTotalMl ?: '' }}">
+
+        <p style="font-size:12px; color:var(--muted); margin-top:14px;">
+            The price per ml was set in the Pricing section above.
+        </p>
     </div>
 
-    {{-- ── Bottle / Measured ────────────────────────────── --}}
-    <div class="form-card conditional-section {{ $currentType === 'measured' ? 'visible' : '' }}"
-         id="section-bottle">
-        <p class="section-title">Bottle / Container</p>
-        <p style="font-size:12.5px; color:var(--muted); margin-bottom:18px;">
-            Enter the bottle size and cost per ml to track volume. Leave blank if not tracking by volume.
+    {{-- ── Variants (sizes & colours) ──────────────────── --}}
+    <div class="form-card conditional-section {{ $currentType === 'variant' ? 'visible' : '' }}" id="section-variants">
+        <p class="section-title">Sizes &amp; Colours</p>
+        <p style="font-size:12.5px; color:var(--muted); margin-bottom:20px; line-height:1.5;">
+            Select the sizes and colours you stock. Each one you pick up gets its own stock count.
         </p>
 
-        <div class="form-grid-2">
-            <div class="form-group">
-                <label class="form-label" for="f-total-ml">Bottle Size (ml)</label>
-                <input class="form-input" style="font-family:'DM Mono',monospace;"
-                       type="number" id="f-total-ml" name="total_ml"
-                       value="{{ $initTotalMl }}"
-                       placeholder="e.g. 100" step="0.1" min="0">
+        {{-- Sizes --}}
+        <span class="subsection-label">Sizes</span>
+        <div class="chip-group" id="size-chips">
+            @foreach($presetSizes as $sz)
+            <button type="button"
+                    class="chip size-chip {{ isset($initSizes[$sz]) ? 'active' : '' }}"
+                    data-value="{{ $sz }}"
+                    onclick="toggleSizeChip(this)">{{ $sz }}</button>
+            @endforeach
+            @foreach($customSizes as $sz => $st)
+            <button type="button"
+                    class="chip size-chip active"
+                    data-value="{{ $sz }}"
+                    onclick="toggleSizeChip(this)">{{ $sz }}</button>
+            @endforeach
+            <button type="button" class="chip-add" id="size-custom-btn" onclick="showCustomChipInput('size')">+ Custom</button>
+        </div>
+
+        <div class="custom-chip-wrap" id="custom-size-wrap">
+            <input type="text" class="custom-chip-input" id="custom-size-input" placeholder="e.g. 36, 38, Free size"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomChip('size');}">
+            <button type="button" class="btn-add-chip" onclick="addCustomChip('size')">Add</button>
+            <button type="button" class="chip-add" onclick="hideCustomChipInput('size')">Cancel</button>
+        </div>
+
+        <div class="chip-stocks" id="size-stocks">
+            @foreach($initSizes as $sz => $st)
+            <div class="chip-stock-row" id="srow-{{ Str::slug($sz) }}">
+                <span class="chip-stock-label">{{ $sz }}</span>
+                <input type="number" class="chip-stock-input size-stock-val" data-size="{{ $sz }}"
+                       id="sstock-{{ Str::slug($sz) }}" value="{{ $st }}" min="0" placeholder="0">
+                <span class="chip-stock-unit">pcs</span>
             </div>
-            <div class="form-group">
-                <label class="form-label" for="f-price-per-ml">Price per ml (KSh)</label>
-                <input class="form-input" style="font-family:'DM Mono',monospace;"
-                       type="number" id="f-price-per-ml" name="price_per_ml"
-                       value="{{ $initPricePerMl }}"
-                       placeholder="e.g. 2.50" step="0.01" min="0">
+            @endforeach
+            @foreach($customSizes as $sz => $st)
+            <div class="chip-stock-row" id="srow-{{ Str::slug($sz) }}">
+                <span class="chip-stock-label">{{ $sz }}</span>
+                <input type="number" class="chip-stock-input size-stock-val" data-size="{{ $sz }}"
+                       id="sstock-{{ Str::slug($sz) }}" value="{{ $st }}" min="0" placeholder="0">
+                <span class="chip-stock-unit">pcs</span>
             </div>
+            @endforeach
+        </div>
+
+        {{-- Colours --}}
+        <span class="subsection-label" style="margin-top:24px;">Colours <span class="form-label-note" style="text-transform:none; letter-spacing:0;">(optional)</span></span>
+        <div class="chip-group" id="colour-chips">
+            @foreach($presetColours as $cl)
+            <button type="button"
+                    class="chip colour-chip {{ isset($initColours[$cl]) ? 'active' : '' }}"
+                    data-value="{{ $cl }}"
+                    onclick="toggleColourChip(this)">{{ $cl }}</button>
+            @endforeach
+            @foreach($customColours as $cl => $st)
+            <button type="button"
+                    class="chip colour-chip active"
+                    data-value="{{ $cl }}"
+                    onclick="toggleColourChip(this)">{{ $cl }}</button>
+            @endforeach
+            <button type="button" class="chip-add" id="colour-custom-btn" onclick="showCustomChipInput('colour')">+ Custom</button>
+        </div>
+
+        <div class="custom-chip-wrap" id="custom-colour-wrap">
+            <input type="text" class="custom-chip-input" id="custom-colour-input" placeholder="e.g. Olive, Dusty Pink"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomChip('colour');}">
+            <button type="button" class="btn-add-chip" onclick="addCustomChip('colour')">Add</button>
+            <button type="button" class="chip-add" onclick="hideCustomChipInput('colour')">Cancel</button>
+        </div>
+
+        <div class="chip-stocks" id="colour-stocks">
+            @foreach($initColours as $cl => $st)
+            <div class="chip-stock-row" id="crow-{{ Str::slug($cl) }}">
+                <span class="chip-stock-label">{{ $cl }}</span>
+                <input type="number" class="chip-stock-input colour-stock-val" data-colour="{{ $cl }}"
+                       id="cstock-{{ Str::slug($cl) }}" value="{{ $st }}" min="0" placeholder="0">
+                <span class="chip-stock-unit">pcs</span>
+            </div>
+            @endforeach
+            @foreach($customColours as $cl => $st)
+            <div class="chip-stock-row" id="crow-{{ Str::slug($cl) }}">
+                <span class="chip-stock-label">{{ $cl }}</span>
+                <input type="number" class="chip-stock-input colour-stock-val" data-colour="{{ $cl }}"
+                       id="cstock-{{ Str::slug($cl) }}" value="{{ $st }}" min="0" placeholder="0">
+                <span class="chip-stock-unit">pcs</span>
+            </div>
+            @endforeach
         </div>
     </div>
 
@@ -491,87 +683,298 @@
 
 @section('scripts')
 <script>
-var INIT_TYPE     = '{{ $currentType }}';
-var INIT_VARIANTS = @json($initVariants);
-var variantIdx    = 0;
+// ── Data ────────────────────────────────────────────────
+var CATEGORIES = {
+    unit:     ['Bags & Handbags','Caps & Hats','Shoes','Jewellery','Perfumes (Bottled)','Empty Bottles','Body Sprays','Hair Products','Accessories'],
+    measured: ['Perfumes (Bulk)','Body Oils','Fragrance Oils'],
+    variant:  ['Dresses','Tops & Blouses','Trousers & Shorts','Shirts','Shoes','Jackets & Coats']
+};
+var NAME_PLACEHOLDERS = {
+    unit:     'e.g. Leather Handbag, Cap, Empty 50ml Bottle',
+    measured: 'e.g. Versace Eros Bulk, Chanel No.5 Oil',
+    variant:  'e.g. Floral Midi Dress, Men\'s Oxford Shirt'
+};
+var PRICE_LABELS = {
+    unit:     'Selling Price',
+    measured: 'Price per ml',
+    variant:  'Selling Price'
+};
+var SHELF_PLACEHOLDERS = {
+    unit:     '0.00',
+    measured: '0.00',
+    variant:  '0.00'
+};
 
-// ── Type card selection ─────────────────────────────────
+// ── Type switching ──────────────────────────────────────
 document.querySelectorAll('.type-card').forEach(function(card) {
     card.addEventListener('click', function() {
-        document.querySelectorAll('.type-card').forEach(function(c) {
-            c.classList.remove('selected');
-        });
+        document.querySelectorAll('.type-card').forEach(function(c) { c.classList.remove('selected'); });
         card.classList.add('selected');
         card.querySelector('input[type="radio"]').checked = true;
-        updateSections(card.dataset.type);
+        switchType(card.dataset.type);
     });
 });
 
-function updateSections(type) {
+function switchType(type) {
+    // Show/hide sections
     document.getElementById('section-stock').classList.toggle('visible', type === 'unit');
-    document.getElementById('section-variants').classList.toggle('visible', type === 'variant');
     document.getElementById('section-bottle').classList.toggle('visible', type === 'measured');
+    document.getElementById('section-variants').classList.toggle('visible', type === 'variant');
+    document.getElementById('measured-hint').classList.toggle('visible', type === 'measured');
+
+    // Name placeholder
+    document.getElementById('f-name').placeholder = NAME_PLACEHOLDERS[type] || '';
+
+    // Price label
+    document.getElementById('shelf-price-label-text').textContent = PRICE_LABELS[type] || 'Selling Price';
+
+    // Category options
+    updateCategoryOptions(type);
+
+    // Auto-set category for measured if blank
+    if (type === 'measured') {
+        var current = document.getElementById('f-category').value;
+        if (!current) setCategoryValue('Perfumes (Bulk)');
+    }
 }
 
-// ── Stock fields opacity ────────────────────────────────
+// ── Category ────────────────────────────────────────────
+function updateCategoryOptions(type) {
+    var sel = document.getElementById('f-category-select');
+    var current = document.getElementById('f-category').value;
+    var cats = CATEGORIES[type] || [];
+
+    sel.innerHTML = '<option value="">— Choose a category —</option>';
+    cats.forEach(function(cat) {
+        var opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        if (cat === current) opt.selected = true;
+        sel.appendChild(opt);
+    });
+    var otherOpt = document.createElement('option');
+    otherOpt.value = '__other__';
+    otherOpt.textContent = 'Other…';
+    sel.appendChild(otherOpt);
+
+    // If current value isn't in the new list, show Other
+    var inList = cats.indexOf(current) !== -1;
+    if (current && !inList) {
+        sel.value = '__other__';
+        document.getElementById('category-other-wrap').classList.add('visible');
+        document.getElementById('f-category-other').value = current;
+    } else {
+        sel.value = current || '';
+        document.getElementById('category-other-wrap').classList.remove('visible');
+    }
+}
+
+function onCategorySelect(val) {
+    var otherWrap = document.getElementById('category-other-wrap');
+    var hiddenCat = document.getElementById('f-category');
+    if (val === '__other__') {
+        otherWrap.classList.add('visible');
+        hiddenCat.value = document.getElementById('f-category-other').value;
+        document.getElementById('f-category-other').focus();
+    } else {
+        otherWrap.classList.remove('visible');
+        document.getElementById('f-category-other').value = '';
+        hiddenCat.value = val;
+    }
+}
+
+function setCategoryValue(val) {
+    var sel = document.getElementById('f-category-select');
+    sel.value = val;
+    document.getElementById('f-category').value = val;
+    document.getElementById('category-other-wrap').classList.remove('visible');
+}
+
+// ── Bargaining / floor price ────────────────────────────
+function toggleBargaining(checked) {
+    var wrap = document.getElementById('floor-price-wrap');
+    if (checked) {
+        wrap.classList.add('visible');
+    } else {
+        wrap.classList.remove('visible');
+        document.getElementById('f-floor-price').value = '';
+    }
+}
+
+// ── Stock field opacity ─────────────────────────────────
 function toggleStockFields(checked) {
     var el = document.getElementById('stock-fields');
     el.style.opacity       = checked ? '1' : '0.4';
     el.style.pointerEvents = checked ? '' : 'none';
 }
 
-// ── Variant rows ────────────────────────────────────────
-function addVariantRow(size, colour, stock) {
-    var idx = variantIdx++;
-    var row = document.createElement('div');
-    row.className = 'variant-row';
-    row.id        = 'vrow-' + idx;
-
-    var sizeVal   = esc(size   !== undefined ? size   : '');
-    var colourVal = esc(colour !== undefined ? colour : '');
-    var stockVal  = stock !== undefined && stock !== '' ? esc(stock) : '';
-
-    row.innerHTML =
-        '<input class="form-input" type="text"   name="variants[' + idx + '][size]"   value="' + sizeVal   + '" placeholder="e.g. M, L, XL">' +
-        '<input class="form-input" type="text"   name="variants[' + idx + '][colour]" value="' + colourVal + '" placeholder="e.g. Black">' +
-        '<input class="form-input" type="number" name="variants[' + idx + '][stock]"  value="' + stockVal  + '" placeholder="0" min="0" style="font-family:\'DM Mono\',monospace;">' +
-        '<button type="button" class="btn-remove" onclick="removeVariantRow(\'vrow-' + idx + '\')" title="Remove">×</button>';
-
-    document.getElementById('variant-rows').appendChild(row);
-}
-
-function removeVariantRow(id) {
-    if (document.querySelectorAll('.variant-row').length <= 1) return;
-    var el = document.getElementById(id);
-    if (el) el.remove();
-}
-
-function esc(s) {
-    return String(s)
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-}
-
-// ── Init ────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
-    // Render initial variant rows
-    if (INIT_VARIANTS && INIT_VARIANTS.length) {
-        INIT_VARIANTS.forEach(function(v) {
-            addVariantRow(
-                v.size   !== null ? v.size   : '',
-                v.colour !== null ? v.colour : '',
-                v.stock  !== undefined ? v.stock : ''
-            );
-        });
+// ── ML chips (single-select) ────────────────────────────
+function selectMlChip(chip) {
+    document.querySelectorAll('#ml-chips .chip').forEach(function(c) { c.classList.remove('active'); });
+    chip.classList.add('active');
+    var customWrap = document.getElementById('custom-ml-wrap');
+    var hiddenMl   = document.getElementById('f-total-ml');
+    if (chip.dataset.value === 'custom') {
+        customWrap.style.display = 'block';
+        hiddenMl.value = document.getElementById('f-total-ml-custom').value;
+        document.getElementById('f-total-ml-custom').focus();
     } else {
-        addVariantRow('', '', '');
+        customWrap.style.display = 'none';
+        document.getElementById('f-total-ml-custom').value = '';
+        hiddenMl.value = chip.dataset.value;
+    }
+}
+
+// Keep custom ml input synced
+document.addEventListener('DOMContentLoaded', function() {
+    var customMlInput = document.getElementById('f-total-ml-custom');
+    if (customMlInput) {
+        customMlInput.addEventListener('input', function() {
+            document.getElementById('f-total-ml').value = this.value;
+        });
+    }
+});
+
+// ── Size chips ──────────────────────────────────────────
+function toggleSizeChip(chip) {
+    var val  = chip.dataset.value;
+    var slug = slugify(val);
+    if (chip.classList.contains('active')) {
+        chip.classList.remove('active');
+        var row = document.getElementById('srow-' + slug);
+        if (row) row.remove();
+    } else {
+        chip.classList.add('active');
+        addStockRow('size', val, slug, 0);
+    }
+}
+
+// ── Colour chips ────────────────────────────────────────
+function toggleColourChip(chip) {
+    var val  = chip.dataset.value;
+    var slug = slugify(val);
+    if (chip.classList.contains('active')) {
+        chip.classList.remove('active');
+        var row = document.getElementById('crow-' + slug);
+        if (row) row.remove();
+    } else {
+        chip.classList.add('active');
+        addStockRow('colour', val, slug, 0);
+    }
+}
+
+function addStockRow(dimension, label, slug, initStock) {
+    var container = document.getElementById(dimension === 'size' ? 'size-stocks' : 'colour-stocks');
+    var row = document.createElement('div');
+    row.className = 'chip-stock-row';
+    row.id = (dimension === 'size' ? 'srow-' : 'crow-') + slug;
+    var inputId = (dimension === 'size' ? 'sstock-' : 'cstock-') + slug;
+    row.innerHTML =
+        '<span class="chip-stock-label">' + escHtml(label) + '</span>' +
+        '<input type="number" class="chip-stock-input" id="' + inputId + '"' +
+        '       value="' + (initStock || 0) + '" min="0" placeholder="0">' +
+        '<span class="chip-stock-unit">pcs</span>';
+    container.appendChild(row);
+    row.querySelector('input').focus();
+}
+
+// ── Custom chips ────────────────────────────────────────
+function showCustomChipInput(dimension) {
+    document.getElementById('custom-' + dimension + '-wrap').classList.add('visible');
+    document.getElementById('custom-' + dimension + '-input').focus();
+}
+function hideCustomChipInput(dimension) {
+    document.getElementById('custom-' + dimension + '-wrap').classList.remove('visible');
+    document.getElementById('custom-' + dimension + '-input').value = '';
+}
+function addCustomChip(dimension) {
+    var input = document.getElementById('custom-' + dimension + '-input');
+    var val   = input.value.trim();
+    if (!val) return;
+    var slug  = slugify(val);
+
+    // Don't add duplicates
+    if (document.querySelector('#' + dimension + '-chips .chip[data-value="' + val.replace(/"/g, '\\"') + '"]')) {
+        input.value = '';
+        hideCustomChipInput(dimension);
+        return;
     }
 
+    var container = document.getElementById(dimension + '-chips');
+    var addBtn    = document.getElementById(dimension + '-custom-btn');
+    var chip = document.createElement('button');
+    chip.type      = 'button';
+    chip.className = 'chip ' + dimension + '-chip active';
+    chip.dataset.value = val;
+    chip.textContent   = val;
+    chip.onclick = dimension === 'size'
+        ? function() { toggleSizeChip(this); }
+        : function() { toggleColourChip(this); };
+    container.insertBefore(chip, addBtn);
+
+    addStockRow(dimension, val, slug, 0);
+    input.value = '';
+    hideCustomChipInput(dimension);
+}
+
+// ── Form submission — generate variant hidden inputs ────
+document.getElementById('product-form').addEventListener('submit', function() {
+    var typeInput = document.querySelector('input[name="type"]:checked');
+    if (!typeInput || typeInput.value !== 'variant') return;
+
+    var form = this;
+    form.querySelectorAll('.variant-gen').forEach(function(el) { el.remove(); });
+
+    var idx = 0;
+    function appendVariant(size, colour, stock) {
+        var base = 'variants[' + idx + ']';
+        [['size', size], ['colour', colour], ['stock', stock]].forEach(function(pair) {
+            var inp = document.createElement('input');
+            inp.type      = 'hidden';
+            inp.name      = base + '[' + pair[0] + ']';
+            inp.value     = pair[1] !== null && pair[1] !== undefined ? pair[1] : '';
+            inp.className = 'variant-gen';
+            form.appendChild(inp);
+        });
+        idx++;
+    }
+
+    document.querySelectorAll('#size-chips .chip.active').forEach(function(chip) {
+        var val   = chip.dataset.value;
+        var slug  = slugify(val);
+        var stock = (document.getElementById('sstock-' + slug) || {}).value || 0;
+        appendVariant(val, '', stock);
+    });
+    document.querySelectorAll('#colour-chips .chip.active').forEach(function(chip) {
+        var val   = chip.dataset.value;
+        var slug  = slugify(val);
+        var stock = (document.getElementById('cstock-' + slug) || {}).value || 0;
+        appendVariant('', val, stock);
+    });
+});
+
+// ── Helpers ─────────────────────────────────────────────
+function slugify(str) {
+    return String(str).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Boot ────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
     // Restore stock field opacity
     var trackCb = document.getElementById('f-track-stock');
     if (trackCb) toggleStockFields(trackCb.checked);
+
+    // Sync category hidden on page load
+    var sel = document.getElementById('f-category-select');
+    if (sel) {
+        var hiddenCat = document.getElementById('f-category');
+        if (sel.value && sel.value !== '__other__' && !hiddenCat.value) {
+            hiddenCat.value = sel.value;
+        }
+    }
 });
 </script>
 @endsection
