@@ -110,7 +110,19 @@
     color: inherit;
     text-decoration: none;
     cursor: pointer;
+    position: relative;
 }
+.stat-eye {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    color: #8C7B6E;
+    line-height: 0;
+}
+.eye-closed { display: inline-block; }
+.eye-open   { display: none; }
+body.hero-revealed .eye-closed { display: none; }
+body.hero-revealed .eye-open   { display: inline-block; }
 .stat-label {
     font-size: 11px;
     font-weight: 600;
@@ -408,6 +420,10 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
 <div class="stat-grid zone-gap-md">
 
     <div class="stat-card" onclick="toggleHero()">
+        <div class="stat-eye">
+            <svg class="eye-closed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            <svg class="eye-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
         <span class="stat-label">Today's sales</span>
         <div class="stat-value stat-amount">Ksh&nbsp;{{ number_format((int)$todayTotal) }}</div>
         <div class="stat-sub">{{ $todayCount }} {{ $todayCount === 1 ? 'transaction' : 'transactions' }}</div>
@@ -417,16 +433,28 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
     </div>
 
     <div class="stat-card" onclick="toggleHero()">
+        <div class="stat-eye">
+            <svg class="eye-closed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            <svg class="eye-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
         <span class="stat-label">Cash collected</span>
         <div class="stat-value c-forest stat-amount">Ksh&nbsp;{{ number_format((int)$todayCash) }}</div>
     </div>
 
     <div class="stat-card" onclick="toggleHero()">
+        <div class="stat-eye">
+            <svg class="eye-closed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            <svg class="eye-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
         <span class="stat-label">M-Pesa received</span>
         <div class="stat-value c-forest stat-amount">Ksh&nbsp;{{ number_format((int)$todayMpesa) }}</div>
     </div>
 
     <div class="stat-card" onclick="toggleHero()">
+        <div class="stat-eye">
+            <svg class="eye-closed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            <svg class="eye-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
         <span class="stat-label">Customers owe you</span>
         <div class="stat-value {{ $creditOwed > 0 ? 'c-clay' : 'c-muted' }} stat-amount">Ksh&nbsp;{{ number_format((int)$creditOwed) }}</div>
         @if($creditOwed > 0)
@@ -615,17 +643,13 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
 <script>
 (function () {
     window.toggleHero = function () {
-        var revealed = document.body.classList.toggle('hero-revealed');
-        sessionStorage.setItem('stoka_hero', revealed ? '1' : '0');
+        document.body.classList.toggle('hero-revealed');
         var hint = document.getElementById('hero-hint');
-        if (hint && revealed) {
+        if (hint) {
             hint.style.display = 'none';
             sessionStorage.setItem('stoka_hero_hint', '1');
         }
     };
-    if (sessionStorage.getItem('stoka_hero') === '1') {
-        document.body.classList.add('hero-revealed');
-    }
     if (sessionStorage.getItem('stoka_hero_hint') === '1') {
         var hint = document.getElementById('hero-hint');
         if (hint) hint.style.display = 'none';
