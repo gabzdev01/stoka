@@ -287,6 +287,44 @@
     /* ── Form actions ────────────────────────────────────── */
     .form-actions { display: flex; gap: 10px; padding-top: 4px; }
 
+    /* ── Custom select dropdown ─────────────────────────────────── */
+    .custom-select { position: relative; user-select: none; }
+    .cs-trigger {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 10px 13px; background: var(--surface);
+        border: 1px solid var(--border); border-radius: 8px;
+        cursor: pointer; font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13.5px; color: var(--espresso);
+        transition: border-color 0.13s, background 0.13s; min-height: 42px;
+    }
+    .cs-trigger:hover, .cs-trigger.open { border-color: var(--terracotta); background: var(--parchment); }
+    .cs-trigger.is-error { border-color: var(--clay); }
+    .cs-arrow { width: 14px; height: 14px; color: var(--muted); flex-shrink: 0; margin-left: 8px; transition: transform 0.2s; }
+    .cs-trigger.open .cs-arrow { transform: rotate(180deg); }
+    .cs-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cs-dropdown {
+        position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 200;
+        background: #fff; border: 1px solid var(--border); border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(28,24,20,0.12); display: none; overflow: hidden;
+    }
+    .cs-dropdown.open { display: block; }
+    .cs-search { border-bottom: 1px solid var(--border); }
+    .cs-search input {
+        width: 100%; padding: 10px 14px; border: none;
+        font-family: "Plus Jakarta Sans", sans-serif; font-size: 13.5px;
+        color: var(--espresso); outline: none; background: #FDFAF7; box-sizing: border-box;
+    }
+    .cs-options { max-height: 240px; overflow-y: auto; }
+    .cs-option {
+        padding: 10px 14px; font-size: 13.5px; color: var(--espresso);
+        cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+        transition: background 0.1s;
+    }
+    .cs-option:hover { background: var(--surface); }
+    .cs-option.selected { color: var(--terracotta); font-weight: 600; }
+    .cs-option.selected::after { content: "✓"; color: var(--terracotta); font-size: 12px; }
+    .cs-option.hidden { display: none; }
+
     @media (max-width: 580px) {
         .type-cards { grid-template-columns: 1fr; }
         .form-grid-2 { grid-template-columns: 1fr; }
@@ -408,15 +446,22 @@
             <div class="form-group">
                 <label class="form-label" for="f-category-select">Category</label>
 
-                <select class="form-select {{ $errors->has('category') ? 'is-error' : '' }}"
-                        id="f-category-select"
-                        onchange="onCategorySelect(this.value)">
-                    <option value="">— Choose a category —</option>
-                    @foreach($typeCats as $cat)
-                        <option value="{{ $cat }}" {{ (!$catIsOther && $currentCat === $cat) ? 'selected' : '' }}>{{ $cat }}</option>
-                    @endforeach
-                    <option value="__other__" {{ $catIsOther ? 'selected' : '' }}>Other…</option>
-                </select>
+                <div class="custom-select" id="category-select">
+                    <div class="cs-trigger {{ $errors->has('category') ? 'is-error' : '' }}" onclick="csToggle('category-select')">
+                        <span class="cs-value" id="category-display">@if($catIsOther){{ $currentCat }}@elseif($currentCat){{ $currentCat }}@else— Choose a category —@endif</span>
+                        <svg class="cs-arrow" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <div class="cs-dropdown">
+                        <div class="cs-search"><input type="text" placeholder="Search categories…" oninput="csSearch('category-select', this.value)"></div>
+                        <div class="cs-options" id="category-options">
+                            <div class="cs-option {{ !$currentCat ? 'selected' : '' }}" data-value="" onclick="csSelectCategory('', '— Choose a category —')">— Choose a category —</div>
+                            @foreach($typeCats as $cat)
+                            <div class="cs-option {{ (!$catIsOther && $currentCat === $cat) ? 'selected' : '' }}" data-value="{{ $cat }}" onclick="csSelectCategory('{{ $cat }}', '{{ $cat }}')">{{ $cat }}</div>
+                            @endforeach
+                            <div class="cs-option {{ $catIsOther ? 'selected' : '' }}" data-value="__other__" onclick="csSelectCategory('__other__', 'Other…')">Other…</div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="custom-chip-wrap {{ $catIsOther ? 'visible' : '' }}" id="category-other-wrap" style="margin-top:8px;">
                     <input type="text"
@@ -432,16 +477,29 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="f-supplier">Supplier</label>
-                <select class="form-select" id="f-supplier" name="supplier_id">
-                    <option value="">— No supplier —</option>
-                    @foreach($suppliers as $s)
-                        <option value="{{ $s->id }}"
-                            {{ (int) old('supplier_id', $isEdit ? $product->supplier_id : 0) === $s->id ? 'selected' : '' }}>
-                            {{ $s->name }}
-                        </option>
-                    @endforeach
-                </select>
+                <label class="form-label">Supplier</label>
+                @php
+                    $selSuppId   = (int) old('supplier_id', $isEdit ? ($product->supplier_id ?? 0) : 0);
+                    $selSuppName = '— No supplier —';
+                    foreach ($suppliers as $_s) {
+                        if ((int)$_s->id === $selSuppId && $selSuppId > 0) { $selSuppName = $_s->name; break; }
+                    }
+                @endphp
+                <input type="hidden" name="supplier_id" id="f-supplier" value="{{ $selSuppId ?: '' }}">
+                <div class="custom-select" id="supplier-select">
+                    <div class="cs-trigger" onclick="csToggle('supplier-select')">
+                        <span class="cs-value" id="supplier-display">{{ $selSuppName }}</span>
+                        <svg class="cs-arrow" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <div class="cs-dropdown">
+                        <div class="cs-options">
+                            <div class="cs-option {{ !$selSuppId ? 'selected' : '' }}" data-value="" onclick="csSelectSupplier('', '— No supplier —')">— No supplier —</div>
+                            @foreach($suppliers as $s)
+                            <div class="cs-option {{ $selSuppId === (int)$s->id ? 'selected' : '' }}" data-value="{{ $s->id }}" onclick="csSelectSupplier('{{ $s->id }}', '{{ addslashes($s->name) }}')">{{ $s->name }}</div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -778,31 +836,32 @@ function switchType(type) {
 
 // ── Category ────────────────────────────────────────────
 function updateCategoryOptions(type) {
-    var sel = document.getElementById('f-category-select');
     var current = document.getElementById('f-category').value;
-    var cats = CATEGORIES;
+    var cats    = CATEGORIES;
+    var container = document.getElementById('category-options');
+    container.innerHTML = '';
 
-    sel.innerHTML = '<option value="">— Choose a category —</option>';
-    cats.forEach(function(cat) {
-        var opt = document.createElement('option');
-        opt.value = cat;
-        opt.textContent = cat;
-        if (cat === current) opt.selected = true;
-        sel.appendChild(opt);
-    });
-    var otherOpt = document.createElement('option');
-    otherOpt.value = '__other__';
-    otherOpt.textContent = 'Other…';
-    sel.appendChild(otherOpt);
+    function makeOpt(val, label) {
+        var d = document.createElement('div');
+        d.className = 'cs-option' + (val === current ? ' selected' : '');
+        d.setAttribute('data-value', val);
+        d.textContent = label;
+        var v = val, l = label;
+        d.onclick = function() { csSelectCategory(v, l); };
+        container.appendChild(d);
+    }
 
-    // If current value isn't in the new list, show Other
+    makeOpt('', '— Choose a category —');
+    cats.forEach(function(cat) { makeOpt(cat, cat); });
+    makeOpt('__other__', 'Other…');
+
     var inList = cats.indexOf(current) !== -1;
     if (current && !inList) {
-        sel.value = '__other__';
+        document.getElementById('category-display').textContent = current;
         document.getElementById('category-other-wrap').classList.add('visible');
         document.getElementById('f-category-other').value = current;
     } else {
-        sel.value = current || '';
+        document.getElementById('category-display').textContent = current || '— Choose a category —';
         document.getElementById('category-other-wrap').classList.remove('visible');
     }
 }
@@ -822,9 +881,11 @@ function onCategorySelect(val) {
 }
 
 function setCategoryValue(val) {
-    var sel = document.getElementById('f-category-select');
-    sel.value = val;
     document.getElementById('f-category').value = val;
+    document.getElementById('category-display').textContent = val || '— Choose a category —';
+    document.querySelectorAll('#category-select .cs-option').forEach(function(o) {
+        o.classList.toggle('selected', o.getAttribute('data-value') === val);
+    });
     document.getElementById('category-other-wrap').classList.remove('visible');
 }
 
@@ -991,6 +1052,59 @@ document.getElementById('product-form').addEventListener('submit', function() {
     });
 });
 
+// ── Custom select (dropdown) ──────────────────────────────
+function csToggle(id) {
+    var cs = document.getElementById(id);
+    var trigger  = cs.querySelector('.cs-trigger');
+    var dropdown = cs.querySelector('.cs-dropdown');
+    var isOpen   = dropdown.classList.contains('open');
+    document.querySelectorAll('.cs-dropdown.open').forEach(function(d) {
+        d.classList.remove('open');
+        d.closest('.custom-select').querySelector('.cs-trigger').classList.remove('open');
+    });
+    if (!isOpen) {
+        dropdown.classList.add('open');
+        trigger.classList.add('open');
+        var search = dropdown.querySelector('.cs-search input');
+        if (search) { search.value = ''; csSearch(id, ''); setTimeout(function() { search.focus(); }, 30); }
+    }
+}
+function csSearch(id, query) {
+    document.querySelectorAll('#' + id + ' .cs-option').forEach(function(o) {
+        o.classList.toggle('hidden', query !== '' && o.textContent.toLowerCase().indexOf(query.toLowerCase()) === -1);
+    });
+}
+function csClose(id) {
+    var cs = document.getElementById(id);
+    if (!cs) return;
+    cs.querySelector('.cs-dropdown').classList.remove('open');
+    cs.querySelector('.cs-trigger').classList.remove('open');
+}
+function csSelectCategory(val, displayText) {
+    document.getElementById('category-display').textContent = displayText;
+    document.querySelectorAll('#category-select .cs-option').forEach(function(o) {
+        o.classList.toggle('selected', o.getAttribute('data-value') === val);
+    });
+    csClose('category-select');
+    onCategorySelect(val);
+}
+function csSelectSupplier(val, displayText) {
+    document.getElementById('f-supplier').value = val;
+    document.getElementById('supplier-display').textContent = displayText;
+    document.querySelectorAll('#supplier-select .cs-option').forEach(function(o) {
+        o.classList.toggle('selected', String(o.getAttribute('data-value')) === String(val));
+    });
+    csClose('supplier-select');
+}
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.custom-select')) {
+        document.querySelectorAll('.cs-dropdown.open').forEach(function(d) {
+            d.classList.remove('open');
+            d.closest('.custom-select').querySelector('.cs-trigger').classList.remove('open');
+        });
+    }
+});
+
 // ── Helpers ─────────────────────────────────────────────
 function slugify(str) {
     return String(str).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -1030,13 +1144,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var trackCb = document.getElementById('f-track-stock');
     if (trackCb) toggleStockFields(trackCb.checked);
 
-    // Sync category hidden on page load
-    var sel = document.getElementById('f-category-select');
-    if (sel) {
-        var hiddenCat = document.getElementById('f-category');
-        if (sel.value && sel.value !== '__other__' && !hiddenCat.value) {
-            hiddenCat.value = sel.value;
-        }
+    // Sync category display on page load
+    var catDisplay = document.getElementById('category-display');
+    var hiddenCat  = document.getElementById('f-category');
+    if (catDisplay && hiddenCat && hiddenCat.value && hiddenCat.value !== '__other__') {
+        catDisplay.textContent = hiddenCat.value;
     }
 
     // Restore gender pill state on page load (edit mode / validation failure)

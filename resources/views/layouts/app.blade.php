@@ -539,6 +539,11 @@
         document.getElementById('sidebar').classList.remove('open');
         document.getElementById('overlay').classList.remove('visible');
     }
+    document.querySelectorAll('.nav-link').forEach(function(link) {
+        link.addEventListener('click', function() {
+            if (window.innerWidth < 768) { closeSidebar(); }
+        });
+    });
 </script>
 
 @yield('scripts')
