@@ -11,6 +11,7 @@ use App\Http\Controllers\SuppliersController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\CreditController;
+use App\Http\Controllers\ShoppingListController;
 use App\Http\Controllers\ShiftsController;
 
 Route::middleware([
@@ -46,6 +47,9 @@ Route::middleware([
             // Shifts (owner view)
             Route::get("/shifts",           [ShiftsController::class, "index"])->name("shifts.index");
             Route::get("/shifts/{shift}",   [ShiftsController::class, "show"])->name("shifts.show");
+
+            // Shopping list
+            Route::get("/shopping-list", [ShoppingListController::class, "index"])->name("shopping-list.index");
 
             // Credit management
             Route::get("/credit",                     [CreditController::class, "index"])->name("credit.index");
