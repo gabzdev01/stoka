@@ -36,6 +36,11 @@ class DashboardController extends Controller
         $todayMpesa = $todaySales->where('payment_type', 'mpesa')->sum('total');
         $todayCount = $todaySales->count();
 
+        // Yesterday comparison for Today's Sales card
+        $yesterdayTotal = Sale::whereDate('created_at', today()->subDay())
+            ->whereNull('voided_at')
+            ->sum('total');
+
         // Credit outstanding
         $creditOwed = CreditLedger::where('status', 'open')->sum('balance');
 
@@ -111,7 +116,7 @@ class DashboardController extends Controller
         return view('dashboard', compact(
             'greeting', 'today',
             'openShifts',
-            'todayTotal', 'todayCash', 'todayMpesa', 'todayCount',
+            'todayTotal', 'todayCash', 'todayMpesa', 'todayCount', 'yesterdayTotal',
             'creditOwed',
             'outOfStock', 'lowStock',
             'lowBottles',
