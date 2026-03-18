@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -35,5 +36,15 @@ class User extends Authenticatable
     public function isStaff(): bool
     {
         return $this->role === "staff";
+    }
+
+    public function shifts(): HasMany
+    {
+        return $this->hasMany(Shift::class, 'staff_id');
+    }
+
+    public function sales(): HasMany
+    {
+        return $this->hasMany(Sale::class, 'staff_id');
     }
 }

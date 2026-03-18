@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Product;
@@ -30,6 +29,7 @@ class ProductsController extends Controller
             'supplier_id'         => $validated['supplier_id'] ?? null,
             'name'                => $validated['name'],
             'category'            => $validated['category'] ?? null,
+            'gender'              => $validated['gender'] ?? null,
             'type'                => $validated['type'],
             'shelf_price'         => $validated['shelf_price'],
             'floor_price'         => $validated['floor_price'] ?? null,
@@ -62,6 +62,7 @@ class ProductsController extends Controller
             'supplier_id'         => $validated['supplier_id'] ?? null,
             'name'                => $validated['name'],
             'category'            => $validated['category'] ?? null,
+            'gender'              => $validated['gender'] ?? null,
             'type'                => $validated['type'],
             'shelf_price'         => $validated['shelf_price'],
             'floor_price'         => $validated['floor_price'] ?? null,
@@ -92,6 +93,7 @@ class ProductsController extends Controller
         return $request->validate([
             'name'                  => 'required|string|max:150',
             'category'              => 'nullable|string|max:60',
+            'gender'                => 'nullable|in:male,female,unisex',
             'type'                  => 'required|in:unit,measured,variant',
             'supplier_id'           => 'nullable|integer',
             'shelf_price'           => 'required|numeric|min:0',

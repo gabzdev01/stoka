@@ -9,6 +9,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SuppliersController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\SalesController;
+use App\Http\Controllers\ShiftsController;
 
 Route::middleware([
     "web",
@@ -41,10 +43,12 @@ Route::middleware([
             Route::post("/products/{product}/toggle", [ProductsController::class, "toggle"])->name("products.toggle");
         });
 
-        // Staff + owner
-        Route::get("/sales", function () {
-            return "Sales screen coming soon — logged in as " . session("auth_name");
-        })->name("sales.index");
+        // Staff + owner — sales flow
+        Route::post("/shifts/open",  [ShiftsController::class, "open"])->name("shifts.open");
+        Route::get("/sales",         [SalesController::class, "index"])->name("sales.index");
+        Route::get("/sales/shift",   [SalesController::class, "activeShift"])->name("sales.shift");
+        Route::get("/sales/history", [SalesController::class, "history"])->name("sales.history");
+        Route::get("/shifts/close",  [ShiftsController::class, "closeForm"])->name("shifts.close");
 
     });
 

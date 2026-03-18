@@ -300,11 +300,14 @@
     $currentType = old('type', $isEdit ? $product->type : 'unit');
     $currentCat  = old('category', $isEdit ? ($product->category ?? '') : '');
 
-    $unitCats     = ['Bags & Handbags','Caps & Hats','Shoes','Jewellery','Perfumes (Bottled)','Empty Bottles','Body Sprays','Hair Products','Accessories','Other'];
-    $measuredCats = ['Perfumes (Bulk)','Body Oils','Fragrance Oils','Other'];
-    $variantCats  = ['Dresses','Tops & Blouses','Trousers & Shorts','Shirts','Shoes','Jackets & Coats','Other'];
-    $allCatsByType = ['unit' => $unitCats, 'measured' => $measuredCats, 'variant' => $variantCats];
-    $typeCats = $allCatsByType[$currentType] ?? $unitCats;
+    $allCats = [
+        'Dresses', 'Tops & Blouses', 'Trousers & Shorts', 'Shirts',
+        'Jackets & Coats', 'Shoes & Sandals', 'Bags & Handbags',
+        'Perfumes (Bottled)', 'Perfumes (Bulk)', 'Body Sprays & Mists',
+        'Jewellery', 'Hair Products', 'Caps & Hats', 'Accessories',
+        "Kids' Clothing",
+    ];
+    $typeCats = $allCats;
 
     $presetSizes   = ['XS','S','M','L','XL','XXL'];
     $presetColours = ['Black','White','Brown','Beige','Navy','Red','Green'];
@@ -334,7 +337,7 @@
     $trackStock    = (bool) old('track_stock',    $isEdit ? ($product->track_stock    ?? true)  : true);
 
     // Is the current category "Other" (not in type list)?
-    $catIsOther = $currentCat && !in_array($currentCat, $typeCats);
+    $catIsOther = $currentCat && !in_array($currentCat, $allCats);
 @endphp
 
 @if($errors->any())
@@ -410,9 +413,7 @@
                         onchange="onCategorySelect(this.value)">
                     <option value="">— Choose a category —</option>
                     @foreach($typeCats as $cat)
-                        @if($cat !== 'Other')
                         <option value="{{ $cat }}" {{ (!$catIsOther && $currentCat === $cat) ? 'selected' : '' }}>{{ $cat }}</option>
-                        @endif
                     @endforeach
                     <option value="__other__" {{ $catIsOther ? 'selected' : '' }}>Other…</option>
                 </select>
@@ -443,6 +444,41 @@
                 </select>
             </div>
         </div>
+
+        {{-- ── Gender (optional) ──────────────────────── --}}
+        <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" style="margin-bottom:10px;">
+                Who is this for?
+                <span style="font-weight:400; color:var(--muted); margin-left:6px; text-transform:none; letter-spacing:0;">(optional)</span>
+            </label>
+
+            <input type="hidden" name="gender" id="f-gender"
+                   value="{{ old('gender', $isEdit ? ($product->gender ?? '') : '') }}">
+
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                @foreach(['male' => "Men's", 'female' => "Women's", 'unisex' => 'Unisex'] as $val => $label)
+                <button type="button"
+                        class="gender-pill"
+                        data-value="{{ $val }}"
+                        onclick="toggleGender(this)"
+                        style="
+                            padding: 8px 18px;
+                            border-radius: 100px;
+                            border: 1.5px solid var(--border);
+                            background: transparent;
+                            font-family: 'Plus Jakarta Sans', sans-serif;
+                            font-size: 13px;
+                            font-weight: 600;
+                            color: var(--muted);
+                            cursor: pointer;
+                            transition: background 0.13s, border-color 0.13s, color 0.13s;
+                            min-height: 36px;
+                            -webkit-tap-highlight-color: transparent;
+                        ">{{ $label }}</button>
+                @endforeach
+            </div>
+        </div>
+
     </div>
 
     {{-- ── Pricing ───────────────────────────────────────── --}}
@@ -684,11 +720,13 @@
 @section('scripts')
 <script>
 // ── Data ────────────────────────────────────────────────
-var CATEGORIES = {
-    unit:     ['Bags & Handbags','Caps & Hats','Shoes','Jewellery','Perfumes (Bottled)','Empty Bottles','Body Sprays','Hair Products','Accessories'],
-    measured: ['Perfumes (Bulk)','Body Oils','Fragrance Oils'],
-    variant:  ['Dresses','Tops & Blouses','Trousers & Shorts','Shirts','Shoes','Jackets & Coats']
-};
+var CATEGORIES = [
+    'Dresses', 'Tops & Blouses', 'Trousers & Shorts', 'Shirts',
+    'Jackets & Coats', 'Shoes & Sandals', 'Bags & Handbags',
+    'Perfumes (Bottled)', 'Perfumes (Bulk)', 'Body Sprays & Mists',
+    'Jewellery', 'Hair Products', 'Caps & Hats', 'Accessories',
+    "Kids' Clothing"
+];
 var NAME_PLACEHOLDERS = {
     unit:     'e.g. Leather Handbag, Cap, Empty 50ml Bottle',
     measured: 'e.g. Versace Eros Bulk, Chanel No.5 Oil',
@@ -742,7 +780,7 @@ function switchType(type) {
 function updateCategoryOptions(type) {
     var sel = document.getElementById('f-category-select');
     var current = document.getElementById('f-category').value;
-    var cats = CATEGORIES[type] || [];
+    var cats = CATEGORIES;
 
     sel.innerHTML = '<option value="">— Choose a category —</option>';
     cats.forEach(function(cat) {
@@ -961,6 +999,31 @@ function escHtml(str) {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── Gender pills ────────────────────────────────────────
+function toggleGender(btn) {
+    var current = document.getElementById('f-gender').value;
+    var val     = btn.dataset.value;
+    var isActive = current === val;
+
+    // Deselect all pills
+    document.querySelectorAll('.gender-pill').forEach(function(p) {
+        p.style.background    = 'transparent';
+        p.style.borderColor   = 'var(--border)';
+        p.style.color         = 'var(--muted)';
+    });
+
+    if (isActive) {
+        // Toggle off
+        document.getElementById('f-gender').value = '';
+    } else {
+        // Select this one
+        btn.style.background  = 'var(--terracotta)';
+        btn.style.borderColor = 'var(--terracotta)';
+        btn.style.color       = '#fff';
+        document.getElementById('f-gender').value = val;
+    }
+}
+
 // ── Boot ────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
     // Restore stock field opacity
@@ -973,6 +1036,17 @@ document.addEventListener('DOMContentLoaded', function() {
         var hiddenCat = document.getElementById('f-category');
         if (sel.value && sel.value !== '__other__' && !hiddenCat.value) {
             hiddenCat.value = sel.value;
+        }
+    }
+
+    // Restore gender pill state on page load (edit mode / validation failure)
+    var genderVal = document.getElementById('f-gender').value;
+    if (genderVal) {
+        var activeBtn = document.querySelector('.gender-pill[data-value="' + genderVal + '"]');
+        if (activeBtn) {
+            activeBtn.style.background  = 'var(--terracotta)';
+            activeBtn.style.borderColor = 'var(--terracotta)';
+            activeBtn.style.color       = '#fff';
         }
     }
 });
