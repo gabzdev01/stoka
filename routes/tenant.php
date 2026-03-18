@@ -46,8 +46,11 @@ Route::middleware([
         // Staff + owner — sales flow
         Route::post("/shifts/open",  [ShiftsController::class, "open"])->name("shifts.open");
         Route::get("/sales",         [SalesController::class, "index"])->name("sales.index");
+        Route::post("/sales",        [SalesController::class, "store"])->name("sales.store");
         Route::get("/sales/shift",   [SalesController::class, "activeShift"])->name("sales.shift");
-        Route::get("/sales/history", [SalesController::class, "history"])->name("sales.history");
+        Route::get("/sales/history",  [SalesController::class, "history"])->name("sales.history");
+        Route::post("/sales/cart",     [SalesController::class, "storeCart"])->name("sales.cart");
+        Route::get("/customers/lookup",[SalesController::class, "customerLookup"])->name("customers.lookup");
         Route::get("/shifts/close",  [ShiftsController::class, "closeForm"])->name("shifts.close");
 
     });

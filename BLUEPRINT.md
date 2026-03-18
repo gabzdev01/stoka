@@ -166,3 +166,80 @@ Pre-loaded believable Kenyan boutique. Makes visitor think: this could be mine.
 Zero budget. Direct WhatsApp outreach to boutique owners.
 Message: "My sister runs a boutique. I built a system after she showed me her notebook. 15 minutes to show you — no obligation."
 First client: sister's boutique, client zero, goes live Phase 4.
+
+---
+
+## 19. Product Positioning & Differentiation
+
+### The one sentence that defines Stoka
+"The only boutique management system built from the ground up for Kenyan boutique owners — not adapted from a Western POS, not a generic inventory tool."
+
+### The core problem we solve that nobody else does
+Every other POS system is built to help you sell more. Stoka is built to make sure you keep what you sell. The notebook lies. Stoka makes the truth visible.
+
+### Target customer
+Primary: A boutique owner in Nairobi with 1-5 staff. Sources from Eastleigh. Sells clothes, perfumes, bags, jewellery. Currently uses a notebook or WhatsApp + Excel. Smart and busy. Has tried apps before and found them confusing.
+
+Not our customer yet: Large retailers, supermarkets, online-only sellers, businesses needing accounting software.
+
+### The five differentiators no competitor has
+
+1. ACCOUNTABILITY THROUGH SHIFTS — every sale tied to a named person during a defined shift. The shift is the unit of accountability.
+
+2. THE BARGAINING ECONOMY — floor price concept. Bei ya mwisho built into the system. Below-floor sales flagged on dashboard. No competitor has this.
+
+3. BUILT FOR EASTLEIGH SOURCING — pre-trip shopping list, supplier balance tracking. No competitor understands this supply chain.
+
+4. WHATSAPP-FIRST REPORTING — shift close report sent to owner automatically. No login needed for routine monitoring.
+
+5. THE CREDIT REALITY — aging credit (7/30/60 days), partial payments at point of sale, per-customer ledger. Competitors treat credit as an afterthought.
+
+### Pricing philosophy
+Ksh 500-1,500/month. Accessible to a boutique owner in Ngong Road, not just large retailers.
+
+### Future differentiators
+- Staff trust score based on shift discrepancies
+- WhatsApp payment links for credit customers
+- Community wholesale pricing data from Eastleigh
+
+---
+
+## 20. Public Shop Page (Phase 7 feature)
+
+### What it is
+Every boutique gets a public catalogue page at their subdomain/shop. Example: demo.stoka.co.ke/shop
+
+This is NOT e-commerce. No cart, no checkout, no payment processing. It is a beautiful shareable product catalogue that connects to WhatsApp for ordering — exactly how Kenyan boutiques already sell informally on Instagram and WhatsApp, but with a proper home.
+
+### Why this and not full e-commerce
+Full e-commerce requires 3-4 months of additional development and solves a different problem for a more sophisticated customer. The public shop page solves the actual need — online presence and WhatsApp ordering — in 2-3 weeks with no operational complexity for the owner.
+
+### How it works
+
+Owner side:
+- Toggle per product: "Show on public page" — on or off
+- Optional: add a product photo and short customer-facing description
+- Public page is live immediately when at least one product is toggled on
+- Owner shares the link from their dashboard with one tap
+
+Public page (customer-facing):
+- Clean product grid with category filter tabs
+- Each product shows: photo or warm placeholder, name, price, availability
+- One button per product: "Order on WhatsApp →"
+- Tapping opens WhatsApp with pre-filled message: "Hi [Shop Name], I'd like to order [Product Name] at Ksh X,XXX. Is it available?"
+- No customer account needed. No checkout. No payment.
+- Footer: "Powered by Stoka · stoka.co.ke"
+
+### What this requires from the owner
+Almost nothing — toggle products on, optionally add photos, share the link.
+
+### Technical requirements
+- Route: GET /shop — public, no auth required
+- New product columns: show_on_shop (boolean, default false), shop_description (text nullable)
+- WhatsApp link: https://wa.me/[owner_whatsapp]?text=[encoded message]
+- Fast-loading, mostly static HTML, mobile-optimised
+- SEO basics: title, meta description, og:image
+
+### Build timing
+Phase 7 — after core is complete and first clients are live.
+
