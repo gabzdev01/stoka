@@ -130,7 +130,7 @@
 <body>
     <div class="card">
         <div class="logo">Stoka</div>
-        <div class="tagline">Boutique management, simplified.</div>
+        <div class="tagline">Your boutique. Running smoothly.</div>
 
         <div class="shop-name">{{ tenant("name") }}</div>
 
@@ -157,7 +157,7 @@
                 <input
                     type="password"
                     name="credential"
-                    placeholder="Password (owner) or 4-digit PIN (staff)"
+                    placeholder="Your password or PIN"
                     class="{{ $errors->has("credential") ? "error" : "" }}"
                     autocomplete="current-password"
                 >
@@ -166,9 +166,9 @@
                 @endif
             </div>
 
-            <div class="hint">Owners use their password. Staff use their 4-digit PIN.</div>
+            <div class="hint">Owners log in with a password. Staff use their 6-digit PIN.</div>
 
-            <button type="submit" class="btn">Sign In</button>
+            <button type="submit" class="btn">Log In</button>
         </form>
 
         <div class="footer">Stoka &copy; {{ date("Y") }}</div>

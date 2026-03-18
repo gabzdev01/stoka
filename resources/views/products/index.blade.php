@@ -190,9 +190,9 @@
                 <rect x="2" y="2" width="40" height="40" rx="10" stroke="currentColor" stroke-width="2"/>
                 <path d="M14 22h16M22 14v16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            <p class="empty-title">No products yet</p>
-            <p class="empty-text">Add the items you sell in your boutique.</p>
-            <a href="{{ route('products.create') }}" class="btn btn-primary">Add your first product</a>
+            <p class="empty-title">Your shelves are empty</p>
+            <p class="empty-text">Add everything you sell — clothes, accessories, fragrances, all of it. Start with your bestsellers.</p>
+            <a href="{{ route('products.create') }}" class="btn btn-primary">Add your first item</a>
         </div>
     @else
 

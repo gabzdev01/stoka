@@ -1,6 +1,6 @@
 @extends('layouts.staff')
 
-@section('title', 'Start Shift')
+@section('title', 'Open Shift')
 
 @section('styles')
 <style>
@@ -164,7 +164,7 @@
         <div class="open-shift-header">
             <span class="open-shift-greeting">{{ $greeting }},</span>
             <span class="open-shift-name">{{ session('auth_name') }}</span>
-            <p class="open-shift-sub">How much cash is in the till right now?</p>
+            <p class="open-shift-sub">Count the notes and coins in the till, then type the amount below.</p>
         </div>
 
         {{-- Form --}}
@@ -193,7 +193,7 @@
                 <p style="color:var(--clay);font-size:12.5px;margin-top:7px;">{{ $message }}</p>
             @enderror
 
-            <p class="float-hint">Enter 0 if the till is empty.</p>
+            <p class="float-hint">Type 0 if you're starting with an empty till — that's fine.</p>
 
             <div style="margin-top:24px;">
                 <button type="submit" class="start-btn">
@@ -201,7 +201,7 @@
                         <circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.6"/>
                         <path d="M7 6l5 3-5 3V6z" fill="currentColor"/>
                     </svg>
-                    Start Shift
+                    Open Shift
                 </button>
             </div>
         </form>

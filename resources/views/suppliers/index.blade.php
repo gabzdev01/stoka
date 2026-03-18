@@ -209,8 +209,8 @@
                 <rect x="2" y="2" width="40" height="40" rx="10" stroke="currentColor" stroke-width="2"/>
                 <path d="M22 9v26M9 22h26" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            <p class="empty-title">No suppliers yet</p>
-            <p class="empty-text">Add the people and companies you buy from.</p>
+            <p class="empty-title">No suppliers added yet</p>
+            <p class="empty-text">Add the people you restock from — Ali Traders, your tailor, your distributor. Keep track of what you owe them.</p>
             <button class="btn btn-primary" onclick="openAddDrawer()">Add your first supplier</button>
         </div>
     @else
