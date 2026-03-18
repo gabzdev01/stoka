@@ -109,6 +109,7 @@
     display: block;
     color: inherit;
     text-decoration: none;
+    cursor: pointer;
 }
 .stat-label {
     font-size: 11px;
@@ -139,6 +140,16 @@
     font-weight: 500;
     text-decoration: none;
 }
+/* Hero cards blur */
+.stat-amount {
+    filter: blur(8px);
+    transition: filter 300ms ease;
+    user-select: none;
+    display: inline-block;
+}
+body.hero-revealed .stat-amount {
+    filter: blur(0);
+}
 
 /* ── Zone 4: Summary cards ────────────────────────────── */
 .summary-grid {
@@ -156,12 +167,6 @@
     display: flex;
     flex-direction: column;
 }
-.sc-money {
-    cursor: pointer;
-    -webkit-user-select: none;
-    user-select: none;
-}
-.sc-money:active { background: #FDFAF8; }
 .sc-header {
     display: flex;
     align-items: center;
@@ -201,13 +206,6 @@
 .sc-line strong { font-weight: 600; }
 .sc-mono { font-family: "DM Mono", monospace; }
 .sc-positive { color: #4A6741; font-weight: 500; }
-.sc-hint {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 2px;
-    margin: 0;
-}
-.sc-hint.hidden { display: none; }
 .sc-footer {
     margin-top: auto;
     padding-top: 12px;
@@ -220,18 +218,6 @@
     transition: opacity 0.13s;
 }
 .sc-link:hover { opacity: 0.75; }
-/* Money card blur */
-.money-amount {
-    display: inline-block;
-    filter: blur(6px);
-    transition: filter 250ms ease;
-    user-select: none;
-    vertical-align: baseline;
-}
-body.money-revealed .money-amount {
-    filter: blur(0);
-    user-select: auto;
-}
 
 /* ── Zone 5: Recent Shifts ────────────────────────────── */
 .shift-list {
@@ -421,127 +407,35 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
 @endphp
 <div class="stat-grid zone-gap-md">
 
-    <div class="stat-card">
+    <div class="stat-card" onclick="toggleHero()">
         <span class="stat-label">Today's sales</span>
-        <div class="stat-value">Ksh&nbsp;{{ number_format((int)$todayTotal) }}</div>
+        <div class="stat-value stat-amount">Ksh&nbsp;{{ number_format((int)$todayTotal) }}</div>
         <div class="stat-sub">{{ $todayCount }} {{ $todayCount === 1 ? 'transaction' : 'transactions' }}</div>
         @if($showCmp)
         <div class="stat-compare {{ $cmpClass }}">{{ $cmpArrow }} <span class="cmp-num">Ksh {{ number_format(abs($cmpDiff)) }}</span> {{ $cmpLabel }} than yesterday</div>
         @endif
     </div>
 
-    <div class="stat-card">
+    <div class="stat-card" onclick="toggleHero()">
         <span class="stat-label">Cash collected</span>
-        <div class="stat-value c-forest">Ksh&nbsp;{{ number_format((int)$todayCash) }}</div>
+        <div class="stat-value c-forest stat-amount">Ksh&nbsp;{{ number_format((int)$todayCash) }}</div>
     </div>
 
-    <div class="stat-card">
+    <div class="stat-card" onclick="toggleHero()">
         <span class="stat-label">M-Pesa received</span>
-        <div class="stat-value c-forest">Ksh&nbsp;{{ number_format((int)$todayMpesa) }}</div>
+        <div class="stat-value c-forest stat-amount">Ksh&nbsp;{{ number_format((int)$todayMpesa) }}</div>
     </div>
 
-    <div class="stat-card">
+    <div class="stat-card" onclick="toggleHero()">
         <span class="stat-label">Customers owe you</span>
-        <div class="stat-value {{ $creditOwed > 0 ? 'c-clay' : 'c-muted' }}">Ksh&nbsp;{{ number_format((int)$creditOwed) }}</div>
+        <div class="stat-value {{ $creditOwed > 0 ? 'c-clay' : 'c-muted' }} stat-amount">Ksh&nbsp;{{ number_format((int)$creditOwed) }}</div>
         @if($creditOwed > 0)
         <div class="stat-sub"><a href="/credit" class="stat-credit-link">View all credit →</a></div>
         @endif
     </div>
 
 </div>
-
-{{-- ── Zone 4: Summary cards ─────────────────────────── --}}
-<div class="summary-grid zone-gap-lg">
-
-    {{-- Card 1: Your Shop --}}
-    <div class="summary-card">
-        <div class="sc-header">
-            <span class="sc-dot sc-dot-{{ $shopDot }}"></span>
-            <span class="sc-title">Your shop</span>
-        </div>
-        <div class="sc-body">
-            @if(empty($shopLines))
-                <p class="sc-line sc-positive">All recent shifts balanced</p>
-            @else
-                @foreach($shopLines as $sl)
-                    @if($sl['type'] === 'open')
-                    <p class="sc-line">
-                        <strong>{{ $sl['staff'] }}</strong> is selling
-                        · <span class="sc-mono">{{ $sl['count'] }}</span>
-                        {{ $sl['count'] === 1 ? 'sale' : 'sales' }} so far
-                    </p>
-                    @elseif($sl['type'] === 'disc')
-                    <p class="sc-line">
-                        <strong>{{ $sl['staff'] }}</strong> was
-                        <span style="color:#B85C38;">Ksh {{ number_format($sl['disc'], 0) }} {{ $sl['dtype'] }}</span>
-                        {{ $sl['when'] }}
-                    </p>
-                    @endif
-                @endforeach
-            @endif
-        </div>
-        <div class="sc-footer">
-            <a href="/shifts" class="sc-link">See all shifts →</a>
-        </div>
-    </div>
-
-    {{-- Card 2: Money (tap to reveal amounts) --}}
-    <div class="summary-card sc-money" onclick="toggleMoney()">
-        <div class="sc-header">
-            <span class="sc-dot sc-dot-{{ $moneyDot }}"></span>
-            <span class="sc-title">Money</span>
-        </div>
-        <div class="sc-body">
-            @if($creditOwed == 0 && $supplierTotal == 0)
-                <p class="sc-line sc-positive">No outstanding balances</p>
-            @else
-                @if($creditOwed > 0)
-                <p class="sc-line" style="color:#B85C38;">
-                    Ksh <span class="sc-mono money-amount">{{ number_format((int)$creditOwed) }}</span>
-                    owed by customers
-                </p>
-                @endif
-                @if($supplierTotal > 0)
-                <p class="sc-line" style="color:#C17F4A;">
-                    Ksh <span class="sc-mono money-amount">{{ number_format((int)$supplierTotal) }}</span>
-                    owed to suppliers
-                </p>
-                @endif
-                <p class="sc-hint" id="money-hint">Tap to show</p>
-            @endif
-        </div>
-        <div class="sc-footer">
-            <a href="/credit" class="sc-link" onclick="event.stopPropagation()">See all credit →</a>
-        </div>
-    </div>
-
-    {{-- Card 3: Stock --}}
-    <div class="summary-card">
-        <div class="sc-header">
-            <span class="sc-dot sc-dot-{{ $stockDot }}"></span>
-            <span class="sc-title">Stock</span>
-        </div>
-        <div class="sc-body">
-            @if($oosCount == 0 && $lowCount == 0)
-                <p class="sc-line sc-positive">Stock levels looking good</p>
-            @elseif($oosCount > 0)
-                <p class="sc-line">
-                    <span style="color:#B85C38;">{{ $oosCount }} {{ $oosCount === 1 ? 'item' : 'items' }} sold out</span>
-                    — restock needed
-                </p>
-                @if($lowCount > 0)
-                <p class="sc-line" style="color:#C17F4A;">{{ $lowCount }} more running low</p>
-                @endif
-            @else
-                <p class="sc-line" style="color:#C17F4A;">{{ $lowCount }} {{ $lowCount === 1 ? 'item' : 'items' }} running low</p>
-            @endif
-        </div>
-        <div class="sc-footer">
-            <a href="/products" class="sc-link">See stock report →</a>
-        </div>
-    </div>
-
-</div>
+<p id="hero-hint" style="text-align:center; font-size:11px; color:#8C7B6E; margin-top:6px;">Tap any card to show amounts</p>
 
 {{-- ── Zone 5: Recent Shifts ──────────────────────────── --}}
 <section class="zone-gap-lg">
@@ -614,6 +508,98 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
     <a href="/shifts" class="see-all-link">See all shifts →</a>
 </section>
 
+{{-- ── Zone 4: Summary cards ─────────────────────────── --}}
+<div class="summary-grid zone-gap-lg">
+
+    {{-- Card 1: Your Shop --}}
+    <div class="summary-card">
+        <div class="sc-header">
+            <span class="sc-dot sc-dot-{{ $shopDot }}"></span>
+            <span class="sc-title">Your shop</span>
+        </div>
+        <div class="sc-body">
+            @if(empty($shopLines))
+                <p class="sc-line sc-positive">All recent shifts balanced</p>
+            @else
+                @foreach($shopLines as $sl)
+                    @if($sl['type'] === 'open')
+                    <p class="sc-line">
+                        <strong>{{ $sl['staff'] }}</strong> is selling
+                        · <span class="sc-mono">{{ $sl['count'] }}</span>
+                        {{ $sl['count'] === 1 ? 'sale' : 'sales' }} so far
+                    </p>
+                    @elseif($sl['type'] === 'disc')
+                    <p class="sc-line">
+                        <strong>{{ $sl['staff'] }}</strong> was
+                        <span style="color:#B85C38;">Ksh {{ number_format($sl['disc'], 0) }} {{ $sl['dtype'] }}</span>
+                        {{ $sl['when'] }}
+                    </p>
+                    @endif
+                @endforeach
+            @endif
+        </div>
+        <div class="sc-footer">
+            <a href="/shifts" class="sc-link">See all shifts →</a>
+        </div>
+    </div>
+
+    {{-- Card 2: Money --}}
+    <div class="summary-card">
+        <div class="sc-header">
+            <span class="sc-dot sc-dot-{{ $moneyDot }}"></span>
+            <span class="sc-title">Money</span>
+        </div>
+        <div class="sc-body">
+            @if($creditOwed == 0 && $supplierTotal == 0)
+                <p class="sc-line sc-positive">No outstanding balances</p>
+            @else
+                @if($creditOwed > 0)
+                <p class="sc-line" style="color:#B85C38;">
+                    Ksh <span class="sc-mono">{{ number_format((int)$creditOwed) }}</span>
+                    owed by customers
+                </p>
+                @endif
+                @if($supplierTotal > 0)
+                <p class="sc-line" style="color:#C17F4A;">
+                    Ksh <span class="sc-mono">{{ number_format((int)$supplierTotal) }}</span>
+                    owed to suppliers
+                </p>
+                @endif
+            @endif
+        </div>
+        <div class="sc-footer">
+            <a href="/credit" class="sc-link">See all credit →</a>
+        </div>
+    </div>
+
+    {{-- Card 3: Stock --}}
+    <div class="summary-card">
+        <div class="sc-header">
+            <span class="sc-dot sc-dot-{{ $stockDot }}"></span>
+            <span class="sc-title">Stock</span>
+        </div>
+        <div class="sc-body">
+            @if($oosCount == 0 && $lowCount == 0)
+                <p class="sc-line sc-positive">Stock levels looking good</p>
+            @elseif($oosCount > 0)
+                <p class="sc-line">
+                    <span style="color:#B85C38;">{{ $oosCount }} {{ $oosCount === 1 ? 'item' : 'items' }} sold out</span>
+                    — restock needed
+                </p>
+                @if($lowCount > 0)
+                <p class="sc-line" style="color:#C17F4A;">{{ $lowCount }} more running low</p>
+                @endif
+            @else
+                <p class="sc-line" style="color:#C17F4A;">{{ $lowCount }} {{ $lowCount === 1 ? 'item' : 'items' }} running low</p>
+            @endif
+        </div>
+        <div class="sc-footer">
+            <a href="/products" class="sc-link">See stock report →</a>
+        </div>
+    </div>
+
+</div>
+
 {{-- ── Zone 6: Quick Actions ──────────────────────────── --}}
 <div class="quick-actions">
     <a href="/credit" class="quick-link">View all credit →</a>
@@ -628,21 +614,21 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
 @section('scripts')
 <script>
 (function () {
-    window.toggleMoney = function () {
-        var revealed = document.body.classList.toggle('money-revealed');
-        sessionStorage.setItem('stoka_money_revealed', revealed ? '1' : '0');
-        var hint = document.getElementById('money-hint');
-        if (hint) {
-            hint.classList.add('hidden');
-            sessionStorage.setItem('stoka_money_hint_gone', '1');
+    window.toggleHero = function () {
+        var revealed = document.body.classList.toggle('hero-revealed');
+        sessionStorage.setItem('stoka_hero', revealed ? '1' : '0');
+        var hint = document.getElementById('hero-hint');
+        if (hint && revealed) {
+            hint.style.display = 'none';
+            sessionStorage.setItem('stoka_hero_hint', '1');
         }
     };
-    if (sessionStorage.getItem('stoka_money_revealed') === '1') {
-        document.body.classList.add('money-revealed');
+    if (sessionStorage.getItem('stoka_hero') === '1') {
+        document.body.classList.add('hero-revealed');
     }
-    if (sessionStorage.getItem('stoka_money_hint_gone') === '1') {
-        var hint = document.getElementById('money-hint');
-        if (hint) hint.classList.add('hidden');
+    if (sessionStorage.getItem('stoka_hero_hint') === '1') {
+        var hint = document.getElementById('hero-hint');
+        if (hint) hint.style.display = 'none';
     }
 })();
 </script>
