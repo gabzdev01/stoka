@@ -89,6 +89,7 @@
             letter-spacing: 0.04em;
             text-transform: uppercase;
         }
+        @media (max-width: 399px) { .top-user { display: none; } }
 
         .top-user-dot {
             width: 6px; height: 6px;

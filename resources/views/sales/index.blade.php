@@ -97,7 +97,7 @@
        PAGE
     ════════════════════════════════════════════════ */
 
-    .staff-content, .content-inner { background: #FAF7F2; }
+    .staff-content, .content-inner { background: #FAF7F2; overflow-x: hidden; }
 
     /* ════════════════════════════════════════════════
        PRODUCT GRID

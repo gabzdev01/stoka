@@ -237,6 +237,7 @@ $uniqueCats = $products->pluck('category')->filter()->unique()->sort()->values()
                 @php $lastCat = $product->category; @endphp
                 @endif
 
+                {{-- variant: header row --}}
                 @if($product->type === 'variant')
                 <tr class="variant-group-row" data-cat="{{ $product->category }}">
                     <td colspan="4" style="font-weight:600; padding:10px 12px 4px; font-size:13.5px;">
@@ -262,8 +263,10 @@ $uniqueCats = $products->pluck('category')->filter()->unique()->sort()->values()
                     <td><input type="number" min="0" step="0.01" placeholder="—" name="items[v{{ $variant->id }}][cost]" class="cost-input" oninput="recalcTotal()" autocomplete="off"></td>
                 </tr>
                 @endforeach
+                @endif
 
-                @elseif($product->type === 'measured')
+                {{-- measured --}}
+                @if($product->type === 'measured')
                 @php
                     $bottle  = $product->bottles->first();
                     $pct     = $bottle ? ((float)$bottle->remaining_ml / max(1, (float)$bottle->total_ml)) : 0;
@@ -280,8 +283,10 @@ $uniqueCats = $products->pluck('category')->filter()->unique()->sort()->values()
                     <td><input type="number" min="0" step="1" placeholder="0 ml" name="items[m{{ $product->id }}][qty]" class="qty-input" oninput="onQtyChange(this)" autocomplete="off" title="Volume of new bottle in ml"></td>
                     <td><input type="number" min="0" step="0.01" placeholder="—" name="items[m{{ $product->id }}][cost]" class="cost-input" oninput="recalcTotal()" autocomplete="off"></td>
                 </tr>
+                @endif
 
-                @else
+                {{-- unit --}}
+                @if($product->type !== 'variant' && $product->type !== 'measured')
                 @php
                     $ustock  = (int)$product->stock;
                     $ustatus = $ustock === 0 ? 'out' : ($ustock <= (int)$product->low_stock_threshold ? 'low' : 'ok');
