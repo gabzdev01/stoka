@@ -189,12 +189,95 @@ class SalesController extends Controller
 
     public function activeShift()
     {
-        return view('sales.shift');
+        $shift      = null;
+        $allSales   = collect();
+        $totalSales = 0;
+        $cashTotal  = 0;
+        $mpesaTotal = 0;
+
+        $shiftId = session('shift_id');
+        if ($shiftId) {
+            $shift = Shift::where('id', $shiftId)
+                ->where('status', 'open')
+                ->with(['staff',
+                    'sales' => fn($q) => $q
+                        ->with(['product', 'variant'])
+                        ->orderByDesc('created_at'),
+                ])
+                ->first();
+
+            if ($shift) {
+                $allSales   = $shift->sales;
+                $active     = $allSales->whereNull('voided_at');
+                $totalSales = $active->sum('total');
+                $cashTotal  = $active->where('payment_type', 'cash')->sum('total');
+                $mpesaTotal = $active->where('payment_type', 'mpesa')->sum('total');
+            }
+        }
+
+        return view('sales.shift', compact(
+            'shift', 'allSales', 'totalSales', 'cashTotal', 'mpesaTotal'
+        ));
     }
 
     public function history()
     {
-        return view('sales.history');
+        $staffId = session('auth_user');
+        $shifts  = Shift::where('staff_id', $staffId)
+            ->where('status', 'closed')
+            ->with([
+                'sales' => fn($q) => $q
+                    ->with(['product', 'variant'])
+                    ->orderByDesc('created_at'),
+            ])
+            ->orderByDesc('closed_at')
+            ->get();
+
+        return view('sales.history', compact('shifts'));
+    }
+
+    public function void(Request $request, Sale $sale)
+    {
+        $request->validate([
+            'void_reason' => ['required', 'string', 'max:255'],
+        ]);
+
+        $shiftId = session('shift_id');
+
+        if (!$shiftId || $sale->shift_id != $shiftId) {
+            return response()->json(['error' => 'Sale does not belong to your current shift.'], 403);
+        }
+
+        $shift = Shift::find($shiftId);
+        if (!$shift || $shift->status !== 'open') {
+            return response()->json(['error' => 'Shift is not open.'], 403);
+        }
+
+        if ($sale->voided_at) {
+            return response()->json(['error' => 'Sale is already voided.'], 422);
+        }
+
+        $sale->update([
+            'voided_at'   => now(),
+            'void_reason' => $request->input('void_reason'),
+        ]);
+
+        // Reverse M-Pesa total on shift
+        if ($sale->payment_type === 'mpesa') {
+            $shift->decrement('mpesa_total', $sale->total);
+        }
+
+        // Reverse unpaid credit balance
+        if ($sale->payment_type === 'credit') {
+            $ledger = $sale->creditLedger;
+            if ($ledger && $ledger->balance > 0) {
+                $outstanding = $ledger->balance;
+                $ledger->update(['status' => 'settled', 'balance' => 0]);
+                $sale->customer?->decrement('total_outstanding', $outstanding);
+            }
+        }
+
+        return response()->json(['success' => true, 'total' => (float) $sale->total]);
     }
 
     public function storeCart(Request $request)

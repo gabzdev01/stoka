@@ -51,6 +51,7 @@ Route::middleware([
         Route::get("/sales/history",  [SalesController::class, "history"])->name("sales.history");
         Route::post("/sales/cart",     [SalesController::class, "storeCart"])->name("sales.cart");
         Route::get("/customers/lookup",[SalesController::class, "customerLookup"])->name("customers.lookup");
+        Route::post("/sales/{sale}/void",  [SalesController::class, "void"])->name("sales.void");
         Route::get("/shifts/close",  [ShiftsController::class, "closeForm"])->name("shifts.close");
         Route::post("/shifts/close", [ShiftsController::class, "close"])->name("shifts.close.submit");
 
