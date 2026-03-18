@@ -2,11 +2,62 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Sale;
 use App\Models\Shift;
 use Illuminate\Http\Request;
 
 class ShiftsController extends Controller
 {
+    public function index()
+    {
+        $shifts = Shift::with('staff')
+            ->orderByDesc('opened_at')
+            ->get();
+
+        // Attach active sale counts for open shifts
+        foreach ($shifts as $s) {
+            if ($s->status === 'open') {
+                $s->setAttribute('_sale_count',
+                    Sale::where('shift_id', $s->id)->whereNull('voided_at')->count());
+                $s->setAttribute('_sale_total',
+                    Sale::where('shift_id', $s->id)->whereNull('voided_at')->sum('total'));
+            }
+        }
+
+        $openCount   = $shifts->where('status', 'open')->count();
+        $closedCount = $shifts->where('status', 'closed')->count();
+
+        return view('shifts.index', compact('shifts', 'openCount', 'closedCount'));
+    }
+
+    public function show(Shift $shift)
+    {
+        $shift->load([
+            'staff',
+            'sales' => fn($q) => $q->with(['product', 'variant'])->orderByDesc('created_at'),
+        ]);
+
+        $allSales    = $shift->sales;
+        $active      = $allSales->whereNull('voided_at');
+        $totalSales  = (float) $active->sum('total');
+        $cashSales   = (float) $active->where('payment_type', 'cash')->sum('total');
+        $mpesaSales  = (float) $shift->mpesa_total;
+        $creditSales = (float) $active->where('payment_type', 'credit')->sum('total');
+        $saleCount   = $active->count();
+
+        $expectedCash    = $shift->expected_cash !== null
+            ? (float) $shift->expected_cash
+            : round((float) $shift->opening_float + $cashSales, 2);
+
+        $disc = (float) $shift->cash_discrepancy;
+
+        return view('shifts.show', compact(
+            'shift', 'allSales',
+            'totalSales', 'cashSales', 'mpesaSales', 'creditSales',
+            'saleCount', 'expectedCash', 'disc'
+        ));
+    }
+
     public function open(Request $request)
     {
         $request->validate([

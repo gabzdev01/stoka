@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SuppliersController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SalesController;
+use App\Http\Controllers\CreditController;
 use App\Http\Controllers\ShiftsController;
 
 Route::middleware([
@@ -41,6 +42,14 @@ Route::middleware([
             Route::get("/products/{product}/edit", [ProductsController::class, "edit"])->name("products.edit");
             Route::put("/products/{product}", [ProductsController::class, "update"])->name("products.update");
             Route::post("/products/{product}/toggle", [ProductsController::class, "toggle"])->name("products.toggle");
+
+            // Shifts (owner view)
+            Route::get("/shifts",           [ShiftsController::class, "index"])->name("shifts.index");
+            Route::get("/shifts/{shift}",   [ShiftsController::class, "show"])->name("shifts.show");
+
+            // Credit management
+            Route::get("/credit",                     [CreditController::class, "index"])->name("credit.index");
+            Route::post("/credit/{customer}/payment", [CreditController::class, "recordPayment"])->name("credit.payment");
         });
 
         // Staff + owner — sales flow
