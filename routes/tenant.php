@@ -12,6 +12,8 @@ use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\CreditController;
 use App\Http\Controllers\ShoppingListController;
+use App\Http\Controllers\RestocksController;
+use App\Http\Controllers\SupplierBalancesController;
 use App\Http\Controllers\ShiftsController;
 
 Route::middleware([
@@ -50,6 +52,15 @@ Route::middleware([
 
             // Shopping list
             Route::get("/shopping-list", [ShoppingListController::class, "index"])->name("shopping-list.index");
+
+            // Restocks
+            Route::get("/restocks",         [RestocksController::class, "index"])->name("restocks.index");
+            Route::get("/restocks/create",  [RestocksController::class, "create"])->name("restocks.create");
+            Route::post("/restocks",        [RestocksController::class, "store"])->name("restocks.store");
+
+            // Supplier balances
+            Route::get("/supplier-balances",                          [SupplierBalancesController::class, "index"])->name("supplier-balances.index");
+            Route::post("/supplier-balances/{supplier}/payment",      [SupplierBalancesController::class, "recordPayment"])->name("supplier-balances.payment");
 
             // Credit management
             Route::get("/credit",                     [CreditController::class, "index"])->name("credit.index");

@@ -410,6 +410,28 @@
                 Suppliers
             </a>
 
+            <a href="/restocks"
+               class="nav-link {{ request()->is('restocks*') ? 'active' : '' }}">
+                <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+                    <path d="M2.5 13.5V6l5.5-4 5.5 4v7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M5.5 13.5V10h5v3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M8 3v2M6.5 4H9.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+                Restocks
+            </a>
+
+            <a href="/shopping-list"
+               class="nav-link {{ request()->is('shopping-list*') ? 'active' : '' }}">
+                <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+                    <rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M5 5.5h6M5 8h6M5 10.5h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                    <circle cx="3.8" cy="5.5" r="0.8" fill="currentColor"/>
+                    <circle cx="3.8" cy="8"   r="0.8" fill="currentColor"/>
+                    <circle cx="3.8" cy="10.5" r="0.8" fill="currentColor"/>
+                </svg>
+                Shopping list
+            </a>
+
             <a href="{{ route('sales.index') }}"
                class="nav-link {{ request()->routeIs('sales.*') ? 'active' : '' }}">
                 <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
@@ -428,6 +450,15 @@
                     <path d="M4.5 10h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
                 </svg>
                 Credit
+            </a>
+
+            <a href="/supplier-balances"
+               class="nav-link {{ request()->is('supplier-balances*') ? 'active' : '' }}">
+                <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 2v12M5 5h4.5a2 2 0 0 1 0 4H5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    <path d="M5 9h5a2 2 0 0 1 0 4H5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+                Supplier pay
             </a>
 
             <a href="/shifts"

@@ -632,6 +632,8 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
 <div class="quick-actions">
     <a href="/credit" class="quick-link">View all credit →</a>
     <a href="/shopping-list" class="quick-link">Shopping list →</a>
+    <a href="/restocks" class="quick-link">Restocks →</a>
+    <a href="/supplier-balances" class="quick-link">Supplier balances →</a>
     <a href="/products" class="quick-link">Stock report →</a>
 </div>
 
