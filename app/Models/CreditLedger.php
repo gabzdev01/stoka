@@ -17,13 +17,15 @@ class CreditLedger extends Model
         'balance',
         'last_payment_at',
         'status',
+        'whatsapp_failed',
     ];
 
     protected $casts = [
-        'amount'          => 'decimal:2',
-        'paid'            => 'decimal:2',
-        'balance'         => 'decimal:2',
-        'last_payment_at' => 'datetime',
+        'amount'           => 'decimal:2',
+        'paid'             => 'decimal:2',
+        'balance'          => 'decimal:2',
+        'last_payment_at'  => 'datetime',
+        'whatsapp_failed'  => 'boolean',
     ];
 
     public function customer(): BelongsTo
