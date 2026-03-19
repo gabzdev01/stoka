@@ -73,9 +73,9 @@
 
         .top-shop {
             font-family: "Cormorant Garamond", serif;
-            font-size: 17px;
+            font-size: 19px;
             font-weight: 600;
-            color: rgba(255,255,255,0.92);
+            color: rgba(255,255,255,0.95);
             letter-spacing: 0.01em;
             flex: 1;
             min-width: 0;
@@ -317,11 +317,12 @@
         .cart-float-inner {
             background: #1C1814;
             border-radius: var(--radius-default);
-            padding: 14px 18px;
+            padding: 13px 14px 13px 18px;
             display: flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 0 4px 20px rgba(28,24,20,0.35);
+            box-shadow: 0 4px 24px rgba(28,24,20,0.4), 0 1px 4px rgba(28,24,20,0.25);
+            border: 1px solid rgba(255,255,255,0.06);
         }
         .cart-float-count {
             color: #FAF7F2;
@@ -339,9 +340,9 @@
             white-space: nowrap;
         }
         .cart-float-btn {
-            background: #C17F4A;
-            color: white;
-            border: none;
+            background: rgba(193,127,74,0.18);
+            color: #C17F4A;
+            border: 1px solid rgba(193,127,74,0.3);
             border-radius: var(--radius-md);
             padding: 8px 14px;
             font-family: "Plus Jakarta Sans", sans-serif;
@@ -350,7 +351,9 @@
             cursor: pointer;
             white-space: nowrap;
             -webkit-tap-highlight-color: transparent;
+            transition: background 0.12s;
         }
+        .cart-float-btn:active { background: rgba(193,127,74,0.28); }
 
     </style>
     @yield('styles')

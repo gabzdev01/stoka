@@ -121,37 +121,58 @@
     .product-card {
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        padding: 16px;
-        min-height: 100px;
+        gap: 10px;
+        padding: 18px 16px 16px;
         width: 100%;
         box-sizing: border-box;
         overflow: hidden;
-        background: #FFFFFF;
-        border: none;
+        background: #FDFAF5;
+        border: 1px solid rgba(28,24,20,0.07);
         border-radius: var(--radius-default);
-        box-shadow: 0 1px 3px rgba(28,24,20,0.07), 0 4px 12px rgba(28,24,20,0.05);
         cursor: pointer;
         text-align: left;
-        transition: transform 0.12s ease, box-shadow 0.12s ease;
+        transition: background 0.12s ease, border-color 0.12s ease;
         -webkit-tap-highlight-color: transparent;
+        animation: cardIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
-    .product-card:active { transform: scale(0.97); }
+    .product-card:active {
+        background: #F5EFE6;
+        border-color: rgba(28,24,20,0.13);
+    }
     @media (hover: hover) {
         .product-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(28,24,20,0.1), 0 1px 3px rgba(28,24,20,0.07);
+            background: #F8F3EB;
+            border-color: rgba(28,24,20,0.1);
         }
     }
-    .product-card.out-of-stock { opacity: 0.45; cursor: not-allowed; }
+    .product-card.out-of-stock { opacity: 0.38; cursor: not-allowed; }
     .product-card.hidden { display: none; }
 
+    @keyframes cardIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Stagger first 16 cards */
+    .product-card:nth-child(1)  { animation-delay: 0.00s; }
+    .product-card:nth-child(2)  { animation-delay: 0.03s; }
+    .product-card:nth-child(3)  { animation-delay: 0.06s; }
+    .product-card:nth-child(4)  { animation-delay: 0.09s; }
+    .product-card:nth-child(5)  { animation-delay: 0.12s; }
+    .product-card:nth-child(6)  { animation-delay: 0.15s; }
+    .product-card:nth-child(7)  { animation-delay: 0.18s; }
+    .product-card:nth-child(8)  { animation-delay: 0.21s; }
+    .product-card:nth-child(9)  { animation-delay: 0.24s; }
+    .product-card:nth-child(10) { animation-delay: 0.27s; }
+    .product-card:nth-child(11) { animation-delay: 0.30s; }
+    .product-card:nth-child(12) { animation-delay: 0.33s; }
+
     .product-name {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 15px;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 17px;
         font-weight: 600;
         color: #1C1814;
-        line-height: 1.35;
+        line-height: 1.3;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -167,23 +188,24 @@
     }
     .product-price {
         font-family: "DM Mono", monospace;
-        font-size: 16px;
-        font-weight: 500;
-        color: #C17F4A;
+        font-size: 13px;
+        font-weight: 400;
+        color: #7A6A5C;
         white-space: nowrap;
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 4px;
     }
     .bargain-dot { font-size: 7px; color: #C17F4A; opacity: 0.7; cursor: default; position: relative; top: -1px; }
     .product-stock {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 12px;
-        font-weight: 500;
-        color: #8C7B6E;
+        font-family: "DM Mono", monospace;
+        font-size: 11px;
+        font-weight: 400;
+        color: #B0A090;
         white-space: nowrap;
         text-align: right;
         flex-shrink: 0;
+        letter-spacing: 0.01em;
     }
     .product-stock.stock-out { color: #B85C38; }
     .product-stock.stock-low { color: #A06020; }
@@ -381,6 +403,13 @@
     }
     .btn-confirm:active { opacity: 0.82; }
     .btn-confirm:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    @keyframes totalPulse {
+        0%   { transform: scale(1); }
+        40%  { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    .total-tick { animation: totalPulse 0.22s ease; }
 
     /* ════════════════════════════════════════════════
        CART REVIEW SHEET
@@ -1318,7 +1347,11 @@
     }
 
     function updateTotal() {
-        document.getElementById('running-total').textContent = '{{ tenant("currency_symbol") }} ' + nf(state.qty * state.price);
+        var rtEl = document.getElementById('running-total');
+        rtEl.textContent = '{{ tenant("currency_symbol") }} ' + nf(state.qty * state.price);
+        rtEl.classList.remove('total-tick');
+        void rtEl.offsetWidth;
+        rtEl.classList.add('total-tick');
     }
 
     function validateAddBtn() {
