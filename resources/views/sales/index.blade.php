@@ -228,14 +228,14 @@
         position: fixed;
         bottom: 0; left: 0; right: 0;
         background: #FFFFFF;
-        border-radius: 20px 20px 0 0;
-        max-height: 88vh;
-        overflow-y: auto;
-        overflow-x: hidden;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        max-height: calc(100dvh - 60px);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
         z-index: 950;
         transform: translateY(100%);
         transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-        padding-bottom: env(safe-area-inset-bottom, 0px);
     }
     .bottom-sheet.open { transform: translateY(0); }
 
@@ -262,10 +262,12 @@
         background: #E8E0D6;
         border-radius: 2px;
         margin: 12px auto 0;
+        flex-shrink: 0;
     }
     .sheet-header {
         padding: 16px 20px 14px;
         border-bottom: 1px solid #F0E8DC;
+        flex-shrink: 0;
     }
     .sheet-product-name {
         font-family: "Plus Jakarta Sans", sans-serif;
@@ -276,7 +278,7 @@
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 13px; color: #8C7B6E;
     }
-    .sheet-screen { padding: 20px 20px 28px; }
+    .sheet-screen { padding: 20px 20px 28px; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .sheet-screen.hidden { display: none; }
     .section-label {
         font-size: 11px; font-weight: 700;
@@ -370,7 +372,9 @@
 
     .btn-confirm {
         display: block; width: 100%; height: 56px; margin-top: 20px;
-        background: #1C1814; color: #FAF7F2; border: none; border-radius: 14px;
+        position: sticky; bottom: 0; z-index: 2;
+        padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
+        background: #1C1814; color: #FAF7F2; border: none; border-radius: var(--radius-default);
         font-family: "Plus Jakarta Sans", sans-serif; font-size: 15px; font-weight: 700;
         cursor: pointer; letter-spacing: 0.02em;
         -webkit-tap-highlight-color: transparent; transition: opacity 0.12s;
@@ -977,6 +981,26 @@
 
     window.updateCartBadge(); // init on page load
 
+    window.updateCartFloat = function () {
+        var cart  = getCart();
+        var count = cart.reduce(function (s, i) { return s + (i.quantity || 1); }, 0);
+        var total = cart.reduce(function (s, i) { return s + (i.actual_price * (i.quantity || 1)); }, 0);
+        var bar   = document.getElementById('cart-float');
+        var badge = document.getElementById('tab-cart-badge');
+        if (count > 0) {
+            document.getElementById('cf-count').textContent = count;
+            document.getElementById('cf-total').textContent = 'Ksh ' + nf(total);
+            if (bar) { bar.style.display = 'block'; bar.classList.add('visible'); }
+        } else {
+            if (bar) bar.style.display = 'none';
+        }
+        if (badge) {
+            if (count > 0) { badge.textContent = count; badge.style.display = 'inline'; }
+            else { badge.style.display = 'none'; }
+        }
+    };
+    window.updateCartFloat(); // init on page load
+
     function cartTotal() {
         return getCart().reduce(function (s, i) { return s + i.actual_price * i.quantity; }, 0);
     }
@@ -1017,6 +1041,7 @@
         saveCart(cart);
 
         var addedLabel = state.productName + (label ? ' (' + label + ')' : '');
+        window.updateCartFloat();
         closeSheet();
         showToast('\u2713 ' + addedLabel + ' added');
     };
@@ -1092,7 +1117,9 @@
 
         overlay.classList.add('open');
         requestAnimationFrame(function () { sheet.classList.add('open'); });
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow  = 'hidden';
+        document.body.style.position  = 'fixed';
+        document.body.style.width     = '100%';
 
         hideMsg();
         if (isOutOfStock) {
@@ -1184,7 +1211,9 @@
         setTimeout(function () {
             overlay.classList.remove('open', 'closing');
         }, 260);
-        document.body.style.overflow = '';
+        document.body.style.overflow  = '';
+        document.body.style.position  = '';
+        document.body.style.width     = '';
     };
 
     /* ══════════════════════════════════════════════
@@ -1205,7 +1234,9 @@
 
         cartOverlay.classList.add('open');
         requestAnimationFrame(function () { cartSheet.classList.add('open'); });
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow  = 'hidden';
+        document.body.style.position  = 'fixed';
+        document.body.style.width     = '100%';
     };
 
     window.closeCartSheet = function () {
@@ -1214,7 +1245,9 @@
         setTimeout(function () {
             cartOverlay.classList.remove('open', 'closing');
         }, 260);
-        document.body.style.overflow = '';
+        document.body.style.overflow  = '';
+        document.body.style.position  = '';
+        document.body.style.width     = '';
     };
 
     function renderCartItems(cart) {
@@ -1273,6 +1306,7 @@
         cart[idx].quantity = Math.max(1, cart[idx].quantity + delta);
         saveCart(cart);
         renderCartItems(cart);
+        window.updateCartFloat();
     };
 
     window.cartRemove = function (idx) {
@@ -1280,6 +1314,7 @@
         cart.splice(idx, 1);
         saveCart(cart);
         renderCartItems(cart);
+        window.updateCartFloat();
         if (cart.length === 0) {
             setTimeout(closeCartSheet, 600);
         }
@@ -1436,6 +1471,7 @@
     function onCartSaleSuccess(data, total) {
         // Clear cart
         saveCart([]);
+        window.updateCartFloat();
         closeCartSheet();
 
         // Update stock badges returned by server

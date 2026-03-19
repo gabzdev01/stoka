@@ -56,6 +56,7 @@
             position: fixed;
             top: 0; left: 0; right: 0;
             z-index: 200;
+            overflow: hidden;
             background: var(--darker-wood);
             padding: 0 16px;
             padding-top: env(safe-area-inset-top, 0px);
@@ -76,13 +77,18 @@
             font-weight: 600;
             color: rgba(255,255,255,0.92);
             letter-spacing: 0.01em;
-            flex-shrink: 0;
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .top-right {
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-shrink: 0;
         }
 
         .top-user {
@@ -95,7 +101,7 @@
             letter-spacing: 0.04em;
             text-transform: uppercase;
         }
-        @media (max-width: 399px) { .top-user { display: none; } }
+        @media (max-width: 479px) { .top-user { display: none; } }
 
         .top-user-dot {
             width: 6px; height: 6px;
@@ -296,6 +302,56 @@
 
         .mono { font-family: "DM Mono", monospace; }
 
+        /* ── Floating cart bar ──────────────────────────── */
+        #cart-float {
+            position: fixed;
+            bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px) + 8px);
+            left: 16px; right: 16px;
+            z-index: 80;
+        }
+        #cart-float.visible { animation: cfSlideUp 0.25s ease; }
+        @keyframes cfSlideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .cart-float-inner {
+            background: #1C1814;
+            border-radius: var(--radius-default);
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(28,24,20,0.35);
+        }
+        .cart-float-count {
+            color: #FAF7F2;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex; align-items: center; gap: 6px;
+            flex: 1;
+            min-width: 0;
+        }
+        .cart-float-total {
+            font-family: "DM Mono", monospace;
+            color: #C17F4A;
+            font-size: 15px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .cart-float-btn {
+            background: #C17F4A;
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 8px 14px;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+        }
+
     </style>
     @yield('styles')
     @yield('head')
@@ -392,6 +448,21 @@
     </div>
 </main>
 
+{{-- ── FLOATING CART BAR ─────────────────────────── --}}
+<div id="cart-float" style="display:none">
+    <div class="cart-float-inner">
+        <span class="cart-float-count">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" style="flex-shrink:0">
+                <path d="M6.5 7.5V5.5a3.5 3.5 0 0 1 7 0v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <rect x="2" y="7.5" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+            <span id="cf-count">0</span> items
+        </span>
+        <span class="cart-float-total" id="cf-total">Ksh 0</span>
+        <button class="cart-float-btn" onclick="window.openCartSheet && window.openCartSheet()">View cart &rarr;</button>
+    </div>
+</div>
+
 {{-- ── BOTTOM TAB BAR (3 tabs) ──────────────────── --}}
 <nav class="tab-bar">
 
@@ -399,13 +470,14 @@
     <a href="{{ route('sales.index') }}"
        class="tab-item {{ request()->routeIs('sales.index') ? 'active' : '' }}">
         <div class="tab-icon-wrap">
-            <span class="tab-icon">
+            <span class="tab-icon" style="position:relative;display:inline-block;">
                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
                     <path d="M7.5 9V6.5a3.5 3.5 0 0 1 7 0V9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
                     <rect x="3" y="9" width="16" height="10.5" rx="2" stroke="currentColor" stroke-width="1.6"/>
                     <circle cx="8.5" cy="14.5" r="1.1" fill="currentColor"/>
                     <circle cx="13.5" cy="14.5" r="1.1" fill="currentColor"/>
                 </svg>
+                <span id="tab-cart-badge" style="display:none;position:absolute;top:-4px;right:-6px;background:#C17F4A;color:white;border-radius:var(--radius-full);font-size:10px;font-weight:700;padding:1px 5px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.4;"></span>
             </span>
         </div>
         <span class="tab-label">Sell</span>
