@@ -11,6 +11,11 @@ class WhatsAppService
 
     public function send(string $to, string $message): bool
     {
+        // WhatsApp sends are handled via wa.me share links — no API call needed here.
+        // Africa's Talking integration preserved below for when direct API sending is added.
+        return true;
+
+        // @phpstan-ignore-next-line
         $to      = $this->formatPhone($to);
         $apiKey  = config('services.africastalking.api_key', '');
         $username = config('services.africastalking.username', '');

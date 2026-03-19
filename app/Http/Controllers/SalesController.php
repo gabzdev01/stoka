@@ -7,7 +7,6 @@ use App\Models\CreditLedger;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\Shift;
-use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -419,7 +418,7 @@ class SalesController extends Controller
 
                     if ($customerId) {
                         $customer = Customer::find($customerId);
-                        $ledger = CreditLedger::create([
+                        CreditLedger::create([
                             'customer_id' => $customerId,
                             'sale_id'     => $saleIds[0],   // anchor to first sale
                             'amount'      => $grandTotal,
@@ -441,32 +440,9 @@ class SalesController extends Controller
                     'total'         => $grandTotal,
                     'payment_type'  => $paymentType,
                     'stock_updates' => $stockUpdates,
-                    'ledger_id'     => isset($ledger) ? $ledger->id : null,
-                    'wa_customer'   => isset($ledger) ? [
-                        'phone'  => $data['customer_phone'] ?? null,
-                        'name'   => $data['customer_name']  ?? 'Customer',
-                        'amount' => $grandTotal,
-                        'paid'   => $amountPaidNow ?? 0,
-                        'balance' => $creditBalance ?? 0,
-                    ] : null,
+
                 ];
             });
-
-            // ── Trigger 4: credit sale confirmation to customer ──────────
-            if (!empty($result['wa_customer']['phone'])) {
-                try {
-                    $wac    = $result['wa_customer'];
-                    $wa     = new WhatsAppService();
-                    $waMsg  = self::buildCreditSaleMessage($wac);
-                    $sent   = $wa->send($wac['phone'], $waMsg);
-                    if (!$sent && $result['ledger_id']) {
-                        CreditLedger::where('id', $result['ledger_id'])
-                            ->update(['whatsapp_failed' => true]);
-                    }
-                } catch (\Throwable $e) {
-                    \Illuminate\Support\Facades\Log::error('Credit WA error', ['error' => $e->getMessage()]);
-                }
-            }
 
             return response()->json(['success' => true] + $result);
 

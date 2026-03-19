@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Sale;
 use App\Models\Shift;
-use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 
 class ShiftsController extends Controller
@@ -15,7 +14,6 @@ class ShiftsController extends Controller
             ->orderByDesc('opened_at')
             ->get();
 
-        // Attach active sale counts for open shifts
         foreach ($shifts as $s) {
             if ($s->status === 'open') {
                 $s->setAttribute('_sale_count',
@@ -46,7 +44,7 @@ class ShiftsController extends Controller
         $creditSales = (float) $active->where('payment_type', 'credit')->sum('total');
         $saleCount   = $active->count();
 
-        $expectedCash    = $shift->expected_cash !== null
+        $expectedCash = $shift->expected_cash !== null
             ? (float) $shift->expected_cash
             : round((float) $shift->opening_float + $cashSales, 2);
 
@@ -65,7 +63,6 @@ class ShiftsController extends Controller
             'opening_float' => ['required', 'numeric', 'min:0'],
         ]);
 
-        // Prevent opening a second shift if one is already open
         if (session('shift_id')) {
             return redirect()->route('sales.index');
         }
@@ -103,12 +100,12 @@ class ShiftsController extends Controller
                 ->first();
 
             if ($shift) {
-                $sales       = $shift->activeSales;
-                $cashSales   = (float) $sales->where('payment_type', 'cash')->sum('total');
-                $mpesaSales  = (float) $sales->where('payment_type', 'mpesa')->sum('total');
-                $creditSales = (float) $sales->where('payment_type', 'credit')->sum('total');
-                $totalSales  = (float) $sales->sum('total');
-                $saleCount   = $sales->count();
+                $sales        = $shift->activeSales;
+                $cashSales    = (float) $sales->where('payment_type', 'cash')->sum('total');
+                $mpesaSales   = (float) $sales->where('payment_type', 'mpesa')->sum('total');
+                $creditSales  = (float) $sales->where('payment_type', 'credit')->sum('total');
+                $totalSales   = (float) $sales->sum('total');
+                $saleCount    = $sales->count();
                 $expectedCash = round((float) $shift->opening_float + $cashSales, 2);
             }
         }
@@ -146,9 +143,6 @@ class ShiftsController extends Controller
         $sales        = $shift->activeSales;
         $cashSales    = (float) $sales->where('payment_type', 'cash')->sum('total');
         $mpesaSales   = (float) $sales->where('payment_type', 'mpesa')->sum('total');
-        $creditSales  = (float) $sales->where('payment_type', 'credit')->sum('total');
-        $totalSales   = (float) $sales->sum('total');
-        $saleCount    = $sales->count();
         $expectedCash = round((float) $shift->opening_float + $cashSales, 2);
         $discrepancy  = round($cashCounted - $expectedCash, 2);
 
@@ -163,111 +157,153 @@ class ShiftsController extends Controller
 
         session()->forget('shift_id');
 
-        if ($discrepancy == 0) {
-            $msg = 'Shift closed · Balanced ✓';
-        } elseif ($discrepancy < 0) {
-            $msg = 'Shift closed · Ksh ' . number_format(abs($discrepancy), 0) . ' short';
-        } else {
-            $msg = 'Shift closed · Ksh ' . number_format($discrepancy, 0) . ' over';
-        }
-
-        // ── Trigger 1: shift close report to owner ──────────────────────
-        try {
-            $ownerWa = tenant('owner_whatsapp');
-            if ($ownerWa) {
-                $wa      = new WhatsAppService();
-                $waMsg   = self::buildShiftCloseMessage(
-                    $shift, $cashSales, $mpesaSales, $creditSales,
-                    $totalSales, $saleCount, $cashCounted, $expectedCash, $discrepancy, $sales
-                );
-                $sent = $wa->send($ownerWa, $waMsg);
-                if ($sent) {
-                    $shift->update(['wa_sent_at' => now()]);
-                }
-            }
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Shift close WA error', ['error' => $e->getMessage()]);
-        }
-
-        return redirect()->route('sales.history')->with('shift_closed', $msg);
+        return redirect()->route('shifts.summary', $shift);
     }
 
-    private static function buildShiftCloseMessage(
-        Shift $shift,
-        float $cashSales,
-        float $mpesaSales,
-        float $creditSales,
-        float $totalSales,
-        int   $saleCount,
-        float $cashCounted,
-        float $expectedCash,
-        float $discrepancy,
-        $sales
-    ): string {
-        $hour     = now()->hour;
-        $greeting = match (true) {
-            $hour < 12 => 'Good morning',
-            $hour < 17 => 'Good afternoon',
-            default    => 'Good evening',
-        };
+    public function summary(Shift $shift)
+    {
+        $shift->load([
+            'staff',
+            'sales' => fn($q) => $q->with('product')->whereNull('voided_at'),
+        ]);
 
-        $ownerName  = tenant('owner_name') ?? '';
-        $ownerFirst = explode(' ', trim($ownerName))[0];
-        $staffFirst = explode(' ', trim($shift->staff->name ?? 'Staff'))[0];
+        $sales        = $shift->sales;
+        $cashSales    = (float) $sales->where('payment_type', 'cash')->sum('total');
+        $mpesaSales   = (float) $sales->where('payment_type', 'mpesa')->sum('total');
+        $creditSales  = (float) $sales->where('payment_type', 'credit')->sum('total');
+        $totalSales   = (float) $sales->sum('total');
+        $saleCount    = $sales->count();
+        $discrepancy  = (float) $shift->cash_discrepancy;
+        $cashCounted  = (float) $shift->cash_counted;
+        $expectedCash = (float) $shift->expected_cash;
 
-        $openedAt  = $shift->opened_at;
-        $closedAt  = $shift->closed_at ?? now();
-        $duration  = $openedAt->diff($closedAt);
-        $durStr    = $duration->h > 0
-            ? $duration->h . 'h ' . $duration->i . 'm'
-            : $duration->i . 'm';
-        $dateStr   = $openedAt->format('D j M');
-        $timeStr   = $openedAt->format('H:i') . ' – ' . $closedAt->format('H:i');
+        $openedAt = $shift->opened_at;
+        $closedAt = $shift->closed_at ?? now();
+        $dur      = $openedAt->diff($closedAt);
+        $durStr   = $dur->h > 0 ? $dur->h . 'h ' . $dur->i . 'm' : $dur->i . 'm';
 
-        $nf = fn(float $v) => 'Ksh ' . number_format($v, 0);
-
-        $lines   = [];
-        $lines[] = $greeting . ', ' . $ownerFirst . '!';
-        $lines[] = '';
-        $lines[] = $staffFirst . "'s shift is closed.";
-        $lines[] = '';
-        $lines[] = '📅 ' . $dateStr . ' · ' . $timeStr . ' (' . $durStr . ')';
-        $lines[] = '🧾 ' . $saleCount . ' sale' . ($saleCount !== 1 ? 's' : '') . ' · ' . $nf($totalSales);
-        $lines[] = '   Cash     ' . $nf($cashSales);
-        $lines[] = '   M-Pesa   ' . $nf($mpesaSales);
-        if ($creditSales > 0) {
-            $lines[] = '   Credit   ' . $nf($creditSales);
-        }
-        $lines[] = '';
-        $lines[] = '💵 Till count: ' . $nf($cashCounted);
-        $lines[] = '   Expected:    ' . $nf($expectedCash);
-
-        if ($discrepancy == 0) {
-            $lines[] = '   ✅ Balanced';
-        } elseif ($discrepancy < 0) {
-            $lines[] = '   ⚠️ ' . $nf(abs($discrepancy)) . ' *short*';
-        } else {
-            $lines[] = '   ⚠️ ' . $nf($discrepancy) . ' *over*';
-        }
-
-        // Top seller (if any product sold 2+ times)
+        // Top seller — only if one product sold 2+ times
         $counts = [];
         foreach ($sales as $sale) {
             $pid = $sale->product_id;
             $counts[$pid] = ($counts[$pid] ?? 0) + 1;
         }
         arsort($counts);
-        $topPid = array_key_first($counts);
-        if ($topPid && $counts[$topPid] >= 2) {
-            $topSale = $sales->firstWhere('product_id', $topPid);
-            $topName = $topSale->product->name ?? 'Unknown';
+        $topSeller = null;
+        $topPid    = array_key_first($counts);
+        if ($topPid && ($counts[$topPid] ?? 0) >= 2) {
+            $topSale   = $sales->firstWhere('product_id', $topPid);
+            $topSeller = [
+                'name'  => $topSale->product->name ?? 'Unknown',
+                'count' => $counts[$topPid],
+            ];
+        }
+
+        $staffFirst = explode(' ', trim($shift->staff->name ?? 'Staff'))[0];
+        $waMsg      = self::buildWaMessage(
+            $staffFirst, $cashSales, $mpesaSales,
+            $totalSales, $saleCount,
+            $cashCounted, $expectedCash, $discrepancy,
+            $topSeller
+        );
+
+        $waUrl   = null;
+        $ownerWa = tenant('owner_whatsapp');
+        if ($ownerWa) {
+            $phone = self::formatWaPhone($ownerWa);
+            $waUrl = 'https://wa.me/' . $phone . '?text=' . rawurlencode($waMsg);
+        }
+
+        return view('shifts.summary', [
+            'shift'        => $shift,
+            'openedAt'     => $openedAt->format('g:ia'),
+            'closedAt'     => $closedAt->format('g:ia'),
+            'duration'     => $durStr,
+            'totalSales'   => $totalSales,
+            'cashSales'    => $cashSales,
+            'mpesaSales'   => $mpesaSales,
+            'creditSales'  => $creditSales,
+            'saleCount'    => $saleCount,
+            'cashCounted'  => $cashCounted,
+            'expectedCash' => $expectedCash,
+            'discrepancy'  => $discrepancy,
+            'waUrl'        => $waUrl,
+            'waMsg'        => $waMsg,
+        ]);
+    }
+
+    private static function buildWaMessage(
+        string $staffFirst,
+        float  $cashSales,
+        float  $mpesaSales,
+        float  $totalSales,
+        int    $saleCount,
+        float  $cashCounted,
+        float  $expectedCash,
+        float  $discrepancy,
+        ?array $topSeller
+    ): string {
+        $hour     = now()->hour;
+        $greeting = match (true) {
+            $hour >= 6  && $hour < 12 => 'Good morning',
+            $hour >= 12 && $hour < 17 => 'Good afternoon',
+            $hour >= 17 && $hour < 22 => 'Good evening',
+            default                   => 'Hi',
+        };
+
+        $ownerFirst = explode(' ', trim(tenant('owner_name') ?? ''))[0] ?: 'there';
+        $shopName   = tenant('name') ?? 'the shop';
+
+        $nf    = fn(float $v) => 'Ksh ' . number_format((int) round($v), 0);
+        $sales = $saleCount . ' ' . ($saleCount === 1 ? 'sale' : 'sales');
+
+        $lines   = [];
+        $lines[] = $greeting . ' ' . $ownerFirst . ' 👋';
+        $lines[] = '';
+        $lines[] = $staffFirst . ' just closed their shift at ' . $shopName . '.';
+        $lines[] = '';
+        $lines[] = $sales . ' · ' . $nf($totalSales);
+        $lines[] = 'Cash: ' . $nf($cashSales) . ' · M-Pesa: ' . $nf($mpesaSales);
+        $lines[] = '';
+        $lines[] = $staffFirst . ' counted ' . $nf($cashCounted) . ' in the till.';
+
+        if ($discrepancy == 0) {
+            $lines[] = 'Expected ' . $nf($expectedCash) . '. ✅ All balanced.';
+            if ($topSeller) {
+                $lines[] = '';
+                $lines[] = 'Best seller today: ' . $topSeller['name'] . ' (' . $topSeller['count'] . ' sold)';
+            }
+        } elseif ($discrepancy < 0) {
+            $lines[] = 'Expected ' . $nf($expectedCash) . '.';
             $lines[] = '';
-            $lines[] = '🥇 Top item: ' . $topName . ' × ' . $counts[$topPid];
+            $lines[] = '⚠️ ' . $nf(abs($discrepancy)) . ' short.';
+            $lines[] = '';
+            $lines[] = 'This has been recorded in Stoka.';
+        } else {
+            $lines[] = 'Expected ' . $nf($expectedCash) . '. ✅ ' . $nf($discrepancy) . ' over.';
         }
 
         $lines[] = '';
         $lines[] = 'Powered by Stoka · stoka.co.ke';
 
         return implode("\n", $lines);
+    }
+
+    private static function formatWaPhone(string $phone): string
+    {
+        $phone = preg_replace('/[\s\-]/', '', $phone);
+        $phone = preg_replace('/\D/', '', $phone);
+
+        if (str_starts_with($phone, '254')) {
+            return $phone;
+        }
+        if (str_starts_with($phone, '0') && strlen($phone) === 10) {
+            return '254' . substr($phone, 1);
+        }
+        if (strlen($phone) === 9) {
+            return '254' . $phone;
+        }
+
+        return $phone;
     }
 }

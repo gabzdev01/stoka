@@ -30,9 +30,10 @@ Route::middleware([
     // Protected routes
     Route::middleware("auth.custom")->group(function () {
 
-        // Close shift — staff + owner, must register BEFORE /shifts/{shift} wildcard
-        Route::get("/shifts/close",  [ShiftsController::class, "closeForm"])->name("shifts.close");
-        Route::post("/shifts/close", [ShiftsController::class, "close"])->name("shifts.close.submit");
+        // Close shift + summary — must register BEFORE /shifts/{shift} wildcard
+        Route::get("/shifts/close",           [ShiftsController::class, "closeForm"])->name("shifts.close");
+        Route::post("/shifts/close",          [ShiftsController::class, "close"])->name("shifts.close.submit");
+        Route::get("/shifts/{shift}/summary", [ShiftsController::class, "summary"])->name("shifts.summary");
 
         // Owner only
         Route::middleware("owner.only")->group(function () {
