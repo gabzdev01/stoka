@@ -389,10 +389,10 @@
                 <span class="cart-badge" id="cart-badge"></span>
             </button>
 
-            <span class="top-user">
+            <a href="{{ route('profile.index') }}" class="top-user" style="text-decoration:none;">
                 <span class="top-user-dot"></span>
                 {{ session('auth_name') }}
-            </span>
+            </a>
         </div>
     </div>
     <div class="top-search">

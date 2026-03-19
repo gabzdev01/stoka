@@ -15,6 +15,9 @@ use App\Http\Controllers\ShoppingListController;
 use App\Http\Controllers\RestocksController;
 use App\Http\Controllers\SupplierBalancesController;
 use App\Http\Controllers\ShiftsController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\ProfileController;
 
 Route::middleware([
     "web",
@@ -27,8 +30,17 @@ Route::middleware([
     Route::post("/login", [LoginController::class, "login"]);
     Route::post("/logout", [LoginController::class, "logout"])->name("logout");
 
+    // Password reset (public — owner may not be logged in)
+    Route::get('/password-reset',           [PasswordResetController::class, 'show'])->name('password-reset.show');
+    Route::post('/password-reset/request',  [PasswordResetController::class, 'requestReset'])->name('password-reset.request');
+    Route::post('/password-reset/confirm',  [PasswordResetController::class, 'confirm'])->name('password-reset.confirm');
+
     // Protected routes
     Route::middleware("auth.custom")->group(function () {
+
+        // Profile (staff + owner)
+        Route::get('/profile',      [ProfileController::class, 'index'])->name('profile.index');
+        Route::post('/profile/pin', [ProfileController::class, 'updatePin'])->name('profile.pin');
 
         // Close shift + summary — must register BEFORE /shifts/{shift} wildcard
         Route::get("/shifts/close",           [ShiftsController::class, "closeForm"])->name("shifts.close");
@@ -70,6 +82,19 @@ Route::middleware([
             // Credit management
             Route::get("/credit",                     [CreditController::class, "index"])->name("credit.index");
             Route::post("/credit/{customer}/payment", [CreditController::class, "recordPayment"])->name("credit.payment");
+
+            // Settings
+            Route::get('/settings',                              [SettingsController::class, 'index'])->name('settings.index');
+            Route::post('/settings/account',                     [SettingsController::class, 'saveAccount'])->name('settings.account');
+            Route::post('/settings/password',                    [SettingsController::class, 'changePassword'])->name('settings.password');
+            Route::post('/settings/shop',                        [SettingsController::class, 'saveShop'])->name('settings.shop');
+            Route::post('/settings/receipts',                    [SettingsController::class, 'saveReceipts'])->name('settings.receipts');
+            Route::post('/settings/alerts',                      [SettingsController::class, 'saveAlerts'])->name('settings.alerts');
+            Route::post('/settings/staff',                       [SettingsController::class, 'addStaff'])->name('settings.staff.add');
+            Route::post('/settings/staff/{user}/toggle',         [SettingsController::class, 'toggleStaffStatus'])->name('settings.staff.toggle');
+            Route::post('/settings/staff/{user}/reset-pin',      [SettingsController::class, 'resetStaffPin'])->name('settings.staff.reset-pin');
+            Route::post('/settings/staff/{user}/remove',         [SettingsController::class, 'removeStaff'])->name('settings.staff.remove');
+            Route::get('/settings/export',                       [SettingsController::class, 'export'])->name('settings.export');
         });
 
         // Staff + owner — sales flow
