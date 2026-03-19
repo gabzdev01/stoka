@@ -128,11 +128,11 @@
         <td class="td-muted">{{ $restock->created_at->format('d M Y') }}</td>
         <td style="font-weight:500;">{{ $restock->supplier?->name ?? '—' }}</td>
         <td class="td-mono">{{ $itemCount }} {{ $itemCount === 1 ? 'item' : 'items' }}</td>
-        <td class="td-mono">{{ $cost > 0 ? 'Ksh ' . number_format((int)$cost) : '—' }}</td>
-        <td class="td-mono">{{ $paid > 0 ? 'Ksh ' . number_format((int)$paid) : '—' }}</td>
+        <td class="td-mono">{{ $cost > 0 ? tenant('currency_symbol') . ' ' . number_format((int)$cost) : '—' }}</td>
+        <td class="td-mono">{{ $paid > 0 ? tenant('currency_symbol') . ' ' . number_format((int)$paid) : '—' }}</td>
         <td class="td-mono {{ $bal > 0 ? 'style=color:var(--clay);font-weight:600' : '' }}">
             @if($bal > 0)
-                <span style="color:var(--clay);font-weight:600;">Ksh {{ number_format((int)$bal) }}</span>
+                <span style="color:var(--clay);font-weight:600;">{{ tenant('currency_symbol') }} {{ number_format((int)$bal) }}</span>
             @elseif($cost > 0)
                 <span style="color:var(--forest);">—</span>
             @else
@@ -145,7 +145,7 @@
             @elseif($settled || $bal <= 0)
                 <span class="badge badge-green">Settled</span>
             @else
-                <span class="badge badge-clay">Owes Ksh {{ number_format((int)$bal) }}</span>
+                <span class="badge badge-clay">Owes {{ tenant('currency_symbol') }} {{ number_format((int)$bal) }}</span>
             @endif
         </td>
     </tr>
@@ -173,14 +173,14 @@
         </div>
         @if($cost > 0)
             <span class="rcm-cost" style="{{ $bal > 0 ? 'color:var(--clay)' : 'color:var(--forest)' }}">
-                Ksh {{ number_format((int)$cost) }}
+                {{ tenant('currency_symbol') }} {{ number_format((int)$cost) }}
             </span>
         @endif
     </div>
     <p class="rcm-meta">
         {{ $itemCount }} {{ $itemCount === 1 ? 'item' : 'items' }}
-        @if($paid > 0) · Paid Ksh {{ number_format((int)$paid) }} @endif
-        @if($bal > 0) · <span style="color:var(--clay);">Owes Ksh {{ number_format((int)$bal) }}</span>
+        @if($paid > 0) · Paid {{ tenant('currency_symbol') }} {{ number_format((int)$paid) }} @endif
+        @if($bal > 0) · <span style="color:var(--clay);">Owes {{ tenant('currency_symbol') }} {{ number_format((int)$bal) }}</span>
         @elseif($cost > 0) · <span style="color:var(--forest);">Settled</span>
         @endif
     </p>

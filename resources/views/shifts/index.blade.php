@@ -150,9 +150,9 @@
             @elseif($disc == 0)
                 <span class="disc-ok">Balanced ✓</span>
             @elseif($disc < 0)
-                <span class="disc-short">Ksh {{ number_format(abs($disc), 0) }} short</span>
+                <span class="disc-short">{{ tenant('currency_symbol') }} {{ number_format(abs($disc), 0) }} short</span>
             @else
-                <span class="disc-over">Ksh {{ number_format($disc, 0) }} over</span>
+                <span class="disc-over">{{ tenant('currency_symbol') }} {{ number_format($disc, 0) }} over</span>
             @endif
         </td>
         <td>
@@ -200,7 +200,7 @@
             <span class="badge badge-tan">Closed</span>
         @endif
     </div>
-    <p class="scm-totals">Ksh {{ number_format((int)$total) }} · {{ $count }} {{ $count === 1 ? 'sale' : 'sales' }}</p>
+    <p class="scm-totals">{{ tenant('currency_symbol') }} {{ number_format((int)$total) }} · {{ $count }} {{ $count === 1 ? 'sale' : 'sales' }}</p>
     <p class="scm-split">Cash {{ number_format((int)$cash) }} · M-Pesa {{ number_format((int)$mpesa) }}</p>
     <div class="scm-bot">
         <span style="font-size:12px;color:var(--muted);">Tap to view</span>
@@ -208,9 +208,9 @@
             @if($disc == 0)
                 <span class="disc-ok" style="font-size:13px;">Balanced ✓</span>
             @elseif($disc < 0)
-                <span class="disc-short" style="font-size:13px;">Ksh {{ number_format(abs($disc), 0) }} short</span>
+                <span class="disc-short" style="font-size:13px;">{{ tenant('currency_symbol') }} {{ number_format(abs($disc), 0) }} short</span>
             @else
-                <span class="disc-over" style="font-size:13px;">Ksh {{ number_format($disc, 0) }} over</span>
+                <span class="disc-over" style="font-size:13px;">{{ tenant('currency_symbol') }} {{ number_format($disc, 0) }} over</span>
             @endif
         @endif
     </div>

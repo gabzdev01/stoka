@@ -174,7 +174,7 @@
             <label class="float-label" for="opening_float">Opening float</label>
 
             <div class="float-input-wrap">
-                <span class="float-prefix">KSh</span>
+                <span class="float-prefix">{{ tenant('currency_symbol') }}</span>
                 <input
                     class="float-input"
                     type="number"

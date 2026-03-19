@@ -277,7 +277,7 @@
             <span class="shift-date-line">{{ $closedDate }}</span>
             <span class="shift-dur-line">{{ $durStr }} shift</span>
             <span class="shift-totals-line">
-                Ksh {{ number_format((int)$total) }}
+                {{ tenant('currency_symbol') }} {{ number_format((int)$total) }}
                 <span style="color:var(--muted);font-size:11px;"> · {{ $count }} {{ $count === 1 ? 'sale' : 'sales' }}</span>
             </span>
             <span class="shift-split-line">
@@ -288,9 +288,9 @@
             @if($disc == 0)
                 <span class="disc-badge disc-balanced">Balanced ✓</span>
             @elseif($disc < 0)
-                <span class="disc-badge disc-short">Ksh {{ number_format(abs($disc), 0) }} short</span>
+                <span class="disc-badge disc-short">{{ tenant('currency_symbol') }} {{ number_format(abs($disc), 0) }} short</span>
             @else
-                <span class="disc-badge disc-over">Ksh {{ number_format($disc, 0) }} over</span>
+                <span class="disc-badge disc-over">{{ tenant('currency_symbol') }} {{ number_format($disc, 0) }} over</span>
             @endif
             <svg class="expand-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -318,13 +318,13 @@
                     <p class="sale-name {{ $isVoided ? 'voided-text' : '' }}">
                         {{ $prodName }}{{ $variant ? ' · ' . $variant : '' }}
                     </p>
-                    <p class="sale-meta">{{ $qtyStr }} · Ksh {{ number_format((int)$sale->actual_price) }}</p>
+                    <p class="sale-meta">{{ $qtyStr }} · {{ tenant('currency_symbol') }} {{ number_format((int)$sale->actual_price) }}</p>
                     @if($isVoided && $sale->void_reason)
                     <p class="sale-void-reason">Void: {{ $sale->void_reason }}</p>
                     @endif
                 </div>
                 <div class="sale-right">
-                    <span class="sale-amount {{ $isVoided ? '' : '' }}">Ksh {{ number_format((int)$sale->total) }}</span>
+                    <span class="sale-amount {{ $isVoided ? '' : '' }}">{{ tenant('currency_symbol') }} {{ number_format((int)$sale->total) }}</span>
                     <span class="sale-time">{{ $sale->created_at->format('g:ia') }}</span>
                     @if($isVoided)
                         <span class="voided-badge">VOIDED</span>

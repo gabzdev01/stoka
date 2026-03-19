@@ -11,7 +11,7 @@
                 No outstanding credit
             @else
                 <span style="font-family:'DM Mono',monospace;color:var(--clay);font-weight:600;">
-                    Ksh {{ number_format((int)$totalOwed) }}
+                    {{ tenant('currency_symbol') }} {{ number_format((int)$totalOwed) }}
                 </span>
                 owed across {{ $customers->count() }} {{ $customers->count() === 1 ? 'customer' : 'customers' }}
             @endif
@@ -282,7 +282,7 @@
             <span style="font-size:12px;color:var(--terracotta);margin-top:3px;">{{ $ageDays }} days since first credit</span>
             @endif
         </div>
-        <span class="cc-total-owed">Ksh {{ number_format((int)$totalBalance) }}</span>
+        <span class="cc-total-owed">{{ tenant('currency_symbol') }} {{ number_format((int)$totalBalance) }}</span>
     </div>
 
     {{-- Credit entries --}}
@@ -303,9 +303,9 @@
                 <span class="ce-date">{{ $entry->created_at->format('d M Y') }}</span>
             </div>
             <div class="ce-right">
-                <div class="ce-balance">Ksh {{ number_format((int)$entry->balance) }}</div>
+                <div class="ce-balance">{{ tenant('currency_symbol') }} {{ number_format((int)$entry->balance) }}</div>
                 @if((float)$entry->paid > 0)
-                <div class="ce-orig">of Ksh {{ number_format((int)$entry->amount) }}</div>
+                <div class="ce-orig">of {{ tenant('currency_symbol') }} {{ number_format((int)$entry->amount) }}</div>
                 @endif
             </div>
         </div>
@@ -319,7 +319,7 @@
         @csrf
         <span class="pay-label">Record payment</span>
         <div class="pay-input-wrap">
-            <span class="pay-prefix">KSh</span>
+            <span class="pay-prefix">{{ tenant('currency_symbol') }}</span>
             <input
                 type="number"
                 class="pay-input"

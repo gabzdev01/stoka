@@ -573,6 +573,89 @@
     }
     .sale-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+        /* ── Receipt overlay ─────────────────────── */
+        .receipt-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(28, 24, 20, 0.55);
+            z-index: 1200;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .receipt-overlay.visible { display: flex; }
+
+        @media (min-width: 480px) {
+            .receipt-overlay { align-items: center; }
+            .receipt-modal   { border-radius: 20px !important; max-width: 400px; }
+        }
+
+        .receipt-modal {
+            background: #FAF7F2;
+            border-radius: 20px 20px 0 0;
+            padding: 28px 20px 36px;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .ro-check {
+            width: 48px; height: 48px;
+            background: #4A6741;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 12px;
+        }
+
+        .ro-check svg { color: #fff; }
+
+        .ro-title {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 22px; font-weight: 600;
+            text-align: center;
+            color: #1C1814;
+            margin-bottom: 4px;
+        }
+
+        .ro-summary {
+            font-size: 13px; color: #8C7B6E;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .ro-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 15px; font-weight: 600;
+            text-decoration: none;
+            border: none; cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .ro-btn-wa {
+            background: #4A6741;
+            color: #fff;
+        }
+
+        .ro-btn-print {
+            background: #2C1810;
+            color: #fff;
+        }
+
+        .ro-btn-done {
+            background: transparent;
+            color: #8C7B6E;
+            font-size: 14px;
+            font-weight: 500;
+            width: 100%;
+            padding: 10px;
+            text-align: center;
+            margin-top: 4px;
+        }
 </style>
 @endsection
 
@@ -610,7 +693,7 @@
     else                 { $stockLabel = $isOut ? 'Out of stock' : $totalStock . ' in stock'; }
 
     $stockCss   = $isOut ? 'stock-out' : ($isLow ? 'stock-low' : '');
-    $priceLabel = $isMeasured ? 'Ksh ' . number_format($product->shelf_price, 0) . '/ml' : 'Ksh ' . number_format($product->shelf_price, 0);
+    $priceLabel = $isMeasured ? tenant('currency_symbol') . ' ' . number_format($product->shelf_price, 0) . '/ml' : tenant('currency_symbol') . ' ' . number_format($product->shelf_price, 0);
 
     $variantsJson = $isVariant
         ? json_encode($product->variants->map(fn($v) => ['id' => $v->id, 'size' => $v->size, 'colour' => $v->colour, 'stock' => $v->stock])->values()->all())
@@ -709,7 +792,7 @@
         <div class="price-section">
             <span class="section-label">Price</span>
             <div class="price-row">
-                <span class="price-prefix">Ksh</span>
+                <span class="price-prefix">{{ tenant('currency_symbol') }}</span>
                 <input type="number" class="price-input" id="price-input" inputmode="decimal" step="1" min="0">
             </div>
             <div class="floor-hint" id="floor-hint"></div>
@@ -718,7 +801,7 @@
 
         <div class="total-row">
             <span class="total-label">Item total</span>
-            <span class="total-amount" id="running-total">Ksh 0</span>
+            <span class="total-amount" id="running-total">{{ tenant('currency_symbol') }} 0</span>
         </div>
 
         <button type="button" class="btn-confirm" id="btn-add-to-cart" onclick="doAddToCart()">
@@ -743,7 +826,7 @@
         <div class="cart-items-list" id="cart-items-list"></div>
         <div class="cart-total-row" id="cart-total-row" style="display:none;">
             <span class="cart-total-label">Total</span>
-            <span class="cart-total-amount" id="cart-grand-total">Ksh 0</span>
+            <span class="cart-total-amount" id="cart-grand-total">{{ tenant('currency_symbol') }} 0</span>
         </div>
         <button type="button" class="btn-confirm" id="btn-checkout"
                 onclick="goToCheckout()" style="margin-top:16px;">
@@ -789,7 +872,7 @@
                     <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span>
                 </span>
                 <div class="credit-partial-row">
-                    <span class="credit-partial-prefix">Ksh</span>
+                    <span class="credit-partial-prefix">{{ tenant('currency_symbol') }}</span>
                     <input type="number" class="credit-partial-input" id="cart-credit-paid-now"
                            inputmode="decimal" step="1" min="0" placeholder="0"
                            oninput="updateCreditBalance()">
@@ -816,6 +899,37 @@
 
 @endsection
 
+{{-- Receipt overlay --}}
+<div class="receipt-overlay" id="receipt-overlay">
+    <div class="receipt-modal">
+        <div class="ro-check">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+        </div>
+        <div class="ro-title">Sale complete</div>
+        <div class="ro-summary" id="ro-summary"></div>
+
+        <a class="ro-btn ro-btn-wa" id="ro-wa-btn" href="#" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            Send receipt via WhatsApp
+        </a>
+
+        <a class="ro-btn ro-btn-print" id="ro-print-btn" href="#" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"/>
+                <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+                <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            Print receipt
+        </a>
+
+        <button class="ro-btn ro-btn-done" onclick="closeReceiptOverlay()">Done</button>
+    </div>
+</div>
+
 @section('scripts')
 <script>
 (function () {
@@ -831,6 +945,17 @@
     var countEl     = document.getElementById('product-count');
     var noResults   = document.getElementById('no-results');
     var noQuery     = document.getElementById('no-results-query');
+
+    /* ── Receipt settings ──────────────────────────────────────────────── */
+    var receiptDigital = {{ tenant('receipt_digital') ? 'true' : 'false' }};
+    var receiptPrint   = {{ tenant('receipt_print') ? 'true' : 'false' }};
+    var receiptFooter  = '{{ addslashes(tenant('receipt_footer') ?? '') }}';
+    var ownerWaRaw     = '{{ preg_replace('/\D/', '', tenant('owner_whatsapp') ?? '') }}';
+    var ownerWaPhone   = (ownerWaRaw.length === 10 && ownerWaRaw[0] === '0')
+                         ? '254' + ownerWaRaw.slice(1) : ownerWaRaw;
+    var shopName       = '{{ addslashes(tenant('name') ?? '') }}';
+    var staffFirst     = '{{ addslashes(explode(' ', trim(session('auth_name', 'Staff')))[0]) }}';
+
     var catStrip    = document.getElementById('cat-strip');
     var cards       = Array.prototype.slice.call(grid.querySelectorAll('.product-card'));
     var total       = cards.length;
@@ -989,7 +1114,7 @@
         var badge = document.getElementById('tab-cart-badge');
         if (count > 0) {
             document.getElementById('cf-count').textContent = count;
-            document.getElementById('cf-total').textContent = 'Ksh ' + nf(total);
+            document.getElementById('cf-total').textContent = '{{ tenant("currency_symbol") }} ' + nf(total);
             if (bar) { bar.style.display = 'block'; bar.classList.add('visible'); }
         } else {
             if (bar) bar.style.display = 'none';
@@ -1081,11 +1206,11 @@
 
         var meta = '';
         if (state.productType === 'measured' && state.bottle) {
-            meta = 'Ksh ' + nf(state.bottle.price_per_ml) + '/ml \u00b7 ' + nf(state.bottle.remaining_ml) + 'ml remaining';
+            meta = '{{ tenant("currency_symbol") }} ' + nf(state.bottle.price_per_ml) + '/ml \u00b7 ' + nf(state.bottle.remaining_ml) + 'ml remaining';
         } else if (state.productType === 'variant') {
             meta = 'Choose a size below';
         } else {
-            meta = 'Ksh ' + nf(state.shelfPrice) + (state.bargainable ? ' \u00b7 Bargainable' : '');
+            meta = '{{ tenant("currency_symbol") }} ' + nf(state.shelfPrice) + (state.bargainable ? ' \u00b7 Bargainable' : '');
         }
         document.getElementById('sheet-meta').textContent = meta;
 
@@ -1107,7 +1232,7 @@
 
         document.getElementById('floor-hint').textContent =
             (state.bargainable && state.floorPrice)
-                ? 'Floor price: Ksh ' + nf(state.floorPrice) : '';
+                ? 'Floor price: {{ tenant("currency_symbol") }} ' + nf(state.floorPrice) : '';
         document.getElementById('qty-display').textContent = state.productType === 'measured' ? '0ml' : '1';
 
         updateFloorWarn();
@@ -1193,7 +1318,7 @@
     }
 
     function updateTotal() {
-        document.getElementById('running-total').textContent = 'Ksh ' + nf(state.qty * state.price);
+        document.getElementById('running-total').textContent = '{{ tenant("currency_symbol") }} ' + nf(state.qty * state.price);
     }
 
     function validateAddBtn() {
@@ -1290,7 +1415,7 @@
                 +   '<span class="cart-qty-num">' + item.quantity + '</span>'
                 +   '<button type="button" class="qty-btn-sm" onclick="cartQty(' + idx + ',1)">+</button>'
                 + '</div>'
-                + '<span class="cart-item-total">Ksh ' + nf(line) + '</span>'
+                + '<span class="cart-item-total">{{ tenant("currency_symbol") }} ' + nf(line) + '</span>'
                 + '<button type="button" class="cart-remove-btn" onclick="cartRemove(' + idx + ')">&times;</button>';
 
             list.appendChild(el);
@@ -1298,7 +1423,7 @@
 
         var label = itemCnt + (itemCnt === 1 ? ' item' : ' items');
         document.getElementById('cart-title').textContent    = 'Cart \u00b7 ' + label;
-        document.getElementById('cart-grand-total').textContent = 'Ksh ' + nf(total);
+        document.getElementById('cart-grand-total').textContent = '{{ tenant("currency_symbol") }} ' + nf(total);
     }
 
     window.cartQty = function (idx, delta) {
@@ -1329,7 +1454,7 @@
 
         document.getElementById('checkout-summary').textContent =
             itemCnt + (itemCnt === 1 ? ' item' : ' items');
-        document.getElementById('checkout-total').textContent   = 'Ksh ' + nf(total);
+        document.getElementById('checkout-total').textContent   = '{{ tenant("currency_symbol") }} ' + nf(total);
 
         // Reset credit fields
         document.getElementById('cart-credit-fields').classList.remove('open');
@@ -1353,7 +1478,7 @@
     window.selectCartPayment = function (type) {
         if (type === 'credit') {
             var total = cartTotal();
-            document.getElementById('cart-credit-balance').textContent = 'Ksh ' + nf(total);
+            document.getElementById('cart-credit-balance').textContent = '{{ tenant("currency_symbol") }} ' + nf(total);
             document.getElementById('cart-credit-fields').classList.add('open');
             return;
         }
@@ -1374,11 +1499,11 @@
             paidNow = total; balance = 0;
         }
         if (paidNow >= total) {
-            balEl.textContent      = 'Ksh 0';
+            balEl.textContent      = '{{ tenant("currency_symbol") }} 0';
             fullWarn.style.display = 'block';
             submitBtn.disabled     = true;
         } else {
-            balEl.textContent      = 'Ksh ' + nf(balance);
+            balEl.textContent      = '{{ tenant("currency_symbol") }} ' + nf(balance);
             fullWarn.style.display = 'none';
             submitBtn.disabled     = false;
         }
@@ -1481,10 +1606,102 @@
             });
         }
 
-        var label = data.items_count + (data.items_count === 1 ? ' item' : ' items')
-            + ' \u2014 Ksh ' + nf(data.total)
-            + ' \u2014 ' + cap(data.payment_type);
-        showToast('\u2713 ' + label);
+        if ((receiptDigital || receiptPrint) && (data.sale_ids || []).length > 0) {
+            showReceiptOverlay(data);
+        } else {
+            var label = data.items_count + (data.items_count === 1 ? ' item' : ' items')
+                + ' \u2014 {{ tenant("currency_symbol") }} ' + nf(data.total)
+                + ' \u2014 ' + cap(data.payment_type);
+            showToast('\u2713 ' + label);
+        }
+    }
+
+    function buildReceiptWaMessage(data) {
+        var lines = [];
+        var now = new Date();
+        var dateStr = now.toLocaleDateString('en-KE', { weekday: 'short', day: 'numeric', month: 'short' });
+        var timeStr = now.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+        lines.push('Receipt \u2014 ' + shopName);
+        lines.push(dateStr + ' \u00b7 ' + timeStr);
+        lines.push('Staff: ' + staffFirst);
+        lines.push('');
+
+        if (data.receipt_items) {
+            data.receipt_items.forEach(function (item) {
+                var name = item.name;
+                if (item.variant) { name += ' (' + item.variant + ')'; }
+                var qty = item.qty !== 1 ? ' \u00d7' + item.qty : '';
+                lines.push(name + qty);
+                lines.push('{{ tenant("currency_symbol") }} ' + nf(item.price));
+            });
+        }
+
+        lines.push('');
+        lines.push('Total: {{ tenant("currency_symbol") }} ' + nf(data.total));
+        var pm = data.payment_type === 'mpesa' ? 'M-Pesa'
+               : data.payment_type === 'credit' ? 'Credit'
+               : 'Cash';
+        lines.push('Paid by: ' + pm + ' \u2713');
+
+        if (receiptFooter) {
+            lines.push('');
+            lines.push(receiptFooter);
+        }
+        lines.push('Powered by Stoka \u00b7 stoka.co.ke');
+
+        return lines.join('\n');
+    }
+
+    function showReceiptOverlay(data) {
+        var ro = document.getElementById('receipt-overlay');
+        if (!ro) return;
+
+        // Summary line
+        document.getElementById('ro-summary').textContent =
+            data.items_count + (data.items_count === 1 ? ' item' : ' items')
+            + ' \u00b7 {{ tenant("currency_symbol") }} ' + nf(data.total)
+            + ' \u00b7 ' + cap(data.payment_type);
+
+        // WA button
+        var waBtn = document.getElementById('ro-wa-btn');
+        if (waBtn) {
+            if (receiptDigital) {
+                var waMsg   = buildReceiptWaMessage(data);
+                var waPhone = (data.payment_type === 'credit' && data.customer_phone)
+                    ? (function(p) {
+                        p = p.replace(/\D/g, '');
+                        return (p.length === 10 && p[0] === '0') ? '254' + p.slice(1) : p;
+                      })(data.customer_phone)
+                    : ownerWaPhone;
+                waBtn.href = 'https://wa.me/' + waPhone + '?text=' + encodeURIComponent(waMsg);
+                waBtn.style.display = 'flex';
+            } else {
+                waBtn.style.display = 'none';
+            }
+        }
+
+        // Print button
+        var printBtn = document.getElementById('ro-print-btn');
+        if (printBtn) {
+            if (receiptPrint && data.sale_ids && data.sale_ids.length > 0) {
+                printBtn.href = '/sales/receipt/' + data.sale_ids.join(',');
+                printBtn.style.display = 'flex';
+            } else {
+                printBtn.style.display = 'none';
+            }
+        }
+
+        ro.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeReceiptOverlay() {
+        var ro = document.getElementById('receipt-overlay');
+        if (ro) { ro.classList.remove('visible'); }
+        document.body.style.overflow = '';
+        var label = document.getElementById('ro-summary').textContent;
+        showToast('\u2713 Sale complete \u2014 ' + label);
     }
 
     function updateCardStock(upd) {

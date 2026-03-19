@@ -342,13 +342,13 @@
         <div class="sale-item-main">
             <div class="sale-item-left">
                 <p class="sale-item-name">{{ $prodName }}{{ $variant ? ' · ' . $variant : '' }}</p>
-                <p class="sale-item-meta">{{ $qtyStr }} · Ksh {{ number_format((int)$sale->actual_price) }}</p>
+                <p class="sale-item-meta">{{ $qtyStr }} · {{ tenant('currency_symbol') }} {{ number_format((int)$sale->actual_price) }}</p>
                 @if($isVoided && $sale->void_reason)
                 <p class="sale-item-void-reason">Void: {{ $sale->void_reason }}</p>
                 @endif
             </div>
             <div class="sale-item-right">
-                <span class="sale-item-amount">Ksh {{ number_format((int)$sale->total) }}</span>
+                <span class="sale-item-amount">{{ tenant('currency_symbol') }} {{ number_format((int)$sale->total) }}</span>
                 <span class="sale-item-time">{{ $sale->created_at->format('g:ia') }}</span>
                 @if($isVoided)
                     <span class="voided-badge">VOIDED</span>

@@ -174,23 +174,23 @@
     {{-- ── Total sales ────────────────────────────── --}}
     <div>
         <div class="summary-total-label">Total sales</div>
-        <div class="summary-total">Ksh {{ number_format((int) $totalSales) }}</div>
+        <div class="summary-total">{{ tenant('currency_symbol') }} {{ number_format((int) $totalSales) }}</div>
     </div>
 
     {{-- ── Breakdown ──────────────────────────────── --}}
     <div class="breakdown">
         <div class="bd-row">
             <span class="bd-label">Cash</span>
-            <span class="bd-value">Ksh {{ number_format((int) $cashSales) }}</span>
+            <span class="bd-value">{{ tenant('currency_symbol') }} {{ number_format((int) $cashSales) }}</span>
         </div>
         <div class="bd-row">
             <span class="bd-label">M-Pesa</span>
-            <span class="bd-value">Ksh {{ number_format((int) $mpesaSales) }}</span>
+            <span class="bd-value">{{ tenant('currency_symbol') }} {{ number_format((int) $mpesaSales) }}</span>
         </div>
         @if($creditSales > 0)
         <div class="bd-row">
             <span class="bd-label">Credit</span>
-            <span class="bd-value">Ksh {{ number_format((int) $creditSales) }}</span>
+            <span class="bd-value">{{ tenant('currency_symbol') }} {{ number_format((int) $creditSales) }}</span>
         </div>
         @endif
         <div class="bd-row">
@@ -206,11 +206,11 @@
         </div>
     @elseif($discrepancy < 0)
         <div class="summary-result result-short">
-            Ksh {{ number_format((int) abs($discrepancy)) }} short
+            {{ tenant('currency_symbol') }} {{ number_format((int) abs($discrepancy)) }} short
         </div>
     @else
         <div class="summary-result result-over">
-            Ksh {{ number_format((int) $discrepancy) }} over ↑
+            {{ tenant('currency_symbol') }} {{ number_format((int) $discrepancy) }} over ↑
         </div>
     @endif
 

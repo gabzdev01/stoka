@@ -289,24 +289,24 @@
         <div class="ss-row">
             <span class="ss-label">Total sales</span>
             <span class="ss-value">
-                Ksh {{ number_format((int)$totalSales) }}<span class="ss-count">{{ $saleCount }} {{ $saleCount === 1 ? 'transaction' : 'transactions' }}</span>
+                {{ tenant('currency_symbol') }} {{ number_format((int)$totalSales) }}<span class="ss-count">{{ $saleCount }} {{ $saleCount === 1 ? 'transaction' : 'transactions' }}</span>
             </span>
         </div>
         <div class="ss-row">
             <span class="ss-label">M-Pesa received</span>
-            <span class="ss-value">Ksh {{ number_format((int)$mpesaSales) }}</span>
+            <span class="ss-value">{{ tenant('currency_symbol') }} {{ number_format((int)$mpesaSales) }}</span>
         </div>
         <div class="ss-row">
             <span class="ss-label">Cash sales</span>
-            <span class="ss-value">Ksh {{ number_format((int)$cashSales) }}</span>
+            <span class="ss-value">{{ tenant('currency_symbol') }} {{ number_format((int)$cashSales) }}</span>
         </div>
         <div class="ss-row">
             <span class="ss-label">Opening float</span>
-            <span class="ss-value">Ksh {{ number_format((int)$shift->opening_float) }}</span>
+            <span class="ss-value">{{ tenant('currency_symbol') }} {{ number_format((int)$shift->opening_float) }}</span>
         </div>
         <div class="ss-row ss-row-expected">
             <span class="ss-label">Expected in till</span>
-            <span class="ss-value">Ksh {{ number_format((int)$expectedCash) }}</span>
+            <span class="ss-value">{{ tenant('currency_symbol') }} {{ number_format((int)$expectedCash) }}</span>
         </div>
     </div>
 
@@ -314,7 +314,7 @@
     <div>
         <label class="till-label" for="cash-counted">How much cash is in the till right now?</label>
         <div class="till-input-wrap">
-            <span class="till-prefix">KSh</span>
+            <span class="till-prefix">{{ tenant('currency_symbol') }}</span>
             <input
                 type="number"
                 name="cash_counted"
@@ -334,7 +334,7 @@
     <div class="recon-section" id="recon" style="display:none;">
         <div class="recon-row">
             <span class="recon-label">Expected</span>
-            <span class="recon-val">Ksh {{ number_format((int)$expectedCash) }}</span>
+            <span class="recon-val">{{ tenant('currency_symbol') }} {{ number_format((int)$expectedCash) }}</span>
         </div>
         <div class="recon-row">
             <span class="recon-label">You counted</span>
@@ -372,7 +372,7 @@
     if (!input) return; // State A — no shift, nothing to wire up
 
     function fmt(n) {
-        return 'Ksh ' + Math.round(Math.abs(n)).toLocaleString('en-KE');
+        return '{{ tenant("currency_symbol") }} ' + Math.round(Math.abs(n)).toLocaleString('en-KE');
     }
 
     input.addEventListener('input', function () {

@@ -150,21 +150,21 @@
 <div class="shift-stats">
     <div class="ss-box">
         <span class="ss-label">Total sales</span>
-        <span class="ss-val">Ksh {{ number_format((int)$totalSales) }}</span>
+        <span class="ss-val">{{ tenant('currency_symbol') }} {{ number_format((int)$totalSales) }}</span>
         <p class="ss-sub">{{ $saleCount }} {{ $saleCount === 1 ? 'transaction' : 'transactions' }}</p>
     </div>
     <div class="ss-box">
         <span class="ss-label">Cash</span>
-        <span class="ss-val forest">Ksh {{ number_format((int)$cashSales) }}</span>
+        <span class="ss-val forest">{{ tenant('currency_symbol') }} {{ number_format((int)$cashSales) }}</span>
     </div>
     <div class="ss-box">
         <span class="ss-label">M-Pesa</span>
-        <span class="ss-val forest">Ksh {{ number_format((int)$mpesaSales) }}</span>
+        <span class="ss-val forest">{{ tenant('currency_symbol') }} {{ number_format((int)$mpesaSales) }}</span>
     </div>
     @if($creditSales > 0)
     <div class="ss-box">
         <span class="ss-label">Credit</span>
-        <span class="ss-val clay">Ksh {{ number_format((int)$creditSales) }}</span>
+        <span class="ss-val clay">{{ tenant('currency_symbol') }} {{ number_format((int)$creditSales) }}</span>
     </div>
     @endif
 </div>
@@ -177,31 +177,31 @@
     <div class="recon-col">
         <div class="recon-row">
             <span class="recon-label">Opening float</span>
-            <span class="recon-val">Ksh {{ number_format((int)$shift->opening_float) }}</span>
+            <span class="recon-val">{{ tenant('currency_symbol') }} {{ number_format((int)$shift->opening_float) }}</span>
         </div>
         <div class="recon-row">
             <span class="recon-label">Cash sales</span>
-            <span class="recon-val">Ksh {{ number_format((int)$cashSales) }}</span>
+            <span class="recon-val">{{ tenant('currency_symbol') }} {{ number_format((int)$cashSales) }}</span>
         </div>
         <div class="recon-row">
             <span class="recon-label">Expected in till</span>
-            <span class="recon-val" style="font-weight:600;">Ksh {{ number_format((int)$expectedCash) }}</span>
+            <span class="recon-val" style="font-weight:600;">{{ tenant('currency_symbol') }} {{ number_format((int)$expectedCash) }}</span>
         </div>
     </div>
 
     <div class="recon-col">
         <div class="recon-row">
             <span class="recon-label">Cash counted</span>
-            <span class="recon-val">Ksh {{ number_format((int)$shift->cash_counted) }}</span>
+            <span class="recon-val">{{ tenant('currency_symbol') }} {{ number_format((int)$shift->cash_counted) }}</span>
         </div>
         <div class="recon-row">
             <span class="recon-label">Discrepancy</span>
             @if($disc == 0)
                 <span class="recon-result-big result-balanced">Balanced ✓</span>
             @elseif($disc < 0)
-                <span class="recon-result-big result-short">Ksh {{ number_format(abs($disc), 0) }} short</span>
+                <span class="recon-result-big result-short">{{ tenant('currency_symbol') }} {{ number_format(abs($disc), 0) }} short</span>
             @else
-                <span class="recon-result-big result-over">Ksh {{ number_format($disc, 0) }} over</span>
+                <span class="recon-result-big result-over">{{ tenant('currency_symbol') }} {{ number_format($disc, 0) }} over</span>
             @endif
         </div>
     </div>
@@ -295,7 +295,7 @@
                 {{ $prodName }}{{ $variant ? ' · ' . $variant : '' }}
             </p>
             <p class="scm-meta">
-                {{ $qtyStr }} · Ksh {{ number_format((int)$sale->actual_price) }} ·
+                {{ $qtyStr }} · {{ tenant('currency_symbol') }} {{ number_format((int)$sale->actual_price) }} ·
                 @if($isVoided) VOIDED
                 @else {{ strtoupper($sale->payment_type) }}
                 @endif
@@ -305,7 +305,7 @@
             <p style="font-size:11px;color:var(--clay);font-style:italic;margin-top:2px;">Void: {{ $sale->void_reason }}</p>
             @endif
         </div>
-        <span class="scm-amt">Ksh {{ number_format((int)$sale->total) }}</span>
+        <span class="scm-amt">{{ tenant('currency_symbol') }} {{ number_format((int)$sale->total) }}</span>
     </div>
 </div>
 @endforeach

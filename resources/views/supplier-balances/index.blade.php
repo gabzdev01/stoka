@@ -11,7 +11,7 @@
                 All suppliers settled
             @else
                 <span style="font-family:'DM Mono',monospace;color:var(--clay);font-weight:600;">
-                    Ksh {{ number_format((int)$totalOwed) }}
+                    {{ tenant('currency_symbol') }} {{ number_format((int)$totalOwed) }}
                 </span>
                 owed across {{ $suppliers->count() }} {{ $suppliers->count() === 1 ? 'supplier' : 'suppliers' }}
             @endif
@@ -227,7 +227,7 @@
             </span>
             @endif
         </div>
-        <span class="sc-total">Ksh {{ number_format((int)$totalBal) }}</span>
+        <span class="sc-total">{{ tenant('currency_symbol') }} {{ number_format((int)$totalBal) }}</span>
     </div>
 
     {{-- Balance entries (per restock) --}}
@@ -244,14 +244,14 @@
                     Restock · {{ $entry->created_at->format('d M Y') }}
                 </span>
                 <span class="be-date">
-                    Invoice Ksh {{ number_format((int)$cost) }}
-                    @if($paid > 0) · Paid Ksh {{ number_format((int)$paid) }} @endif
+                    Invoice {{ tenant('currency_symbol') }} {{ number_format((int)$cost) }}
+                    @if($paid > 0) · Paid {{ tenant('currency_symbol') }} {{ number_format((int)$paid) }} @endif
                 </span>
             </div>
             <div class="be-right">
-                <div class="be-balance">Ksh {{ number_format((int)$bal) }}</div>
+                <div class="be-balance">{{ tenant('currency_symbol') }} {{ number_format((int)$bal) }}</div>
                 @if($paid > 0)
-                <div class="be-orig">of Ksh {{ number_format((int)$cost) }}</div>
+                <div class="be-orig">of {{ tenant('currency_symbol') }} {{ number_format((int)$cost) }}</div>
                 @endif
             </div>
         </div>
@@ -265,7 +265,7 @@
         @csrf
         <span class="pay-label">Record payment</span>
         <div class="pay-input-wrap">
-            <span class="pay-prefix">KSh</span>
+            <span class="pay-prefix">{{ tenant('currency_symbol') }}</span>
             <input
                 type="number" class="pay-input"
                 id="pay-input-{{ $supplier->id }}"

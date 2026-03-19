@@ -403,7 +403,7 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
     <a href="/shifts/{{ $os->id }}" class="now-card">
         <span class="pulse-dot"></span>
         <div class="now-body">
-            <span class="now-name"><strong>{{ $os->staff->name }}</strong> is selling</span><span class="now-dot-sep"> · </span><span class="now-stats">{{ $osCount }} {{ $osCount === 1 ? 'sale' : 'sales' }} · Ksh {{ number_format((int)$osTotal) }} so far · Since {{ $since }}</span>
+            <span class="now-name"><strong>{{ $os->staff->name }}</strong> is selling</span><span class="now-dot-sep"> · </span><span class="now-stats">{{ $osCount }} {{ $osCount === 1 ? 'sale' : 'sales' }} · {{ tenant('currency_symbol') }} {{ number_format((int)$osTotal) }} so far · Since {{ $since }}</span>
         </div>
     </a>
 </div>
@@ -425,10 +425,10 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
             <svg class="eye-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </div>
         <span class="stat-label">Today's sales</span>
-        <div class="stat-value stat-amount">Ksh&nbsp;{{ number_format((int)$todayTotal) }}</div>
+        <div class="stat-value stat-amount">{{ tenant('currency_symbol') }}&nbsp;{{ number_format((int)$todayTotal) }}</div>
         <div class="stat-sub">{{ $todayCount }} {{ $todayCount === 1 ? 'transaction' : 'transactions' }}</div>
         @if($showCmp)
-        <div class="stat-compare {{ $cmpClass }}">{{ $cmpArrow }} <span class="cmp-num">Ksh {{ number_format(abs($cmpDiff)) }}</span> {{ $cmpLabel }} than yesterday</div>
+        <div class="stat-compare {{ $cmpClass }}">{{ $cmpArrow }} <span class="cmp-num">{{ tenant('currency_symbol') }} {{ number_format(abs($cmpDiff)) }}</span> {{ $cmpLabel }} than yesterday</div>
         @endif
     </div>
 
@@ -438,7 +438,7 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
             <svg class="eye-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </div>
         <span class="stat-label">Cash collected</span>
-        <div class="stat-value c-forest stat-amount">Ksh&nbsp;{{ number_format((int)$todayCash) }}</div>
+        <div class="stat-value c-forest stat-amount">{{ tenant('currency_symbol') }}&nbsp;{{ number_format((int)$todayCash) }}</div>
     </div>
 
     <div class="stat-card" onclick="toggleHero()">
@@ -447,7 +447,7 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
             <svg class="eye-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </div>
         <span class="stat-label">M-Pesa received</span>
-        <div class="stat-value c-forest stat-amount">Ksh&nbsp;{{ number_format((int)$todayMpesa) }}</div>
+        <div class="stat-value c-forest stat-amount">{{ tenant('currency_symbol') }}&nbsp;{{ number_format((int)$todayMpesa) }}</div>
     </div>
 
     <div class="stat-card" onclick="toggleHero()">
@@ -456,7 +456,7 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
             <svg class="eye-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </div>
         <span class="stat-label">Customers owe you</span>
-        <div class="stat-value {{ $creditOwed > 0 ? 'c-clay' : 'c-muted' }} stat-amount">Ksh&nbsp;{{ number_format((int)$creditOwed) }}</div>
+        <div class="stat-value {{ $creditOwed > 0 ? 'c-clay' : 'c-muted' }} stat-amount">{{ tenant('currency_symbol') }}&nbsp;{{ number_format((int)$creditOwed) }}</div>
         @if($creditOwed > 0)
         <div class="stat-sub"><a href="/credit" class="stat-credit-link">View all credit →</a></div>
         @endif
@@ -484,7 +484,7 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
                     <span class="badge-open">Open now</span>
                     <span>{{ $os2Sales->count() }} {{ $os2Sales->count() === 1 ? 'sale' : 'sales' }}</span>
                     <span style="color:var(--border);">·</span>
-                    <span>Ksh {{ number_format((int)$os2Total) }}</span>
+                    <span>{{ tenant('currency_symbol') }} {{ number_format((int)$os2Total) }}</span>
                 </div>
             </div>
             <div class="shift-right">
@@ -512,11 +512,11 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
                 <div class="shift-meta">
                     <span>{{ $sCount }} {{ $sCount === 1 ? 'sale' : 'sales' }}</span>
                     <span style="color:var(--border);">·</span>
-                    <span>Ksh {{ number_format((int)$sTotal) }}</span>
+                    <span>{{ tenant('currency_symbol') }} {{ number_format((int)$sTotal) }}</span>
                 </div>
                 <div class="shift-split">
-                    Cash Ksh {{ number_format((int)$sCash) }}
-                    &nbsp;·&nbsp;M-Pesa Ksh {{ number_format((int)$sMpesa) }}
+                    Cash {{ tenant('currency_symbol') }} {{ number_format((int)$sCash) }}
+                    &nbsp;·&nbsp;M-Pesa {{ tenant('currency_symbol') }} {{ number_format((int)$sMpesa) }}
                 </div>
             </div>
             <div class="shift-right">
@@ -524,9 +524,9 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
                 @if($disc == 0)
                     <span class="shift-balanced"><span class="dot"></span>Balanced</span>
                 @elseif($disc < 0)
-                    <span class="shift-disc">Ksh {{ number_format(abs($disc), 0) }} short</span>
+                    <span class="shift-disc">{{ tenant('currency_symbol') }} {{ number_format(abs($disc), 0) }} short</span>
                 @else
-                    <span class="shift-disc over">Ksh {{ number_format(abs($disc), 0) }} over</span>
+                    <span class="shift-disc over">{{ tenant('currency_symbol') }} {{ number_format(abs($disc), 0) }} over</span>
                 @endif
             </div>
         </a>
@@ -559,7 +559,7 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
                     @elseif($sl['type'] === 'disc')
                     <p class="sc-line">
                         <strong>{{ $sl['staff'] }}</strong> was
-                        <span style="color:#B85C38;">Ksh {{ number_format($sl['disc'], 0) }} {{ $sl['dtype'] }}</span>
+                        <span style="color:#B85C38;">{{ tenant('currency_symbol') }} {{ number_format($sl['disc'], 0) }} {{ $sl['dtype'] }}</span>
                         {{ $sl['when'] }}
                     </p>
                     @endif
@@ -583,13 +583,13 @@ elseif ($lowCount > 0)   $stockDot = 'amber';
             @else
                 @if($creditOwed > 0)
                 <p class="sc-line" style="color:#B85C38;">
-                    Ksh <span class="sc-mono">{{ number_format((int)$creditOwed) }}</span>
+                    {{ tenant('currency_symbol') }} <span class="sc-mono">{{ number_format((int)$creditOwed) }}</span>
                     owed by customers
                 </p>
                 @endif
                 @if($supplierTotal > 0)
                 <p class="sc-line" style="color:#C17F4A;">
-                    Ksh <span class="sc-mono">{{ number_format((int)$supplierTotal) }}</span>
+                    {{ tenant('currency_symbol') }} <span class="sc-mono">{{ number_format((int)$supplierTotal) }}</span>
                     owed to suppliers
                 </p>
                 @endif

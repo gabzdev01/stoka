@@ -458,7 +458,7 @@
             </svg>
             <span id="cf-count">0</span> items
         </span>
-        <span class="cart-float-total" id="cf-total">Ksh 0</span>
+        <span class="cart-float-total" id="cf-total">{{ tenant('currency_symbol') }} 0</span>
         <button class="cart-float-btn" onclick="window.openCartSheet && window.openCartSheet()">View cart &rarr;</button>
     </div>
 </div>

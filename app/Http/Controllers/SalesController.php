@@ -314,9 +314,10 @@ class SalesController extends Controller
             $result = DB::transaction(function () use ($data, $cartItems, $shift, $staffId, $paymentType) {
 
                 $stockUpdates = [];
-                $grandTotal   = 0;
-                $saleIds      = [];
-                $customerId   = null;
+                $grandTotal    = 0;
+                $saleIds       = [];
+                $receiptItems  = [];
+                $customerId    = null;
 
                 // ── Resolve customer once for credit sales ────────────
                 if ($paymentType === 'credit' && !empty($data['customer_phone'])) {
@@ -400,6 +401,16 @@ class SalesController extends Controller
 
                     $saleIds[] = $sale->id;
 
+                    $receiptItems[] = [
+                        'name'    => $product->name,
+                        'variant' => $variantId
+                            ? (optional($product->variants->find($variantId))->size)
+                            : null,
+                        'qty'     => $qty,
+                        'price'   => $price,
+                        'total'   => $total,
+                    ];
+
                     $stockUpdates[] = [
                         'product_id' => $product->id,
                         'variant_id' => $variantId,
@@ -440,11 +451,17 @@ class SalesController extends Controller
                     'total'         => $grandTotal,
                     'payment_type'  => $paymentType,
                     'stock_updates' => $stockUpdates,
-
+                    'sale_ids'      => $saleIds,
+                    'receipt_items' => $receiptItems,
                 ];
             });
 
-            return response()->json(['success' => true] + $result);
+            $customerPhone = $paymentType === 'credit' ? ($data['customer_phone'] ?? null) : null;
+            $customerName  = $paymentType === 'credit' ? ($data['customer_name']  ?? null) : null;
+            return response()->json(array_merge(
+                ['success' => true, 'customer_phone' => $customerPhone, 'customer_name' => $customerName],
+                $result
+            ));
 
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 422);
@@ -491,6 +508,23 @@ class SalesController extends Controller
             'id'    => $customer->id,
             'name'  => $customer->name,
             'phone' => $customer->phone,
+        ]);
+    }
+
+    public function receipt(string $ids)
+    {
+        $idArray = array_values(array_filter(array_map('intval', explode(',', $ids))));
+        if (empty($idArray)) {
+            abort(404);
+        }
+        $sales = Sale::with(['product', 'variant', 'staff'])
+            ->whereIn('id', $idArray)
+            ->get();
+        if ($sales->isEmpty()) {
+            abort(404);
+        }
+        return view('sales.receipt', [
+            'sales' => $sales,
         ]);
     }
 }

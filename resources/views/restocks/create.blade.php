@@ -313,7 +313,7 @@ $uniqueCats = $products->pluck('category')->filter()->unique()->sort()->values()
         <div class="form-group">
             <label class="form-label" for="total-cost">Total invoice</label>
             <div class="ksh-wrap">
-                <span class="ksh-prefix">KSh</span>
+                <span class="ksh-prefix">{{ tenant('currency_symbol') }}</span>
                 <input type="number" min="0" step="1" id="total-cost" name="total_cost" class="ksh-input"
                        value="{{ old('total_cost') }}" placeholder="0" autocomplete="off" oninput="onCostManual()">
             </div>
@@ -326,7 +326,7 @@ $uniqueCats = $products->pluck('category')->filter()->unique()->sort()->values()
                 <span class="paid-shortcut" onclick="setFullPaid()" style="margin-left:8px;text-transform:none;font-weight:500;letter-spacing:0;">Full amount</span>
             </label>
             <div class="ksh-wrap">
-                <span class="ksh-prefix">KSh</span>
+                <span class="ksh-prefix">{{ tenant('currency_symbol') }}</span>
                 <input type="number" min="0" step="1" id="amount-paid" name="amount_paid" class="ksh-input"
                        value="{{ old('amount_paid', 0) }}" placeholder="0" autocomplete="off">
             </div>

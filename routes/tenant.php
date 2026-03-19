@@ -106,6 +106,7 @@ Route::middleware([
         Route::post("/sales/cart",     [SalesController::class, "storeCart"])->name("sales.cart");
         Route::get("/customers/lookup",[SalesController::class, "customerLookup"])->name("customers.lookup");
         Route::post("/sales/{sale}/void",  [SalesController::class, "void"])->name("sales.void");
+        Route::get("/sales/receipt/{ids}", [SalesController::class, "receipt"])->name("sales.receipt");
     });
 
 });
