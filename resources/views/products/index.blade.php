@@ -244,7 +244,7 @@
                             </span>
                         </td>
                         <td class="td-muted">{{ $product->supplier?->name ?? '—' }}</td>
-                        <td class="price-cell">{{ tenant(currency_symbol) }} {{ number_format($product->shelf_price, 2) }}</td>
+                        <td class="price-cell">{{ tenant('currency_symbol') }} {{ number_format($product->shelf_price, 2) }}</td>
                         <td><span class="stock-num {{ $stockClass }}">{{ $stockDisplay }}</span></td>
                         <td>
                             <form method="POST" action="{{ route('products.toggle', $product) }}" style="display:inline;">
@@ -307,7 +307,7 @@
                     <span class="badge {{ $typeBadge[$product->type] ?? '' }}">
                         {{ $typeLabels[$product->type] ?? $product->type }}
                     </span>
-                    <span class="m-card-price">{{ tenant(currency_symbol) }} {{ number_format($product->shelf_price, 2) }}</span>
+                    <span class="m-card-price">{{ tenant('currency_symbol') }} {{ number_format($product->shelf_price, 2) }}</span>
                 </div>
 
                 {{-- Supplier --}}

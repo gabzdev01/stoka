@@ -549,7 +549,7 @@
                 <span class="required">*</span>
             </label>
             <div class="price-wrap" style="max-width:220px;">
-                <span class="price-prefix">{{ tenant(currency_symbol) }}</span>
+                <span class="price-prefix">{{ tenant('currency_symbol') }}</span>
                 <input class="form-input {{ $errors->has('shelf_price') ? 'is-error' : '' }}"
                        type="number" id="f-shelf-price" name="shelf_price"
                        value="{{ old('shelf_price', $isEdit ? $product->shelf_price : '') }}"
@@ -583,7 +583,7 @@
                 Minimum (floor) price <span class="form-label-note">— staff cannot go below this</span>
             </label>
             <div class="price-wrap" style="max-width:220px;">
-                <span class="price-prefix">{{ tenant(currency_symbol) }}</span>
+                <span class="price-prefix">{{ tenant('currency_symbol') }}</span>
                 <input class="form-input {{ $errors->has('floor_price') ? 'is-error' : '' }}"
                        type="number" id="f-floor-price" name="floor_price"
                        value="{{ old('floor_price', $isEdit ? $product->floor_price : '') }}"
