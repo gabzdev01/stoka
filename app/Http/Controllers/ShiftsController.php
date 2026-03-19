@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Console\Commands\DemoReset;
 use App\Models\Sale;
 use App\Models\Shift;
 use Illuminate\Http\Request;
@@ -76,6 +77,11 @@ class ShiftsController extends Controller
         ]);
 
         session(['shift_id' => $shift->id]);
+
+        // On demo tenant, restore stock so every session starts with full shelves
+        if (tenant('id') === 'demo') {
+            DemoReset::restoreStock();
+        }
 
         return redirect()->route('sales.index')
             ->with('success', 'Shift started. Good selling!');

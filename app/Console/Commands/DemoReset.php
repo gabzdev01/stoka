@@ -34,6 +34,40 @@ class DemoReset extends Command
         2 => 300.00,   // Oud & Amber Blend
     ];
 
+    /**
+     * Restore stock only — called on every shift open in the demo tenant.
+     * Safe to call while tenancy is already initialised.
+     */
+    public static function restoreStock(): void
+    {
+        DB::table('products')
+            ->where('type', 'unit')
+            ->whereIn('id', array_keys(self::UNIT_STOCK))
+            ->get()
+            ->each(function ($p) {
+                DB::table('products')->where('id', $p->id)->update([
+                    'stock'                => self::UNIT_STOCK[$p->id],
+                    'low_stock_alert_sent' => false,
+                ]);
+            });
+
+        foreach (self::VARIANT_STOCK as $variantId => $stock) {
+            DB::table('product_variants')
+                ->where('id', $variantId)
+                ->update(['stock' => $stock]);
+        }
+
+        DB::table('products')
+            ->whereIn('type', ['variant', 'measured'])
+            ->update(['low_stock_alert_sent' => false]);
+
+        foreach (self::BOTTLE_ML as $bottleId => $ml) {
+            DB::table('product_bottles')
+                ->where('id', $bottleId)
+                ->update(['remaining_ml' => $ml, 'active' => true]);
+        }
+    }
+
     public function handle(): int
     {
         $tenant = Tenant::find('demo');
@@ -66,33 +100,8 @@ class DemoReset extends Command
 
             DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
-            // ── Restore unit product stock ────────────────────────────────
-            foreach (self::UNIT_STOCK as $productId => $stock) {
-                DB::table('products')
-                    ->where('id', $productId)
-                    ->update([
-                        'stock'                => $stock,
-                        'low_stock_alert_sent' => false,
-                    ]);
-            }
-
-            // ── Restore variant stock ─────────────────────────────────────
-            foreach (self::VARIANT_STOCK as $variantId => $stock) {
-                DB::table('product_variants')
-                    ->where('id', $variantId)
-                    ->update(['stock' => $stock]);
-            }
-
-            DB::table('products')
-                ->whereIn('type', ['variant', 'measured'])
-                ->update(['low_stock_alert_sent' => false]);
-
-            // ── Restore bottle ml ─────────────────────────────────────────
-            foreach (self::BOTTLE_ML as $bottleId => $ml) {
-                DB::table('product_bottles')
-                    ->where('id', $bottleId)
-                    ->update(['remaining_ml' => $ml, 'active' => true]);
-            }
+            // ── Restore all stock ─────────────────────────────────────────
+            self::restoreStock();
 
             // ── Clear tenant-level transient fields ───────────────────────
             $tenant->update(['wa_sent_at' => null]);
