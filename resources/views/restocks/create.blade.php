@@ -279,7 +279,7 @@ $uniqueCats = $products->pluck('category')->filter()->unique()->sort()->values()
                         <input type="hidden" name="items[m{{ $product->id }}][product_id]" value="{{ $product->id }}">
                         <input type="hidden" name="items[m{{ $product->id }}][measured]" value="1">
                     </td>
-                    <td><span class="prod-stock {{ $mstatus }}">@if(!$bottle)Out@else{{ number_format((float)$bottle->remaining_ml, 0) }}ml@endif</span></td>
+                    <td><span class="prod-stock {{ $mstatus }}">{{ !$bottle ? 'Out' : number_format((float)$bottle->remaining_ml, 0).'ml' }}</span></td>
                     <td><input type="number" min="0" step="1" placeholder="0 ml" name="items[m{{ $product->id }}][qty]" class="qty-input" oninput="onQtyChange(this)" autocomplete="off" title="Volume of new bottle in ml"></td>
                     <td><input type="number" min="0" step="0.01" placeholder="—" name="items[m{{ $product->id }}][cost]" class="cost-input" oninput="recalcTotal()" autocomplete="off"></td>
                 </tr>
