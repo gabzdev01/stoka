@@ -23,6 +23,12 @@
             --clay:       #B85C38;
             --dark-wood:  #2C1F14;
             --sidebar-w:  240px;
+
+            --radius-sm:      6px;
+            --radius-md:      10px;
+            --radius-default: 14px;
+            --radius-lg:      20px;
+            --radius-full:    999px;
         }
 
         /* ── Base ─────────────────────────────────────────────── */
@@ -111,7 +117,7 @@
             align-items: center;
             gap: 9px;
             padding: 9px 12px;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             font-size: 13.5px;
             font-weight: 500;
             color: var(--mid);
@@ -174,7 +180,7 @@
             padding: 8px 12px;
             background: transparent;
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             font-family: "Plus Jakarta Sans", sans-serif;
             font-size: 12.5px;
             font-weight: 500;
@@ -311,7 +317,7 @@
             display: inline-flex;
             align-items: center;
             padding: 2px 8px;
-            border-radius: 100px;
+            border-radius: var(--radius-full);
             font-size: 11px;
             font-weight: 600;
         }
@@ -324,7 +330,7 @@
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: var(--radius-default);
             padding: 24px;
         }
 
@@ -333,7 +339,7 @@
             align-items: center;
             gap: 6px;
             padding: 9px 18px;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             font-family: "Plus Jakarta Sans", sans-serif;
             font-size: 13.5px;
             font-weight: 600;

@@ -60,7 +60,7 @@
     .btn-row {
         background: none;
         border: 1px solid var(--border);
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         padding: 5px 11px;
         font-size: 12px;
         font-weight: 500;
@@ -78,7 +78,7 @@
     .m-card {
         background: var(--parchment);
         border: 1px solid var(--border);
-        border-radius: 12px;
+        border-radius: var(--radius-default);
         padding: 16px;
         margin-bottom: 10px;
     }
@@ -113,7 +113,7 @@
         gap: 10px;
         background: #DFF0DD;
         border: 1px solid #BFD9BC;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         padding: 12px 16px;
         margin-bottom: 22px;
         font-size: 13.5px;
@@ -331,7 +331,7 @@
         <div class="drawer-body">
 
             @if($errors->any())
-            <div style="background:#F9E8E4; border:1px solid #ECC9C2; border-radius:8px; padding:12px 14px; margin-bottom:20px;">
+            <div style="background:#F9E8E4; border:1px solid #ECC9C2; border-radius:var(--radius-md); padding:12px 14px; margin-bottom:20px;">
                 <p style="font-size:13px; font-weight:600; color:var(--clay); margin-bottom:6px;">Please fix the following:</p>
                 <ul style="font-size:12.5px; color:var(--clay); padding-left:16px;">
                     @foreach($errors->all() as $error)

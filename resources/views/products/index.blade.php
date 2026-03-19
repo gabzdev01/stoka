@@ -73,7 +73,7 @@
         display: inline-flex;
         align-items: center;
         padding: 4px 10px;
-        border-radius: 20px;
+        border-radius: var(--radius-full);
         font-size: 11.5px;
         font-weight: 600;
         cursor: pointer;
@@ -90,7 +90,7 @@
     .btn-row {
         background: none;
         border: 1px solid var(--border);
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         padding: 5px 11px;
         font-size: 12px;
         font-weight: 500;
@@ -114,7 +114,7 @@
     .m-card {
         background: var(--parchment);
         border: 1px solid var(--border);
-        border-radius: 12px;
+        border-radius: var(--radius-default);
         padding: 16px;
         margin-bottom: 10px;
     }
@@ -156,7 +156,7 @@
         gap: 10px;
         background: #DFF0DD;
         border: 1px solid #BFD9BC;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         padding: 12px 16px;
         margin-bottom: 22px;
         font-size: 13.5px;

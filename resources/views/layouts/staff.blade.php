@@ -26,8 +26,14 @@
             --dark-wood:   #2C1F14;
             --darker-wood: #1A120B;
 
-            --top-h:  108px;
+            --top-h:  calc(108px + env(safe-area-inset-top, 0px));
             --tab-h:  64px;
+
+            --radius-sm:      6px;
+            --radius-md:      10px;
+            --radius-default: 14px;
+            --radius-lg:      20px;
+            --radius-full:    999px;
         }
 
         html { height: 100%; }
@@ -108,7 +114,7 @@
             color: var(--forest);
             background: rgba(74,103,65,0.18);
             border: 1px solid rgba(74,103,65,0.3);
-            border-radius: 100px;
+            border-radius: var(--radius-full);
             padding: 2px 8px 2px 6px;
         }
         .shift-badge-dot {
@@ -142,7 +148,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             -webkit-tap-highlight-color: transparent;
             transition: color 0.15s;
         }
@@ -159,7 +165,7 @@
             font-weight: 500;
             min-width: 16px;
             height: 16px;
-            border-radius: 8px;
+            border-radius: var(--radius-full);
             padding: 0 3px;
             display: none;
             align-items: center;
@@ -186,7 +192,7 @@
             height: 52px;
             background: rgba(255,255,255,0.09);
             border: 1.5px solid rgba(255,255,255,0.12);
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             font-family: "Plus Jakarta Sans", sans-serif;
             font-size: 16px;
             font-weight: 500;
@@ -270,7 +276,7 @@
         .flash {
             margin: 0 16px 12px;
             padding: 12px 16px;
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             font-size: 13.5px;
             font-weight: 500;
             display: flex;

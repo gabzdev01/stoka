@@ -103,7 +103,7 @@
 .stat-card {
     background: #fff;
     border: 1px solid #EDE8E0;
-    border-radius: 16px;
+    border-radius: var(--radius-default);
     padding: 20px 22px;
     box-shadow: 0 1px 3px rgba(28,24,20,0.06), 0 4px 16px rgba(28,24,20,0.04);
     display: block;

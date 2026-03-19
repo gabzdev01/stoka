@@ -48,7 +48,7 @@
 .shift-status-open {
     display: inline-flex; align-items: center; gap: 5px;
     background: #DFF0DD; color: var(--forest);
-    padding: 2px 9px; border-radius: 20px;
+    padding: 2px 9px; border-radius: var(--radius-full);
     font-size: 11px; font-weight: 600;
 }
 .shift-status-open .dot {
@@ -69,7 +69,7 @@
 /* ── Mobile cards ───────────────────────────────── */
 .shift-card-m {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 14px; padding: 16px; margin-bottom: 10px;
+    border-radius: var(--radius-default); padding: 16px; margin-bottom: 10px;
     display: block; text-decoration: none; color: inherit;
 }
 .shift-card-m:active { background: #EDE5D8; }

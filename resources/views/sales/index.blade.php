@@ -32,7 +32,7 @@
         align-items: center;
         min-height: 44px;
         padding: 0 16px;
-        border-radius: 20px;
+        border-radius: var(--radius-full);
         border: none;
         background: transparent;
         color: rgba(255,255,255,0.42);
@@ -97,7 +97,8 @@
        PAGE
     ════════════════════════════════════════════════ */
 
-    .staff-content, .content-inner { background: #FAF7F2; overflow-x: hidden; }
+    .staff-content { background: #FAF7F2; }
+    .content-inner { background: #FAF7F2; overflow-x: hidden; }
 
     /* ════════════════════════════════════════════════
        PRODUCT GRID
@@ -107,6 +108,8 @@
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
+        width: 100%;
+        box-sizing: border-box;
     }
     @media (min-width: 768px)  { .product-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
     @media (min-width: 1024px) { .product-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
@@ -119,11 +122,14 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
-        padding: 20px;
-        min-height: 108px;
+        padding: 16px;
+        min-height: 100px;
+        width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
         background: #FFFFFF;
         border: none;
-        border-radius: 14px;
+        border-radius: var(--radius-default);
         box-shadow: 0 1px 3px rgba(28,24,20,0.07), 0 4px 12px rgba(28,24,20,0.05);
         cursor: pointer;
         text-align: left;

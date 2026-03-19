@@ -26,7 +26,7 @@
 .credit-card {
     background: #fff;
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: var(--radius-default);
     margin-bottom: 16px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(28,24,20,0.05);
@@ -99,7 +99,7 @@
     font-weight: 700;
     letter-spacing: 0.05em;
     padding: 2px 7px;
-    border-radius: 10px;
+    border-radius: var(--radius-full);
     margin-left: 6px;
 }
 .age-ok     { background: #EEE4D5; color: var(--muted); }
@@ -144,7 +144,7 @@
     align-items: center;
     background: #fff;
     border: 1.5px solid var(--border);
-    border-radius: 9px;
+    border-radius: var(--radius-md);
     overflow: hidden;
     transition: border-color 0.15s;
     flex: 1;
@@ -186,7 +186,7 @@
     background: var(--espresso);
     color: #fff;
     border: none;
-    border-radius: 9px;
+    border-radius: var(--radius-md);
     font-family: "Plus Jakarta Sans", sans-serif;
     font-size: 13px;
     font-weight: 700;
@@ -229,7 +229,7 @@
     gap: 10px;
     background: #DFF0DD;
     color: var(--forest);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     padding: 12px 16px;
     font-size: 14px;
     font-weight: 600;
