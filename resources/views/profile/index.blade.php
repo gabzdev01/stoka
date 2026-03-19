@@ -117,6 +117,26 @@
     font-weight: 600;
     margin-bottom: 16px;
 }
+.p-logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: 48px;
+    background: transparent;
+    border: 1.5px solid rgba(184,92,56,0.25);
+    border-radius: var(--radius-md);
+    color: var(--clay);
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.13s, border-color 0.13s;
+    -webkit-tap-highlight-color: transparent;
+}
+.p-logout:active { background: rgba(184,92,56,0.07); border-color: rgba(184,92,56,0.4); }
+
 .flash-err {
     display: flex;
     align-items: center;
@@ -184,6 +204,21 @@
                        placeholder="&#9679;&#9679;&#9679;&#9679;" required>
             </div>
             <button type="submit" class="p-save">Change PIN</button>
+        </form>
+    </div>
+
+    {{-- Logout --}}
+    <div class="p-card" style="padding:20px 24px;">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="p-logout">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>
+                    <polyline points="11 11 14 8 11 5"/>
+                    <line x1="14" y1="8" x2="6" y2="8"/>
+                </svg>
+                Log out
+            </button>
         </form>
     </div>
 

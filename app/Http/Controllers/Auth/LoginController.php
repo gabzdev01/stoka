@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Shift;
 use App\Models\User;
 
 class LoginController extends Controller
@@ -57,12 +58,21 @@ class LoginController extends Controller
             return redirect()->route("dashboard");
         }
 
+        // Restore open shift to session if one exists in the DB
+        $openShift = Shift::where("staff_id", $user->id)
+            ->where("status", "open")
+            ->latest("opened_at")
+            ->first();
+        if ($openShift) {
+            session(["shift_id" => $openShift->id]);
+        }
+
         return redirect()->route("sales.index");
     }
 
     public function logout(Request $request)
     {
-        session()->forget(["auth_user", "auth_role", "auth_name"]);
+        session()->forget(["auth_user", "auth_role", "auth_name", "shift_id"]);
         return redirect()->route("login");
     }
 }
