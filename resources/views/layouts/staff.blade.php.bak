@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#F5F0E8">
+    <meta name="theme-color" content="#1A120B">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Stoka')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +26,7 @@
             --dark-wood:   #2C1F14;
             --darker-wood: #1A120B;
 
-            --top-h:  calc(106px + env(safe-area-inset-top, 0px));
+            --top-h:  calc(108px + env(safe-area-inset-top, 0px));
             --tab-h:  64px;
 
             --radius-sm:      6px;
@@ -57,10 +57,10 @@
             top: 0; left: 0; right: 0;
             z-index: 200;
             overflow: hidden;
-            background: #FAF7F2;
+            background: var(--darker-wood);
             padding: 0 16px;
             padding-top: env(safe-area-inset-top, 0px);
-            border-bottom: 1px solid rgba(28,24,20,0.08);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
         }
         @media (min-width: 1024px) { .top-bar { padding-left: 24px; padding-right: 24px; } }
 
@@ -68,14 +68,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 50px;
+            height: 44px;
         }
 
         .top-shop {
             font-family: "Cormorant Garamond", serif;
-            font-size: 21px;
+            font-size: 19px;
             font-weight: 600;
-            color: #1C1814;
+            color: rgba(255,255,255,0.95);
             letter-spacing: 0.01em;
             flex: 1;
             min-width: 0;
@@ -96,17 +96,17 @@
             align-items: center;
             gap: 5px;
             font-size: 11px;
-            font-weight: 500;
-            color: rgba(28,24,20,0.4);
+            font-weight: 600;
+            color: rgba(255,255,255,0.45);
             letter-spacing: 0.04em;
             text-transform: uppercase;
         }
         @media (max-width: 479px) { .top-user { display: none; } }
 
         .top-user-dot {
-            width: 5px; height: 5px;
+            width: 6px; height: 6px;
             border-radius: 50%;
-            background: rgba(28,24,20,0.25);
+            background: var(--terracotta);
             flex-shrink: 0;
         }
 
@@ -116,26 +116,26 @@
             align-items: center;
             gap: 5px;
             font-size: 11px;
-            font-weight: 500;
-            color: #4A6741;
-            background: rgba(74,103,65,0.1);
-            border: 1px solid rgba(74,103,65,0.18);
+            font-weight: 600;
+            color: var(--forest);
+            background: rgba(74,103,65,0.18);
+            border: 1px solid rgba(74,103,65,0.3);
             border-radius: var(--radius-full);
-            padding: 3px 9px 3px 7px;
+            padding: 2px 8px 2px 6px;
         }
         .shift-badge-dot {
-            width: 5px; height: 5px;
+            width: 6px; height: 6px;
             border-radius: 50%;
             background: #6AB65A;
             animation: pulse 2s infinite;
         }
         .shift-badge.closed {
-            color: rgba(28,24,20,0.35);
-            background: rgba(28,24,20,0.05);
-            border-color: rgba(28,24,20,0.1);
+            color: var(--muted);
+            background: rgba(122,106,92,0.15);
+            border-color: rgba(122,106,92,0.2);
         }
         .shift-badge.closed .shift-badge-dot {
-            background: rgba(28,24,20,0.25);
+            background: var(--muted);
             animation: none;
         }
         @keyframes pulse {
@@ -148,7 +148,7 @@
             position: relative;
             background: none;
             border: none;
-            color: rgba(28,24,20,0.35);
+            color: rgba(255,255,255,0.42);
             cursor: pointer;
             padding: 6px;
             display: flex;
@@ -159,7 +159,7 @@
             transition: color 0.15s;
         }
         .cart-btn:active { opacity: 0.7; }
-        .cart-btn.has-items { color: rgba(28,24,20,0.8); }
+        .cart-btn.has-items { color: rgba(255,255,255,0.82); }
 
         .cart-badge {
             position: absolute;
@@ -186,30 +186,30 @@
 
         .search-icon {
             position: absolute;
-            left: 13px; top: 50%;
+            left: 14px; top: 50%;
             transform: translateY(-50%);
-            color: rgba(28,24,20,0.35);
+            color: rgba(255,255,255,0.38);
             pointer-events: none;
             line-height: 0;
         }
 
         .search-input {
             width: 100%;
-            height: 46px;
-            background: rgba(28,24,20,0.05);
-            border: 1.5px solid rgba(28,24,20,0.1);
+            height: 52px;
+            background: rgba(255,255,255,0.09);
+            border: 1.5px solid rgba(255,255,255,0.12);
             border-radius: var(--radius-md);
             font-family: "Plus Jakarta Sans", sans-serif;
-            font-size: 15px;
-            font-weight: 400;
-            color: #1C1814;
-            padding: 0 16px 0 44px;
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.9);
+            padding: 0 16px 0 46px;
             outline: none;
-            transition: border-color 0.18s, background 0.18s;
+            transition: border-color 0.15s, background 0.15s;
             -webkit-appearance: none;
         }
-        .search-input::placeholder { color: rgba(28,24,20,0.35); font-weight: 400; }
-        .search-input:focus { border-color: rgba(28,24,20,0.28); background: rgba(28,24,20,0.07); }
+        .search-input::placeholder { color: rgba(255,255,255,0.35); font-weight: 400; }
+        .search-input:focus { border-color: var(--terracotta); background: rgba(255,255,255,0.13); }
 
         /* ── SCROLLABLE CONTENT ─────────────────────── */
         .staff-content {

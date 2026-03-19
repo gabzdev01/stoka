@@ -13,15 +13,15 @@
         position: sticky;
         top: var(--top-h);
         z-index: 100;
-        background: #F5F0E8;
-        border-bottom: 1px solid rgba(28,24,20,0.07);
+        background: var(--darker-wood);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
     }
     .cat-strip {
         display: flex;
-        align-items: stretch;
-        gap: 0;
+        align-items: center;
+        gap: 4px;
         overflow-x: auto;
-        padding: 0 12px;
+        padding: 8px 12px 10px;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
     }
@@ -30,50 +30,49 @@
         flex-shrink: 0;
         display: inline-flex;
         align-items: center;
-        height: 42px;
-        padding: 0 14px;
-        border-radius: 0;
+        min-height: 44px;
+        padding: 0 16px;
+        border-radius: var(--radius-full);
         border: none;
-        border-bottom: 2px solid transparent;
         background: transparent;
-        color: rgba(28,24,20,0.38);
+        color: rgba(255,255,255,0.42);
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 13px;
-        font-weight: 500;
+        font-weight: 600;
         cursor: pointer;
         white-space: nowrap;
-        transition: color 0.14s, border-color 0.14s;
+        transition: background 0.14s, color 0.14s;
         -webkit-tap-highlight-color: transparent;
     }
-    .cat-tab.active { color: #1C1814; border-bottom-color: #1C1814; }
-    .cat-tab:active { opacity: 0.7; }
+    .cat-tab.active { background: #C17F4A; color: #fff; }
+    .cat-tab:active { opacity: 0.78; }
     .cat-more-dropdown {
         display: none;
         position: absolute;
         top: calc(100% - 2px);
         right: 8px;
-        background: #FAF7F2;
-        border: 1px solid rgba(28,24,20,0.1);
+        background: #1A120B;
+        border: 1px solid rgba(255,255,255,0.14);
         border-radius: 12px;
         padding: 6px 0;
         min-width: 160px;
         z-index: 110;
-        box-shadow: 0 8px 28px rgba(28,24,20,0.14);
+        box-shadow: 0 8px 28px rgba(0,0,0,0.45);
     }
     .cat-more-dropdown.open { display: block; }
     .cat-more-item {
         display: block; width: 100%;
         padding: 12px 18px;
         background: none; border: none;
-        color: rgba(28,24,20,0.6);
+        color: rgba(255,255,255,0.65);
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 14px; font-weight: 500;
+        font-size: 14px; font-weight: 600;
         text-align: left; cursor: pointer;
         -webkit-tap-highlight-color: transparent;
         transition: background 0.1s;
     }
-    .cat-more-item.active { color: #1C1814; font-weight: 600; }
-    .cat-more-item:active { background: rgba(28,24,20,0.04); }
+    .cat-more-item.active { color: #C17F4A; }
+    .cat-more-item:active { background: rgba(255,255,255,0.07); }
 
 
     /* Mobile: hide overflow tabs, show More btn */
@@ -499,61 +498,23 @@
     ════════════════════════════════════════════════ */
 
     .pay-summary {
-        padding: 24px 0 20px;
-        text-align: center;
-        border-bottom: 1px solid rgba(28,24,20,0.07);
-        margin-bottom: 24px;
+        background: #FAF7F2; border-radius: 12px;
+        padding: 14px 16px; margin-bottom: 20px; text-align: center;
     }
-    .pay-product {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 12px;
-        font-weight: 500;
-        color: rgba(28,24,20,0.4);
-        letter-spacing: 0.02em;
-        margin-bottom: 6px;
-        text-transform: uppercase;
-    }
-    .pay-total {
-        font-family: "Cormorant Garamond", Georgia, serif;
-        font-size: 48px;
-        font-weight: 600;
-        color: #1C1814;
-        line-height: 1;
-        letter-spacing: -0.01em;
-    }
-    .pay-label {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
-        font-weight: 600;
-        color: rgba(28,24,20,0.35);
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        margin-bottom: 14px;
-        display: block;
-    }
+    .pay-product { font-family: "Plus Jakarta Sans", sans-serif; font-size: 13px; color: #8C7B6E; margin-bottom: 4px; }
+    .pay-total   { font-family: "DM Mono", monospace; font-size: 28px; font-weight: 500; color: #1C1814; }
+
     .pay-btn {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        height: 58px;
-        margin-bottom: 8px;
-        padding: 0 20px;
-        border: none;
-        border-radius: 14px;
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 15px;
-        font-weight: 500;
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-        transition: opacity 0.12s;
+        display: block; width: 100%; height: 64px; margin-bottom: 10px;
+        border: none; border-radius: 14px;
+        font-family: "Plus Jakarta Sans", sans-serif; font-size: 16px; font-weight: 700;
+        cursor: pointer; letter-spacing: 0.01em;
+        -webkit-tap-highlight-color: transparent; transition: opacity 0.12s;
     }
-    .pay-btn:active { opacity: 0.80; }
-    .pay-btn .pay-btn-arrow { opacity: 0.5; font-size: 16px; }
-    .pay-btn.cash   { background: #1C1814; color: rgba(255,255,255,0.88); }
-    .pay-btn.mpesa  { background: #4A6741; color: rgba(255,255,255,0.92); }
-    .pay-btn.credit { background: transparent; border: 1.5px solid rgba(193,127,74,0.4); color: #A06830; }
-    .pay-btn.credit .pay-btn-arrow { color: #C17F4A; }
+    .pay-btn:active { opacity: 0.82; }
+    .pay-btn.cash   { background: #1C1814; color: #FAF7F2; }
+    .pay-btn.mpesa  { background: #4A6741; color: #fff; }
+    .pay-btn.credit { background: #C17F4A; color: #fff; font-size: 14px; }
 
     .credit-fields {
         display: none; flex-direction: column; gap: 10px;
@@ -641,14 +602,12 @@
     }
     .sale-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        /* ── Sale complete overlay ───────────────────────── */
+        /* ── Receipt overlay ─────────────────────── */
         .receipt-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(245,240,232,0.75);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            background: rgba(28, 24, 20, 0.55);
             z-index: 1200;
             align-items: flex-end;
             justify-content: center;
@@ -657,53 +616,39 @@
 
         @media (min-width: 480px) {
             .receipt-overlay { align-items: center; }
-            .receipt-modal   { border-radius: 24px !important; max-width: 380px; }
+            .receipt-modal   { border-radius: 20px !important; max-width: 400px; }
         }
 
         .receipt-modal {
             background: #FAF7F2;
-            border-radius: 24px 24px 0 0;
-            padding: 36px 24px 40px;
+            border-radius: 20px 20px 0 0;
+            padding: 28px 20px 36px;
             width: 100%;
             max-width: 480px;
-            border-top: 1px solid rgba(28,24,20,0.06);
         }
 
         .ro-check {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            width: 40px;
-            height: 40px;
-            color: #4A6741;
+            width: 48px; height: 48px;
+            background: #4A6741;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 12px;
         }
 
-        .ro-amount {
-            font-family: "Cormorant Garamond", Georgia, serif;
-            font-size: 52px;
-            font-weight: 600;
+        .ro-check svg { color: #fff; }
+
+        .ro-title {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 22px; font-weight: 600;
+            text-align: center;
             color: #1C1814;
-            text-align: center;
-            line-height: 1;
-            letter-spacing: -0.01em;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
-        .ro-payment-label {
-            font-size: 12px;
-            font-weight: 500;
-            color: rgba(28,24,20,0.4);
+        .ro-summary {
+            font-size: 13px; color: #8C7B6E;
             text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-bottom: 28px;
-        }
-
-        .ro-rule {
-            border: none;
-            border-top: 1px solid rgba(28,24,20,0.07);
-            margin: 0 0 20px;
+            margin-bottom: 24px;
         }
 
         .ro-btn {
@@ -712,52 +657,34 @@
             justify-content: center;
             gap: 10px;
             width: 100%;
-            padding: 14px 20px;
+            padding: 15px 20px;
             border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 15px; font-weight: 600;
             text-decoration: none;
-            border: none;
-            cursor: pointer;
-            margin-bottom: 8px;
+            border: none; cursor: pointer;
+            margin-bottom: 10px;
         }
 
         .ro-btn-wa {
-            background: rgba(74,103,65,0.1);
-            color: #4A6741;
-            border: 1px solid rgba(74,103,65,0.2);
+            background: #4A6741;
+            color: #fff;
         }
 
         .ro-btn-print {
-            background: rgba(28,24,20,0.05);
-            color: rgba(28,24,20,0.6);
-            border: 1px solid rgba(28,24,20,0.1);
+            background: #2C1810;
+            color: #fff;
         }
 
-        .ro-btn-new {
-            background: #1C1814;
-            color: rgba(255,255,255,0.88);
-            border-radius: 14px;
-            width: 100%;
-            height: 58px;
-            margin-top: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: "Plus Jakarta Sans", sans-serif;
-            font-size: 15px;
+        .ro-btn-done {
+            background: transparent;
+            color: #8C7B6E;
+            font-size: 14px;
             font-weight: 500;
-            border: none;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            transition: opacity 0.12s;
+            width: 100%;
+            padding: 10px;
+            text-align: center;
+            margin-top: 4px;
         }
-        .ro-btn-new:active { opacity: 0.78; }
-
-        /* keep ro-summary hidden — amount/payment replace it */
-        .ro-summary { display: none; }
-        .ro-title   { display: none; }
 </style>
 @endsection
 
@@ -948,17 +875,11 @@
             <div class="pay-total" id="checkout-total"></div>
         </div>
 
-        <span class="pay-label">How are they paying?</span>
+        <span class="section-label">How are they paying?</span>
 
-        <button type="button" class="pay-btn cash"   onclick="selectCartPayment('cash')">
-            <span>Cash</span><span class="pay-btn-arrow">&#8594;</span>
-        </button>
-        <button type="button" class="pay-btn mpesa"  onclick="selectCartPayment('mpesa')">
-            <span>M-Pesa</span><span class="pay-btn-arrow">&#8594;</span>
-        </button>
-        <button type="button" class="pay-btn credit" onclick="selectCartPayment('credit')">
-            <span>Credit — Kulipa Baadaye</span><span class="pay-btn-arrow">&#8594;</span>
-        </button>
+        <button type="button" class="pay-btn cash"   onclick="selectCartPayment('cash')">Cash</button>
+        <button type="button" class="pay-btn mpesa"  onclick="selectCartPayment('mpesa')">M-Pesa</button>
+        <button type="button" class="pay-btn credit" onclick="selectCartPayment('credit')">Credit &mdash; Kulipa Baadaye</button>
 
         <div class="credit-fields" id="cart-credit-fields">
             <input type="tel"  class="credit-input" id="cart-credit-phone"
@@ -1007,34 +928,26 @@
 
 @endsection
 
-{{-- Sale complete overlay --}}
+{{-- Receipt overlay --}}
 <div class="receipt-overlay" id="receipt-overlay">
     <div class="receipt-modal">
-
         <div class="ro-check">
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="30 9 15 26 6 18"/>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
             </svg>
         </div>
-
-        <div class="ro-amount" id="ro-amount"></div>
-        <div class="ro-payment-label" id="ro-payment-label"></div>
-
-        {{-- hidden compat elements --}}
+        <div class="ro-title">Sale complete</div>
         <div class="ro-summary" id="ro-summary"></div>
-        <div class="ro-title"></div>
 
-        <hr class="ro-rule" id="ro-rule" style="display:none">
-
-        <a class="ro-btn ro-btn-wa" id="ro-wa-btn" href="#" target="_blank" rel="noopener" style="display:none">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <a class="ro-btn ro-btn-wa" id="ro-wa-btn" href="#" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
             </svg>
             Send receipt via WhatsApp
         </a>
 
-        <a class="ro-btn ro-btn-print" id="ro-print-btn" href="#" target="_blank" rel="noopener" style="display:none">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <a class="ro-btn ro-btn-print" id="ro-print-btn" href="#" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="6 9 6 2 18 2 18 9"/>
                 <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
                 <rect x="6" y="14" width="12" height="8"/>
@@ -1042,10 +955,7 @@
             Print receipt
         </a>
 
-        <button class="ro-btn-new" onclick="closeReceiptOverlay()">
-            New sale <span style="opacity:0.5">&#8594;</span>
-        </button>
-
+        <button class="ro-btn ro-btn-done" onclick="closeReceiptOverlay()">Done</button>
     </div>
 </div>
 
@@ -1780,19 +1690,11 @@
         var ro = document.getElementById('receipt-overlay');
         if (!ro) return;
 
-        // Amount + payment label
-        document.getElementById('ro-amount').textContent =
-            '{{ tenant("currency_symbol") }} ' + nf(data.total);
-        var pm = data.payment_type === 'mpesa' ? 'M-Pesa'
-               : data.payment_type === 'credit' ? 'Credit'
-               : 'Cash';
-        document.getElementById('ro-payment-label').textContent = pm;
-
-        // Legacy summary (hidden but keep for compat)
+        // Summary line
         document.getElementById('ro-summary').textContent =
             data.items_count + (data.items_count === 1 ? ' item' : ' items')
             + ' \u00b7 {{ tenant("currency_symbol") }} ' + nf(data.total)
-            + ' \u00b7 ' + pm;
+            + ' \u00b7 ' + cap(data.payment_type);
 
         // WA button
         var waBtn = document.getElementById('ro-wa-btn');
@@ -1807,7 +1709,6 @@
                     : ownerWaPhone;
                 waBtn.href = 'https://wa.me/' + waPhone + '?text=' + encodeURIComponent(waMsg);
                 waBtn.style.display = 'flex';
-                document.getElementById('ro-rule').style.display = 'block';
             } else {
                 waBtn.style.display = 'none';
             }
