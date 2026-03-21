@@ -54,9 +54,13 @@ localStorage.removeItem('demo_skipped');
 
   <form method="POST" action="/demo">
     @csrf
+    <label class="form-label" for="owner_name">Your name</label>
+    <input type="text" id="owner_name" name="owner_name" class="form-input"
+           placeholder="e.g. Sarah" autocomplete="given-name" autofocus>
+    
     <label class="form-label" for="shop_name">Your boutique name</label>
     <input type="text" id="shop_name" name="shop_name" class="form-input"
-           placeholder="e.g. Zawadi Boutique" autocomplete="off" autofocus>
+           placeholder="e.g. Zawadi Boutique" autocomplete="organization">
 
     <label class="form-label" style="margin-bottom:10px;">Experience as</label>
     <div class="role-btns">

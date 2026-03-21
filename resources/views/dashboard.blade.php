@@ -5,7 +5,7 @@
 @section('header')
 <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;">
     <div>
-        <p class="dash-greeting">{{ $greeting }}, {{ explode(' ', trim(session('auth_name')))[0] }}.</p>
+        <p class="dash-greeting">{{ $greeting }}, {{ session('demo_owner_name') ?: explode(' ', trim(session('auth_name')))[0] }}.</p>
         @if($insight)
             <p class="dash-insight">{{ $insight }}</p>
         @else

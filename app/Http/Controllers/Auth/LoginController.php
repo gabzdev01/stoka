@@ -150,12 +150,18 @@ class LoginController extends Controller
             return redirect()->route('login');
         }
 
-        $shopName = trim($request->input('shop_name', ''));
-        $role     = in_array($request->input('role'), ['owner','staff']) ? $request->input('role') : 'owner';
+        $shopName  = trim($request->input('shop_name', ''));
+        $ownerName = trim($request->input('owner_name', ''));
+        $role      = in_array($request->input('role'), ['owner','staff']) ? $request->input('role') : 'owner';
 
-        // Store shop name in session for manifest + dashboard personalisation
+        // Store shop name + owner name in session for personalisation
         if ($shopName) {
             session(['demo_shop_name' => $shopName]);
+        }
+        if ($ownerName) {
+            // Extract first name for greeting
+            $firstName = explode(' ', $ownerName)[0];
+            session(['demo_owner_name' => $firstName]);
         }
 
         return redirect()->route('quick.login', ['role' => $role]);
