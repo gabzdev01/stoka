@@ -39,6 +39,28 @@ body{background:var(--parchment);color:var(--espresso);font-family:'Plus Jakarta
 .skip a{color:var(--terracotta);font-weight:600;text-decoration:none;}
 @media(max-width:480px){.wrap{padding:32px 20px;}}
 </style>
+<script>
+(function() {
+    // demo_auto_redirect
+    var name     = localStorage.getItem('demo_preview_name');
+    var owner    = localStorage.getItem('demo_owner_name');
+    var role     = localStorage.getItem('demo_role') || 'owner';
+    var skipped  = localStorage.getItem('demo_skipped');
+
+    if (!name && !skipped) return; // no stored state — show the form
+
+    // Build destination URL
+    var base = role === 'staff'
+        ? 'https://demo.tempforest.com/staff-login'
+        : 'https://demo.tempforest.com/dashboard';
+
+    var params = new URLSearchParams();
+    if (name)  params.set('preview', name);
+    if (owner) params.set('name', owner);
+
+    window.location.replace(base + '?' + params.toString());
+})();
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -83,4 +105,23 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 </body>
-</html>
+</html><script>
+// demo_role_store
+(function() {
+    // Store role selection in localStorage when form submits
+    var form = document.getElementById('demo-enter-form');
+    if (!form) return;
+
+    form.addEventListener('submit', function() {
+        var role = document.querySelector('input[name="role"]:checked');
+        if (role) localStorage.setItem('demo_role', role.value);
+    });
+
+    // Also store on role button click if using button toggles
+    document.querySelectorAll('[data-role]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            localStorage.setItem('demo_role', this.dataset.role);
+        });
+    });
+})();
+</script>

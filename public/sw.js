@@ -1,5 +1,5 @@
-const CACHE = 'stoka-shop-v1';
-const SHELL = ['/', '/shop', '/manifest.json', '/favicon.svg'];
+const CACHE = 'stoka-shop-v2';
+const SHELL = ['/demo', '/manifest.json', '/favicon.svg'];
 
 self.addEventListener('install', function(e) {
   e.waitUntil(caches.open(CACHE).then(function(c) { return c.addAll(SHELL); }));
@@ -20,13 +20,17 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(e) {
   if (e.request.method !== 'GET') return;
-  e.respondWith(
-    fetch(e.request)
-      .then(function(res) {
-        var clone = res.clone();
-        caches.open(CACHE).then(function(c) { c.put(e.request, clone); });
-        return res;
+  var url = e.request.url;
+  var isStatic = url.match(/\.(css|js|png|jpg|jpeg|svg|ico|woff2|woff|ttf)$/);
+  if (isStatic) {
+    e.respondWith(
+      caches.match(e.request).then(function(cached) {
+        return cached || fetch(e.request).then(function(res) {
+          var clone = res.clone();
+          caches.open(CACHE).then(function(c) { c.put(e.request, clone); });
+          return res;
+        });
       })
-      .catch(function() { return caches.match(e.request); })
-  );
+    );
+  }
 });
