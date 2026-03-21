@@ -662,6 +662,23 @@ body.hero-revealed .stat-amount {
     /* Right Now — two lines */
     .now-dot-sep { display: none; }
     .now-stats   { display: block; }
+    
+    /* Open shift chips — more compact on mobile */
+    .now-chip {
+        padding: 10px 12px;
+        gap: 6px;
+    }
+    .now-chip-name {
+        font-size: 12px;
+    }
+    .now-chip-stats {
+        font-size: 10px;
+        white-space: normal;
+        line-height: 1.3;
+    }
+    .now-chip-arrow {
+        font-size: 10px;
+    }
 
     /* Stat grid — 2x2 */
     .stat-grid  { grid-template-columns: repeat(2, 1fr); gap: 10px; }
