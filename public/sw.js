@@ -1,50 +1,32 @@
-// Stoka PWA — Service Worker
-// Strategy: network-first for pages/data, cache-first for static assets
+const CACHE = 'stoka-shop-v1';
+const SHELL = ['/', '/shop', '/manifest.json', '/favicon.svg'];
 
-const CACHE = 'stoka-v1';
-const STATIC = [
-  'https://fonts.googleapis.com',
-  'https://fonts.gstatic.com',
-];
-
-self.addEventListener('install', e => {
+self.addEventListener('install', function(e) {
+  e.waitUntil(caches.open(CACHE).then(function(c) { return c.addAll(SHELL); }));
   self.skipWaiting();
 });
 
-self.addEventListener('activate', e => {
+self.addEventListener('activate', function(e) {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    )
+    caches.keys().then(function(keys) {
+      return Promise.all(
+        keys.filter(function(k) { return k !== CACHE; })
+            .map(function(k) { return caches.delete(k); })
+      );
+    })
   );
   self.clients.claim();
 });
 
-self.addEventListener('fetch', e => {
-  const url = new URL(e.request.url);
-
-  // Never cache: API calls, auth, manifest
-  if (['/manifest.json','/login','/logout','/demo'].some(p => url.pathname.startsWith(p))) return;
-
-  // Cache-first for fonts and icons (long-lived static)
-  if (STATIC.some(o => e.request.url.startsWith(o)) || url.pathname.startsWith('/icons/')) {
-    e.respondWith(
-      caches.match(e.request).then(cached => {
-        if (cached) return cached;
-        return fetch(e.request).then(res => {
-          if (res.ok) {
-            const clone = res.clone();
-            caches.open(CACHE).then(c => c.put(e.request, clone));
-          }
-          return res;
-        });
-      })
-    );
-    return;
-  }
-
-  // Network-first for all shop pages (keeps demo data fresh)
+self.addEventListener('fetch', function(e) {
+  if (e.request.method !== 'GET') return;
   e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
+    fetch(e.request)
+      .then(function(res) {
+        var clone = res.clone();
+        caches.open(CACHE).then(function(c) { c.put(e.request, clone); });
+        return res;
+      })
+      .catch(function() { return caches.match(e.request); })
   );
 });

@@ -270,47 +270,53 @@ body {
 }
 .shop-footer a:hover { color: var(--espresso); }
 
-/* ── Demo acquisition bar ────────────────────────────── */
+/* ── Demo acquisition bar ───────────────────────────────── */
 .demo-bar {
-    background: #2C1F14;
+    background: var(--espresso);
+    padding: 10px 20px;
+    font-size: 12px;
+    text-align: center;
+}
+.demo-bar-inner {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
-    padding: 9px 20px;
-    font-size: 11px;
-    text-align: center;
+    gap: 16px;
+    flex-wrap: wrap;
 }
 .demo-bar-text {
-    color: rgba(255,255,255,0.45);
+    color: rgba(250,247,242,0.78);
     letter-spacing: 0.02em;
-    line-height: 1.7;
+    line-height: 1.6;
 }
 .demo-preview-name {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--terracotta);
     letter-spacing: 0.03em;
 }
 .demo-bar-link {
-    color: #C17F4A;
+    color: var(--parchment);
     text-decoration: none;
     font-weight: 600;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
     white-space: nowrap;
+    padding-bottom: 1px;
+    border-bottom: 1px solid rgba(250,247,242,0.3);
     transition: opacity 0.12s;
 }
-.demo-bar-link:hover { opacity: 0.8; }
+.demo-bar-link:hover { opacity: 0.72; }
 .demo-bar-back {
-    color: rgba(255,255,255,0.28);
+    color: rgba(250,247,242,0.35);
     text-decoration: none;
     white-space: nowrap;
     font-size: 10px;
     flex-shrink: 0;
     transition: color 0.12s;
 }
-.demo-bar-back:hover { color: rgba(255,255,255,0.65); }
+.demo-bar-back:hover { color: rgba(250,247,242,0.7); }
+
 
 /* ── Floating WhatsApp ───────────────────────────────── */
 .wa-float {
@@ -359,26 +365,22 @@ body {
 
 @if($isDemo)
 @php
-    $previewName = request('preview') ? htmlspecialchars(request('preview'), ENT_QUOTES) : null;
-    $refBack     = request('back') ? 'https://' . htmlspecialchars(request('back'), ENT_QUOTES) . '/dashboard' : null;
-    $waPhone     = '254741641925';
-    $waMsg       = $previewName
-        ? urlencode('Hi! I was shown a preview of my boutique on Stoka — it looks great. I am ' . $previewName . ' and I would like to get started.')
-        : urlencode('Hi! I would like to get my boutique on Stoka. Can you tell me more?');
+    $refBack = request('back') ? 'https://' . htmlspecialchars(request('back'), ENT_QUOTES) . '/dashboard' : null;
+    $waPhone = '254741641925';
 @endphp
-<div class="demo-bar">
-    <span class="demo-bar-text">
-        @if($previewName)
-            Exploring <span class="demo-preview-name">{{ $previewName }}</span> on Stoka &nbsp;&middot;&nbsp; <a href="https://wa.me/{{ $waPhone }}?text={{ $waMsg }}" target="_blank" class="demo-bar-link">Get your own →</a>
-        @else
-            You're exploring a demo shop &nbsp;&middot;&nbsp; <a href="https://wa.me/{{ $waPhone }}?text={{ $waMsg }}" target="_blank" class="demo-bar-link">Get your own →</a>
+
+{{-- Demo bar: JS-driven, shown once state is known --}}
+<div id="demo-bar" class="demo-bar" style="display:none">
+    <div class="demo-bar-inner">
+        <span id="demo-bar-text" class="demo-bar-text"></span>
+        <a href="https://wa.me/{{ $waPhone }}" id="demo-bar-cta" target="_blank" class="demo-bar-link">Get your own →</a>
+        @if($refBack)
+        <a href="{{ $refBack }}" class="demo-bar-back">← Back</a>
         @endif
-    </span>
-    @if($refBack)
-    <a href="{{ $refBack }}" class="demo-bar-back">← Back</a>
-    @endif
+    </div>
 </div>
 @endif
+
 
 {{-- ── App banner CSS (inline to avoid adding to <style>) ─────────── --}}
 <style>
@@ -489,15 +491,101 @@ body {
 </a>
 @endif
 <script>
-(function() {
-    var params = new URLSearchParams(window.location.search);
-    var preview = params.get('preview');
-    if (preview) {
-        document.querySelectorAll('.shop-name, .nav-shop-name').forEach(function(el) {
-            el.textContent = preview;
-        });
-        document.title = preview;
+(function () {
+    var STORAGE_NAME = 'demo_preview_name';
+    var STORAGE_SKIP = 'demo_skipped';
+    var waPhone      = '254741641925';
+
+    var params     = new URLSearchParams(window.location.search);
+    var urlName    = params.get('preview');
+    var storedName = localStorage.getItem(STORAGE_NAME);
+    var skipped    = localStorage.getItem(STORAGE_SKIP);
+    var activeName = urlName || storedName || null;
+
+    var panel   = document.getElementById('boutique-panel');
+    var demoBar = document.getElementById('demo-bar');
+    var barText = document.getElementById('demo-bar-text');
+    var barCta  = document.getElementById('demo-bar-cta');
+
+    function buildMsg(name) {
+        return name
+            ? encodeURIComponent('Hi! I was shown a preview of my boutique on Stoka — it looks great. I am ' + name + ' and I would like to get started.')
+            : encodeURIComponent('Hi! I would like to get my boutique on Stoka. Can you tell me more?');
     }
+
+    function applyName(name) {
+        document.querySelectorAll('.shop-name').forEach(function (el) { el.textContent = name; });
+        document.title = name;
+        if (barText) barText.innerHTML = 'Viewing <span class="demo-preview-name">' + name + '</span> on Stoka';
+        if (barCta)  barCta.href = 'https://wa.me/' + waPhone + '?text=' + buildMsg(name);
+        showBar();
+    }
+
+    function showBar() {
+        if (demoBar) demoBar.style.display = '';
+        if (panel)   panel.style.display = 'none';
+    }
+
+    function showPanel() {
+        if (panel)   panel.style.display = '';
+        if (demoBar) demoBar.style.display = 'none';
+    }
+
+    function skipDemo() {
+        localStorage.setItem(STORAGE_SKIP, '1');
+        if (panel) {
+            panel.style.transition = 'opacity 0.25s ease';
+            panel.style.opacity = '0';
+            setTimeout(function () {
+                panel.style.display = 'none';
+                panel.style.opacity = '';
+                panel.style.transition = '';
+                if (barText) barText.textContent = 'Browsing a demo shop';
+                if (barCta)  barCta.href = 'https://wa.me/' + waPhone + '?text=' + buildMsg(null);
+                showBar();
+            }, 260);
+        } else {
+            if (barText) barText.textContent = 'Browsing a demo shop';
+            if (barCta)  barCta.href = 'https://wa.me/' + waPhone + '?text=' + buildMsg(null);
+            showBar();
+        }
+    }
+
+    // ── Init ──────────────────────────────────────────────────────
+    if (activeName) {
+        if (urlName && urlName !== storedName) localStorage.setItem(STORAGE_NAME, urlName);
+        if (!urlName && storedName) {
+            var u = new URL(window.location.href);
+            u.searchParams.set('preview', storedName);
+            history.replaceState(null, '', u.toString());
+        }
+        applyName(activeName);
+    } else if (skipped) {
+        if (barText) barText.textContent = 'Browsing a demo shop';
+        if (barCta)  barCta.href = 'https://wa.me/' + waPhone + '?text=' + buildMsg(null);
+        showBar();
+    } else {
+        showPanel();
+    }
+
+    // ── Form submit ───────────────────────────────────────────────
+    var form = document.getElementById('boutique-form');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var input = document.getElementById('boutique-input');
+            var name  = input ? input.value.trim() : '';
+            if (!name) { skipDemo(); return; }
+            localStorage.setItem(STORAGE_NAME, name);
+            var u = new URL(window.location.href);
+            u.searchParams.set('preview', name);
+            window.location.href = u.toString();
+        });
+    }
+
+    // ── Skip button ───────────────────────────────────────────────
+    var skipBtn = document.getElementById('boutique-skip');
+    if (skipBtn) skipBtn.addEventListener('click', skipDemo);
 })();
 </script>
 <script>
