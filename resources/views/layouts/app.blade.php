@@ -652,6 +652,13 @@
         sessionStorage.removeItem('stoka_threshold');
         document.body.classList.add('threshold-enter');
     }
+    // Back button (bfcache restore) — strip the overlay immediately
+    // so the page doesn't appear blank when navigating back
+    window.addEventListener('pageshow', function(e){
+        if(e.persisted){
+            document.body.classList.remove('threshold-enter');
+        }
+    });
 })();
 </script>
 </body>
