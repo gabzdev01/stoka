@@ -40,26 +40,10 @@ body{background:var(--parchment);color:var(--espresso);font-family:'Plus Jakarta
 @media(max-width:480px){.wrap{padding:32px 20px;}}
 </style>
 <script>
-(function() {
-    // demo_auto_redirect
-    var name     = localStorage.getItem('demo_preview_name');
-    var owner    = localStorage.getItem('demo_owner_name');
-    var role     = localStorage.getItem('demo_role') || 'owner';
-    var skipped  = localStorage.getItem('demo_skipped');
-
-    if (!name && !skipped) return; // no stored state — show the form
-
-    // Build destination URL
-    var base = role === 'staff'
-        ? 'https://demo.tempforest.com/staff-login'
-        : 'https://demo.tempforest.com/dashboard';
-
-    var params = new URLSearchParams();
-    if (name)  params.set('preview', name);
-    if (owner) params.set('name', owner);
-
-    window.location.replace(base + '?' + params.toString());
-})();
+// Clear any old demo state on page load
+localStorage.removeItem('demo_preview_name');
+localStorage.removeItem('demo_owner_name');
+localStorage.removeItem('demo_skipped');
 </script>
 </head>
 <body>
