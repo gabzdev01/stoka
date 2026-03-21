@@ -167,6 +167,20 @@ class LoginController extends Controller
             session(['demo_owner_name' => $firstName]);
         }
 
+        // Log demo visit for funnel analytics
+        try {
+            \Illuminate\Support\Facades\DB::table('demo_visits')->insert([
+                'shop_name'  => $shopName ?: null,
+                'owner_name' => $ownerName ?: null,
+                'role'       => $role,
+                'ref'        => $request->input('ref', null),
+                'ip'         => $request->ip(),
+                'created_at' => now(),
+            ]);
+        } catch (\Exception $e) {
+            // Non-blocking — never let logging break the demo flow
+        }
+
         return redirect()->route('quick.login', ['role' => $role]);
     }
 }
