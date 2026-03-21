@@ -156,6 +156,14 @@ class MarketingController extends Controller
         } catch (\Exception $e) {
             try { tenancy()->end(); } catch (\Exception $e2) {}
             $provisioned = false;
+            
+            // Alert Stoka team about provisioning failure
+            \Illuminate\Support\Facades\Log::error('Tenant provisioning failed', [
+                'shop_name' => $request->shop_name,
+                'slug' => $slug,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
 
         return redirect('/register/welcome')->with('welcome', [
