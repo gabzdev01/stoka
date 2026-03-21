@@ -164,7 +164,7 @@
   <a href="/" class="nav-logo">stoka<span class="nav-logo-dot">&middot;</span></a>
   <div class="nav-right">
     <a href="/insights" class="nav-insights">Insights</a>
-    <a href="https://demo.tempforest.com/quick-login/owner" class="nav-cta">Start free trial &rarr;</a>
+    <a href="https://demo.tempforest.com/demo" class="nav-cta">Try the demo &rarr;</a>
   </div>
 </nav>
 
@@ -179,7 +179,7 @@
       @endforeach
     </div>
     <div class="article-cta">
-      <a href="https://demo.tempforest.com/quick-login/owner">This is what Stoka was built to solve. See it working &rarr;</a>
+      <a href="https://demo.tempforest.com/demo">This is what Stoka was built to solve. See it in your shop &rarr;</a>
     </div>
   </div>
 </div>
