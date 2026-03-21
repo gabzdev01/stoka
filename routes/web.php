@@ -13,10 +13,9 @@ Route::domain('tempforest.com')->middleware('web')->group(function () {
     Route::get('/register', [MarketingController::class, 'registerForm'])->name('marketing.register');
     Route::post('/register', [MarketingController::class, 'register'])->name('marketing.register.store');
     Route::get('/register/welcome', [MarketingController::class, 'registerWelcome'])->name('marketing.register.welcome');
+    Route::get('/insights', [MarketingController::class, 'insights'])->name('marketing.insights');
+    Route::get('/insights/{slug}', [MarketingController::class, 'insight'])->name('marketing.insight');
 });
-
-Route::get('/insights', [MarketingController::class, 'insights'])->name('marketing.insights');
-Route::get('/insights/{slug}', [MarketingController::class, 'insight'])->name('marketing.insight');
 
 // ── Super Admin ───────────────────────────────────────────────────────
 Route::get('/admin/login',  [AdminController::class, 'loginForm'])->name('admin.login');
