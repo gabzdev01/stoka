@@ -64,7 +64,7 @@ class MarketingController extends Controller
             abort(404);
         }
 
-        $others = collect($articles)->filter(fn(\$a) => \$a['slug'] !== \$slug)->values()->all();
+        $others = collect($articles)->filter(fn($a) => $a['slug'] !== $slug)->values()->all();
         return view('marketing.insight', compact('article', 'others'));
     }
 
