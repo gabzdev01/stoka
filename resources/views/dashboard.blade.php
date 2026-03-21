@@ -14,12 +14,8 @@
     </div>
     @if(session('auth_role') === 'owner')
     @php
-        $isDemo   = tenant()->id === 'demo';
-        $goOnlineUrl = $isDemo
-            ? route('shop.index')
-            : ($shopEnabled
-                ? route('shop.index')
-                : 'https://demo.tempforest.com/shop?ref=dashboard&back=' . urlencode(request()->getHost()) . '&preview=' . urlencode(shop_name()));
+        // Always use shop.index route - no preview parameter needed
+        $goOnlineUrl = route('shop.index');
     @endphp
     <div class="header-actions">
         <div class="header-btns">
