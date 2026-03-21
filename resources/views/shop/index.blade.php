@@ -261,16 +261,17 @@ body {
     padding: 28px 20px 40px;
     border-top: 1px solid var(--border);
     font-size: 11px;
-    color: var(--border);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.04em;
 }
 .shop-footer a {
-    color: var(--muted);
+    color: var(--espresso);
     text-decoration: none;
-    transition: color 0.12s;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+    transition: border-color 0.15s;
 }
-.shop-footer a:hover { color: var(--espresso); }
+.shop-footer a:hover { border-bottom-color: var(--espresso); }
 
 /* ── Demo acquisition bar ───────────────────────────────── */
 .demo-bar {
@@ -477,7 +478,7 @@ body {
 
 {{-- ── Footer ───────────────────────────────────────────────────────── --}}
 <div class="shop-footer">
-    A <a href="https://getstoka.com" target="_blank" rel="noopener">Stoka</a> shop
+    Powered by <a href="https://tempforest.com/register" target="_blank" rel="noopener">Stoka</a> &mdash; boutique management built for Kenya
 </div>
 
 
