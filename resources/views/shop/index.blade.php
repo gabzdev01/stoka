@@ -39,6 +39,8 @@ body {
     color: var(--espresso);
     min-height: 100vh;
 }
+        100% { opacity: 0; visibility: hidden; }
+    }
 
 /* ── Header ─────────────────────────────────────────────── */
 .shop-header {

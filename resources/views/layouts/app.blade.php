@@ -42,8 +42,7 @@
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
-        /* Espresso-to-parchment transition — continues the demo form's dark background */
-        body::before {
+        body.threshold-enter::before {
             content: '';
             position: fixed;
             inset: 0;
@@ -55,6 +54,8 @@
         }
         @keyframes dawnIn {
             0%   { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
             100% { opacity: 0; visibility: hidden; }
         }
 
