@@ -1178,7 +1178,7 @@ $bestShiftPerStaff = \App\Models\Shift::where('status', 'closed')
         </a>
         @endforeach
 
-        @foreach($recentShifts->take(4) as $shift)
+        @foreach($recentShifts->take(3) as $shift)
         @php
             $ss     = $shift->activeSales;
             $sTotal = $ss->sum('total');
