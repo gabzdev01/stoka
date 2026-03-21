@@ -98,15 +98,17 @@ class SettingsController extends Controller
             'pin'   => 'nullable|string|digits_between:4,6',
         ]);
 
-        $pin = $data['pin'] ?: str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
+        $plainPin = $data['pin'] ?: str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
 
         $user = User::create([
             'name'   => $data['name'],
             'phone'  => $data['phone'],
             'role'   => 'staff',
-            'pin'    => $pin,
+            'pin'    => bcrypt($plainPin),
             'active' => true,
         ]);
+
+        $pin = $plainPin; // Keep for display
 
         return redirect(route('staff.index'))
             ->with('ok_add_staff', [
@@ -123,8 +125,9 @@ class SettingsController extends Controller
 
     public function resetStaffPin(User $user)
     {
-        $pin = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-        $user->update(['pin' => $pin]);
+        $plainPin = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
+        $user->update(['pin' => bcrypt($plainPin)]);
+        $pin = $plainPin; // Keep for display
 
         return redirect(route('staff.index'))
             ->with('ok_reset_pin', [
