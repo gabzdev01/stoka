@@ -158,12 +158,29 @@ a{color:inherit;text-decoration:none;}
         <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-default);overflow:hidden;box-shadow:0 1px 3px rgba(28,24,20,0.04);">
           <div style="padding:12px 18px;background:var(--surface);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">Recent shifts</div>
           <div style="padding:0 18px;">
-            @forelse($detail['shifts'] as $sh)@php $disc=(float)$sh->cash_discrepancy;@endphp
+            @forelse($detail['shifts'] as $sh)
+            @php $disc=(float)$sh->cash_discrepancy; @endphp
             <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);gap:12px;">
-              <div><div style="font-size:13px;font-weight:600;color:var(--espresso);">{{ $sh->staff_name }}</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">{{ \Carbon\Carbon::parse($sh->opened_at)->format('d M Y') }}@if($sh->closed_at) · {{ \Carbon\Carbon::parse($sh->opened_at)->diffInHours(\Carbon\Carbon::parse($sh->closed_at)) }}h@endif</div></div>
-              <div>@if($disc==0)<span style="font-size:12px;color:var(--forest);font-weight:500;">Balanced</span>@elseif($disc<0)<span style="font-size:12px;color:var(--clay);font-weight:600;">{{ number_format(abs($disc),0) }} short</span>@else<span style="font-size:12px;color:var(--terracotta);font-weight:600;">{{ number_format($disc,0) }} over</span>@endif</div>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--espresso);">{{ $sh->staff_name }}</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px;">
+                  {{ \Carbon\Carbon::parse($sh->opened_at)->format('d M Y') }}
+                  @if($sh->closed_at) &middot; {{ \Carbon\Carbon::parse($sh->opened_at)->diffInHours(\Carbon\Carbon::parse($sh->closed_at)) }}h @endif
+                </div>
+              </div>
+              <div>
+                @if($disc==0)
+                  <span style="font-size:12px;color:var(--forest);font-weight:500;">Balanced</span>
+                @elseif($disc<0)
+                  <span style="font-size:12px;color:var(--clay);font-weight:600;">{{ number_format(abs($disc),0) }} short</span>
+                @else
+                  <span style="font-size:12px;color:var(--terracotta);font-weight:600;">{{ number_format($disc,0) }} over</span>
+                @endif
+              </div>
             </div>
-            @empty<div style="padding:32px;text-align:center;color:var(--muted);font-size:13px;">No shifts yet.</div>@endforelse
+            @empty
+            <div style="padding:32px;text-align:center;color:var(--muted);font-size:13px;">No shifts yet.</div>
+            @endforelse
           </div>
         </div>
       </div>
