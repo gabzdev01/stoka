@@ -40,7 +40,7 @@ class LoginController extends Controller
 
         // Staff logs in with PIN
         if ($user->role === "staff") {
-            if ($request->credential !== $user->pin) {
+            if (!Hash::check($request->credential, $user->pin)) {
                 return back()->withErrors(["credential" => "Incorrect PIN."])->withInput();
             }
             if (!$user->active) {
