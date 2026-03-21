@@ -163,7 +163,7 @@
     </div>
     @if($creditSales > 0)
     <div class="ss-box">
-        <span class="ss-label">Credit</span>
+        <span class="ss-label">Deposit</span>
         <span class="ss-val clay">{{ tenant('currency_symbol') }} {{ number_format((int)$creditSales) }}</span>
     </div>
     @endif
@@ -176,7 +176,7 @@
 
     <div class="recon-col">
         <div class="recon-row">
-            <span class="recon-label">Opening float</span>
+            <span class="recon-label">Opening counter float</span>
             <span class="recon-val">{{ tenant('currency_symbol') }} {{ number_format((int)$shift->opening_float) }}</span>
         </div>
         <div class="recon-row">
@@ -184,7 +184,7 @@
             <span class="recon-val">{{ tenant('currency_symbol') }} {{ number_format((int)$cashSales) }}</span>
         </div>
         <div class="recon-row">
-            <span class="recon-label">Expected in till</span>
+            <span class="recon-label">Expected in counter</span>
             <span class="recon-val" style="font-weight:600;">{{ tenant('currency_symbol') }} {{ number_format((int)$expectedCash) }}</span>
         </div>
     </div>

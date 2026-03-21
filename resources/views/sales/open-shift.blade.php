@@ -1,4 +1,5 @@
 @extends('layouts.staff')
+@section('no-search', true)
 
 @section('title', 'Open Shift')
 
@@ -147,6 +148,20 @@
         transition: transform 0.2s;
     }
     .os-start-btn:active .os-start-arrow { transform: translateX(4px); }
+
+    .os-owner-back {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: rgba(28,24,20,0.35);
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        transition: color 0.13s;
+    }
+    .os-owner-back:hover { color: var(--espresso); }
 </style>
 @endsection
 
@@ -164,35 +179,44 @@
         <form method="POST" action="{{ route('shifts.open') }}">
             @csrf
 
-            <label class="os-float-label" for="opening_float">Opening float</label>
+            @if($showFloat)
+                <label class="os-float-label" for="opening_float">Opening counter float</label>
 
-            <div class="os-amount-row">
-                <span class="os-currency">{{ tenant('currency_symbol') }}</span>
-                <input
-                    class="os-amount-input"
-                    type="number"
-                    id="opening_float"
-                    name="opening_float"
-                    value="{{ old('opening_float', '0') }}"
-                    min="0"
-                    step="1"
-                    inputmode="numeric"
-                    autocomplete="off"
-                    autofocus
-                >
-            </div>
+                <div class="os-amount-row">
+                    <span class="os-currency">{{ tenant('currency_symbol') }}</span>
+                    <input
+                        class="os-amount-input"
+                        type="number"
+                        id="opening_float"
+                        name="opening_float"
+                        value="{{ old('opening_float', $lastFloat ?? '') }}"
+                        min="0"
+                        step="1"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        autofocus
+                    >
+                </div>
 
-            @error('opening_float')
-                <p style="color:var(--clay);font-size:12.5px;margin:4px 0 8px;">{{ $message }}</p>
-            @enderror
+                @error('opening_float')
+                    <p style="color:var(--clay);font-size:12.5px;margin:4px 0 8px;">{{ $message }}</p>
+                @enderror
 
-            <p class="os-hint">Count the notes in the till. Type 0 if it's empty — that's fine.</p>
+                <p class="os-hint">Count the notes in the counter. Type 0 if it's empty — that's fine.</p>
+            @else
+                <input type="hidden" name="opening_float" value="0">
+                <p class="os-hint" style="margin-bottom:36px;">Your till is ready. Tap to start selling.</p>
+            @endif
 
             <button type="submit" class="os-start-btn">
-                Open shift
+                {{ $showFloat ? 'Open shift' : 'Start selling' }}
                 <span class="os-start-arrow">&#8594;</span>
             </button>
         </form>
+
+        @if(session('auth_role') === 'owner')
+        <a href="{{ route('dashboard') }}" class="os-owner-back">← Back to Dashboard</a>
+        @endif
 
     </div>
 </div>

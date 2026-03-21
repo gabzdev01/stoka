@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Stoka') — {{ tenant('name') }}</title>
+    <title>@yield('title', 'Stoka') — {{ shop_name() }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -60,6 +63,7 @@
             top: 0;
             left: 0;
             height: 100vh;
+            height: 100dvh;
             z-index: 100;
             transition: transform 0.22s ease;
             overflow: hidden;
@@ -108,8 +112,12 @@
             color: var(--muted);
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            padding: 10px 12px 5px;
+            padding: 14px 12px 5px;
             display: block;
+        }
+
+        .nav-section-label:first-child {
+            padding-top: 4px;
         }
 
         .nav-link {
@@ -119,9 +127,9 @@
             padding: 9px 12px;
             border-radius: var(--radius-md);
             font-size: 13.5px;
-            font-weight: 500;
+            font-weight: 400;
             color: var(--mid);
-            transition: background 0.13s, color 0.13s;
+            transition: background 0.13s, color 0.13s, font-weight 0.1s;
             margin-bottom: 1px;
         }
 
@@ -133,6 +141,13 @@
         .nav-link.active {
             background: var(--terracotta);
             color: #fff;
+            font-weight: 500;
+        }
+
+        /* Attention signal — fractionally bolder, no badge, no colour */
+        .nav-link.nav-attention {
+            font-weight: 500;
+            color: var(--espresso);
         }
 
         .nav-link.active .nav-icon { opacity: 1; }
@@ -145,6 +160,7 @@
         }
 
         .nav-link.active .nav-icon { opacity: 1; }
+        .nav-link.nav-attention .nav-icon { opacity: 0.85; }
 
         /* Sidebar — footer */
         .sidebar-footer {
@@ -236,13 +252,35 @@
         }
 
         .hamburger {
-            background: none;
-            border: none;
+            width: 40px;
+            height: 40px;
+            background: var(--parchment);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
             cursor: pointer;
-            padding: 4px;
-            color: var(--espresso);
-            line-height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 5px;
+            padding: 0;
+            flex-shrink: 0;
+            transition: background 0.15s, border-color 0.15s;
+            -webkit-tap-highlight-color: transparent;
         }
+        .hamburger:active { background: #EBE3D8; }
+        .ham-line {
+            width: 18px;
+            height: 1.75px;
+            background: var(--espresso);
+            border-radius: 2px;
+            transition: transform 0.22s ease, opacity 0.18s ease;
+            transform-origin: center;
+        }
+        .hamburger.active { background: #EBE3D8; border-color: #D5CEC5; }
+        .hamburger.active .ham-line:nth-child(1) { transform: translateY(6.75px) rotate(45deg); }
+        .hamburger.active .ham-line:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .hamburger.active .ham-line:nth-child(3) { transform: translateY(-6.75px) rotate(-45deg); }
 
         /* ── Page header ──────────────────────────────────────── */
         .page-header {
@@ -380,13 +418,16 @@
 
         <div class="sidebar-header">
             <span class="sidebar-logo">Stoka</span>
-            <span class="sidebar-shop">{{ tenant('name') }}</span>
+            <span class="sidebar-shop">{{ shop_name() }}</span>
         </div>
+
+        @php
+            $navAlerts = session('nav_alerts', []);
+        @endphp
 
         <nav class="sidebar-nav">
 
-            <span class="nav-section-label">Menu</span>
-
+            {{-- Dashboard — always first, no section label --}}
             <a href="{{ route('dashboard') }}"
                class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                 <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
@@ -398,22 +439,43 @@
                 Dashboard
             </a>
 
-            <a href="/products"
-               class="nav-link {{ request()->is('products*') ? 'active' : '' }}">
+            {{-- ── TODAY ──────────────────────────────────────────── --}}
+            <span class="nav-section-label">Today</span>
+
+            <a href="/shifts"
+               class="nav-link {{ request()->is('shifts*') ? 'active' : '' }} {{ in_array('shifts', $navAlerts) && !request()->is('shifts*') ? 'nav-attention' : '' }}">
                 <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-                    <rect x="1.75" y="1.75" width="12.5" height="12.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
-                    <path d="M4.5 5.5h7M4.5 8h7M4.5 10.5h4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                    <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M8 5v3.2l2.2 1.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                Products
+                Shifts
             </a>
 
-            <a href="/suppliers"
-               class="nav-link {{ request()->is('suppliers*') ? 'active' : '' }}">
+
+            <a href="/credit"
+               class="nav-link {{ request()->is('credit*') ? 'active' : '' }} {{ in_array('credit', $navAlerts) && !request()->is('credit*') ? 'nav-attention' : '' }}"
+               >
                 <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-                    <path d="M2 12V6.5l6-4 6 4V12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1Z" stroke="currentColor" stroke-width="1.4"/>
-                    <path d="M6 13V9h4v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="1.5" y="4" width="13" height="8.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M1.5 7h13" stroke="currentColor" stroke-width="1.3"/>
+                    <path d="M4.5 10h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
                 </svg>
-                Suppliers
+                Deposits
+            </a>
+
+            {{-- ── STOCK ───────────────────────────────────────────── --}}
+            <span class="nav-section-label">Stock</span>
+
+            <a href="/shopping-list"
+               class="nav-link {{ request()->is('shopping-list*') ? 'active' : '' }} {{ in_array('shopping-list', $navAlerts) && !request()->is('shopping-list*') ? 'nav-attention' : '' }}">
+                <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+                    <rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M5 5.5h6M5 8h6M5 10.5h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                    <circle cx="3.8" cy="5.5" r="0.8" fill="currentColor"/>
+                    <circle cx="3.8" cy="8"   r="0.8" fill="currentColor"/>
+                    <circle cx="3.8" cy="10.5" r="0.8" fill="currentColor"/>
+                </svg>
+                Shopping list
             </a>
 
             <a href="/restocks"
@@ -426,40 +488,20 @@
                 Restocks
             </a>
 
-            <a href="/shopping-list"
-               class="nav-link {{ request()->is('shopping-list*') ? 'active' : '' }}">
+            <a href="/products"
+               class="nav-link {{ request()->is('products*') ? 'active' : '' }}">
                 <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-                    <rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
-                    <path d="M5 5.5h6M5 8h6M5 10.5h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                    <circle cx="3.8" cy="5.5" r="0.8" fill="currentColor"/>
-                    <circle cx="3.8" cy="8"   r="0.8" fill="currentColor"/>
-                    <circle cx="3.8" cy="10.5" r="0.8" fill="currentColor"/>
+                    <rect x="1.75" y="1.75" width="12.5" height="12.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M4.5 5.5h7M4.5 8h7M4.5 10.5h4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
                 </svg>
-                Shopping list
+                Products
             </a>
 
-            <a href="{{ route('sales.index') }}"
-               class="nav-link {{ request()->routeIs('sales.*') ? 'active' : '' }}">
-                <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-                    <path d="M2.5 2.5h1.2l1.8 7.5h6.5l1.5-5H5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="6.5" cy="12.5" r="1" fill="currentColor"/>
-                    <circle cx="11"  cy="12.5" r="1" fill="currentColor"/>
-                </svg>
-                Sales
-            </a>
-
-            <a href="/credit"
-               class="nav-link {{ request()->is('credit*') ? 'active' : '' }}">
-                <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-                    <rect x="1.5" y="4" width="13" height="8.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
-                    <path d="M1.5 7h13" stroke="currentColor" stroke-width="1.3"/>
-                    <path d="M4.5 10h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                </svg>
-                Credit
-            </a>
+            {{-- ── MONEY ───────────────────────────────────────────── --}}
+            <span class="nav-section-label">Money</span>
 
             <a href="/supplier-balances"
-               class="nav-link {{ request()->is('supplier-balances*') ? 'active' : '' }}">
+               class="nav-link {{ request()->is('supplier-balances*') ? 'active' : '' }} {{ in_array('supplier-pay', $navAlerts) && !request()->is('supplier-balances*') ? 'nav-attention' : '' }}">
                 <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
                     <path d="M8 2v12M5 5h4.5a2 2 0 0 1 0 4H5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
                     <path d="M5 9h5a2 2 0 0 1 0 4H5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
@@ -467,16 +509,40 @@
                 Supplier pay
             </a>
 
-            <a href="/shifts"
-               class="nav-link {{ request()->is('shifts*') ? 'active' : '' }}">
+            <a href="/suppliers"
+               class="nav-link {{ request()->is('suppliers*') ? 'active' : '' }}">
                 <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-                    <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/>
-                    <path d="M8 5v3.2l2.2 1.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12V6.5l6-4 6 4V12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1Z" stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M6 13V9h4v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                Shifts
+                Suppliers
             </a>
 
+            {{-- ── MANAGE ──────────────────────────────────────────── --}}
             @if(session('auth_role') === 'owner')
+            <span class="nav-section-label">Manage</span>
+
+            <a href="/staff"
+               class="nav-link {{ request()->is('staff*') ? 'active' : '' }}">
+                <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+                    <circle cx="6" cy="4.5" r="2.2" stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M1.5 13.5c0-2.49 2.02-4.5 4.5-4.5s4.5 2.01 4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    <path d="M10.5 7l1.5 1.5L15 5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Staff
+            </a>
+
+            <a href="/reports"
+               class="nav-link {{ request()->is('reports*') ? 'active' : '' }}">
+                <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 2h10v12H3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                    <path d="M5.5 5.5h5M5.5 8h5M5.5 10.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                    <path d="M11 8v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M9.5 9.5L11 8l1.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Reports
+            </a>
+
             <a href="/settings"
                class="nav-link {{ request()->is('settings*') ? 'active' : '' }}">
                 <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
@@ -510,13 +576,12 @@
         <div class="topbar">
             <div>
                 <div class="topbar-logo">Stoka</div>
-                <div class="topbar-shop">{{ tenant('name') }}</div>
+                <div class="topbar-shop">{{ shop_name() }}</div>
             </div>
-            <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                    <path d="M3 6h16M3 11h16M3 16h16"
-                          stroke="#1C1814" stroke-width="1.75" stroke-linecap="round"/>
-                </svg>
+            <button class="hamburger" id="ham-btn" onclick="toggleSidebar()" aria-label="Toggle menu">
+                <span class="ham-line"></span>
+                <span class="ham-line"></span>
+                <span class="ham-line"></span>
             </button>
         </div>
 
@@ -540,10 +605,18 @@
     function openSidebar() {
         document.getElementById('sidebar').classList.add('open');
         document.getElementById('overlay').classList.add('visible');
+        document.getElementById('ham-btn').classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
     function closeSidebar() {
         document.getElementById('sidebar').classList.remove('open');
         document.getElementById('overlay').classList.remove('visible');
+        document.getElementById('ham-btn').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    function toggleSidebar() {
+        var open = document.getElementById('sidebar').classList.contains('open');
+        open ? closeSidebar() : openSidebar();
     }
     document.querySelectorAll('.nav-link').forEach(function(link) {
         link.addEventListener('click', function() {
@@ -551,6 +624,7 @@
         });
     });
 </script>
+
 
 @yield('scripts')
 

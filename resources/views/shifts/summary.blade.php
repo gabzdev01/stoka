@@ -1,4 +1,5 @@
 @extends('layouts.staff')
+@section('no-search', true)
 
 @section('title', 'Shift Closed')
 
@@ -189,7 +190,7 @@
         </div>
         @if($creditSales > 0)
         <div class="bd-row">
-            <span class="bd-label">Credit</span>
+            <span class="bd-label">Deposit</span>
             <span class="bd-value">{{ tenant('currency_symbol') }} {{ number_format((int) $creditSales) }}</span>
         </div>
         @endif
@@ -202,7 +203,7 @@
     {{-- ── Result ──────────────────────────────────── --}}
     @if($discrepancy == 0)
         <div class="summary-result result-balanced">
-            Till balanced ✓
+            Counter balanced ✓
         </div>
     @elseif($discrepancy < 0)
         <div class="summary-result result-short">

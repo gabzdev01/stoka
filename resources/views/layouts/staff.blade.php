@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#F5F0E8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -364,7 +367,7 @@
 {{-- ── TOP BAR ──────────────────────────────────── --}}
 <header class="top-bar">
     <div class="top-info">
-        <span class="top-shop">{{ tenant('name') }}</span>
+        <a href="{{ route('sales.index') }}" class="top-shop" style="text-decoration:none;">{{ shop_name() }}</a>
 
         <div class="top-right">
             @if(session('shift_id'))
@@ -396,8 +399,19 @@
                 <span class="top-user-dot"></span>
                 {{ session('auth_name') }}
             </a>
+            <form method="POST" action="{{ route('logout') }}" style="margin:0;display:flex;">
+                @csrf
+                <button type="submit" class="top-logout" title="Log out">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                </button>
+            </form>
         </div>
     </div>
+    @unless(View::hasSection('no-search'))
     <div class="top-search">
         <div class="search-wrap">
             <span class="search-icon">
@@ -419,6 +433,7 @@
             >
         </div>
     </div>
+    @endunless
 </header>
 
 {{-- ── MAIN CONTENT ─────────────────────────────── --}}
@@ -498,6 +513,22 @@
             </span>
         </div>
         <span class="tab-label">My Shift</span>
+    </a>
+
+    {{-- Deposits --}}
+    <a href="{{ route('sales.deposits') }}"
+       class="tab-item {{ request()->routeIs('sales.deposits') ? 'active' : '' }}">
+        <div class="tab-icon-wrap">
+            <span class="tab-icon">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                    <rect x="2" y="5" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                    <path d="M2 9h18" stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M6 14h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    <circle cx="16" cy="14" r="1.2" fill="currentColor"/>
+                </svg>
+            </span>
+        </div>
+        <span class="tab-label">Deposits</span>
     </a>
 
     {{-- Close Shift --}}

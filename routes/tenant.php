@@ -9,9 +9,12 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SuppliersController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\ExchangeController;
+use App\Http\Controllers\ShopController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\CreditController;
 use App\Http\Controllers\ShoppingListController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\RestocksController;
 use App\Http\Controllers\SupplierBalancesController;
 use App\Http\Controllers\ShiftsController;
@@ -29,6 +32,31 @@ Route::middleware([
     Route::get("/login", [LoginController::class, "showLogin"])->name("login");
     Route::post("/login", [LoginController::class, "login"]);
     Route::post("/logout", [LoginController::class, "logout"])->name("logout");
+    // Dynamic PWA manifest — personalised with demo shop name
+    Route::get('/manifest.json', function() {
+        $shopName  = session('demo_shop_name', tenant('name') ?? 'Stoka');
+        $shortName = collect(explode(' ', $shopName))->take(2)->implode(' ');
+        return response()->json([
+            'name'             => $shopName,
+            'short_name'       => $shortName,
+            'description'      => 'Boutique management. Aware by design.',
+            'start_url'        => '/demo',
+            'display'          => 'standalone',
+            'background_color' => '#FAF7F2',
+            'theme_color'      => '#1C1814',
+            'icons'            => [
+                ['src' => '/icons/icon-192.png', 'sizes' => '192x192', 'type' => 'image/png'],
+                ['src' => '/icons/icon-512.png', 'sizes' => '512x512', 'type' => 'image/png'],
+            ],
+        ])->header('Content-Type', 'application/manifest+json');
+    })->name('manifest');
+
+    // Demo name-capture landing
+    Route::get('/demo',  [LoginController::class, 'demoLanding'])->name('demo.landing');
+    Route::post('/demo', [LoginController::class, 'demoEnter'])->name('demo.enter');
+
+    // Quick login for demo tenant (direct)
+    Route::get('/quick-login/{role}', [LoginController::class, 'quickLogin'])->name('quick.login');
 
     // Password reset (public — owner may not be logged in)
     Route::get('/password-reset',           [PasswordResetController::class, 'show'])->name('password-reset.show');
@@ -84,20 +112,27 @@ Route::middleware([
             Route::post("/credit/{customer}/payment", [CreditController::class, "recordPayment"])->name("credit.payment");
 
             // Settings
+            Route::get('/staff', [SettingsController::class, 'staffPage'])->name('staff.index');
             Route::get('/settings',                              [SettingsController::class, 'index'])->name('settings.index');
             Route::post('/settings/account',                     [SettingsController::class, 'saveAccount'])->name('settings.account');
             Route::post('/settings/password',                    [SettingsController::class, 'changePassword'])->name('settings.password');
             Route::post('/settings/shop',                        [SettingsController::class, 'saveShop'])->name('settings.shop');
             Route::post('/settings/receipts',                    [SettingsController::class, 'saveReceipts'])->name('settings.receipts');
             Route::post('/settings/alerts',                      [SettingsController::class, 'saveAlerts'])->name('settings.alerts');
+            Route::post('/settings/shop-toggle',                [SettingsController::class, 'toggleShop'])->name('settings.shop.toggle');
             Route::post('/settings/staff',                       [SettingsController::class, 'addStaff'])->name('settings.staff.add');
             Route::post('/settings/staff/{user}/toggle',         [SettingsController::class, 'toggleStaffStatus'])->name('settings.staff.toggle');
             Route::post('/settings/staff/{user}/reset-pin',      [SettingsController::class, 'resetStaffPin'])->name('settings.staff.reset-pin');
             Route::post('/settings/staff/{user}/remove',         [SettingsController::class, 'removeStaff'])->name('settings.staff.remove');
             Route::get('/settings/export',                       [SettingsController::class, 'export'])->name('settings.export');
+
+            // Reports
+            Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
         });
 
-        // Staff + owner — sales flow
+        // Staff + owner — sales flow + deposits
+        Route::get("/my-deposits",              [SalesController::class, "depositsIndex"])->name("sales.deposits");
+        Route::post("/my-deposits/{customer}/pay", [SalesController::class, "depositPay"])->name("sales.deposits.pay");
         Route::post("/shifts/open",  [ShiftsController::class, "open"])->name("shifts.open");
         Route::get("/sales",         [SalesController::class, "index"])->name("sales.index");
         Route::post("/sales",        [SalesController::class, "store"])->name("sales.store");
@@ -106,7 +141,17 @@ Route::middleware([
         Route::post("/sales/cart",     [SalesController::class, "storeCart"])->name("sales.cart");
         Route::get("/customers/lookup",[SalesController::class, "customerLookup"])->name("customers.lookup");
         Route::post("/sales/{sale}/void",  [SalesController::class, "void"])->name("sales.void");
+        Route::get("/exchange/{sale}",       [ExchangeController::class, "create"])->name("exchange.create");
+        Route::post("/exchange/{sale}",      [ExchangeController::class, "store"])->name("exchange.store");
         Route::get("/sales/receipt/{ids}", [SalesController::class, "receipt"])->name("sales.receipt");
+    });
+
+
+
+    // ── Public shop (no auth, rate-limited) ──────────────────────────
+    Route::middleware('throttle:120,1')->group(function () {
+        Route::get('/shop',                    [ShopController::class, 'index'])->name('shop.index');
+        Route::get('/shop/{product:slug}',     [ShopController::class, 'show'])->name('shop.show');
     });
 
 });

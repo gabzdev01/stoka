@@ -14,6 +14,7 @@ class User extends Authenticatable
         "pin",
         "password",
         "active",
+        "dashboard_last_seen",
     ];
 
     protected $hidden = [
@@ -24,7 +25,8 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            "active" => "boolean",
+            "active"               => "boolean",
+            "dashboard_last_seen"  => "datetime",
         ];
     }
 

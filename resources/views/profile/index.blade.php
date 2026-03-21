@@ -1,4 +1,5 @@
 @extends('layouts.staff')
+@section('no-search', true)
 
 @section('title', 'My Profile')
 

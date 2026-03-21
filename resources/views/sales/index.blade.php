@@ -356,6 +356,27 @@
         -webkit-tap-highlight-color: transparent;
     }
     .ml-chip.active { border-color: #4A6741; background: #EFF5EF; color: #4A6741; }
+    .ml-custom-row {
+        display: flex; align-items: center; gap: 10px; margin-top: 14px;
+    }
+    .ml-custom-input {
+        width: 90px; height: 44px;
+        border: 1.5px solid #E8E0D6; border-radius: 10px;
+        font-family: "DM Mono", monospace; font-size: 16px;
+        color: #1C1814; padding: 0 10px;
+        text-align: right; outline: none;
+        -webkit-appearance: none; transition: border-color 0.14s;
+    }
+    .ml-custom-input:focus { border-color: #1C1814; }
+    .ml-custom-input::-webkit-outer-spin-button,
+    .ml-custom-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .ml-custom-input[type=number] { -moz-appearance: textfield; }
+    .ml-custom-suffix { font-size: 14px; color: #8C7B6E; font-family: "Plus Jakarta Sans", sans-serif; }
+    .ml-live-price {
+        font-family: "DM Mono", monospace; font-size: 15px;
+        font-weight: 600; color: #4A6741;
+        margin-left: auto;
+    }
 
     .qty-section { margin-bottom: 20px; }
     .qty-row { display: flex; align-items: center; gap: 16px; }
@@ -384,7 +405,7 @@
     .price-input:focus { border-bottom-color: #C17F4A; }
     .price-input[readonly] { cursor: default; }
     .floor-hint { font-size: 11px; color: #8C7B6E; margin-top: 6px; }
-    .floor-warn { font-size: 11px; color: #B85C38; margin-top: 6px; display: none; }
+    .floor-warn { font-size: 11px; color: #B85C38; margin-top: 6px; display: none; font-weight: 600; }
 
     .total-row {
         display: flex; align-items: center; justify-content: space-between;
@@ -879,6 +900,13 @@
                 <button type="button" class="ml-chip" data-ml="30">30ml</button>
                 <button type="button" class="ml-chip" data-ml="50">50ml</button>
             </div>
+            <div class="ml-custom-row">
+                <input type="number" class="ml-custom-input" id="ml-custom-input"
+                       inputmode="decimal" min="1" step="1" placeholder="0"
+                       autocomplete="off">
+                <span class="ml-custom-suffix">ml</span>
+                <span class="ml-live-price" id="ml-live-price"></span>
+            </div>
         </div>
 
         <div class="qty-section" id="qty-section">
@@ -898,7 +926,7 @@
                 <input type="number" class="price-input" id="price-input" inputmode="decimal" step="1" min="0">
             </div>
             <div class="floor-hint" id="floor-hint"></div>
-            <div class="floor-warn" id="floor-warn">&#9888; Below floor price</div>
+            <div class="floor-warn" id="floor-warn">&#9888; Cannot sell below floor price ({{ tenant("currency_symbol") }} <span id="floor-warn-val"></span>)</div>
         </div>
 
         <div class="total-row">
@@ -957,7 +985,7 @@
             <span>M-Pesa</span><span class="pay-btn-arrow">&#8594;</span>
         </button>
         <button type="button" class="pay-btn credit" onclick="selectCartPayment('credit')">
-            <span>Credit — Kulipa Baadaye</span><span class="pay-btn-arrow">&#8594;</span>
+            <span>Deposit sale</span><span class="pay-btn-arrow">&#8594;</span>
         </button>
 
         <div class="credit-fields" id="cart-credit-fields">
@@ -976,7 +1004,7 @@
 
             <div class="credit-partial-wrap">
                 <span class="section-label" style="margin-bottom:0;">
-                    Amount paying now
+                    Deposit paid now
                     <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span>
                 </span>
                 <div class="credit-partial-row">
@@ -986,7 +1014,7 @@
                            oninput="updateCreditBalance()">
                 </div>
                 <div class="credit-balance-row">
-                    <span class="credit-balance-label">Credit balance:</span>
+                    <span class="credit-balance-label">Balance to pay:</span>
                     <span class="credit-balance-amount" id="cart-credit-balance">&#8212;</span>
                 </div>
                 <div class="credit-full-warn" id="cart-credit-full-warn">
@@ -996,7 +1024,7 @@
 
             <button type="button" class="btn-confirm-credit" id="btn-confirm-cart-credit"
                     onclick="confirmCartSale('credit')">
-                Record Credit Sale
+                Record Deposit Sale
             </button>
         </div>
     </div>
@@ -1072,7 +1100,7 @@
     var ownerWaRaw     = '{{ preg_replace('/\D/', '', tenant('owner_whatsapp') ?? '') }}';
     var ownerWaPhone   = (ownerWaRaw.length === 10 && ownerWaRaw[0] === '0')
                          ? '254' + ownerWaRaw.slice(1) : ownerWaRaw;
-    var shopName       = '{{ addslashes(tenant('name') ?? '') }}';
+    var shopName       = '{{ addslashes(shop_name() ?? '') }}';
     var staffFirst     = '{{ addslashes(explode(' ', trim(session('auth_name', 'Staff')))[0]) }}';
 
     var catStrip    = document.getElementById('cat-strip');
@@ -1341,6 +1369,10 @@
 
         if (state.productType === 'measured') {
             document.querySelectorAll('.ml-chip').forEach(function (c) { c.classList.remove('active'); });
+        var mlCI = document.getElementById('ml-custom-input');
+        if (mlCI) { mlCI.value = ''; }
+        var mlLP = document.getElementById('ml-live-price');
+        if (mlLP) { mlLP.textContent = ''; }
             state.qty   = 0;
             state.price = state.bottle ? state.bottle.price_per_ml : 0;
         }
@@ -1419,9 +1451,45 @@
             state.price = state.bottle ? state.bottle.price_per_ml : 0;
             document.getElementById('qty-display').textContent = state.qty + 'ml';
             document.getElementById('price-input').value       = state.price;
+            // Clear custom input
+            var ci = document.getElementById('ml-custom-input');
+            if (ci) ci.value = '';
+            updateMlLivePrice();
             updateTotal(); validateAddBtn(); return;
         }
     });
+
+    // Custom ml input handler
+    var mlCustomInput = document.getElementById('ml-custom-input');
+    if (mlCustomInput) {
+        mlCustomInput.addEventListener('input', function () {
+            var ml = parseFloat(this.value) || 0;
+            if (ml > 0) {
+                // Deselect all chips
+                document.querySelectorAll('.ml-chip').forEach(function (ch) { ch.classList.remove('active'); });
+                state.qty   = ml;
+                state.price = state.bottle ? state.bottle.price_per_ml : 0;
+                document.getElementById('qty-display').textContent = ml + 'ml';
+                document.getElementById('price-input').value = state.price;
+            } else {
+                state.qty = 0;
+            }
+            updateMlLivePrice();
+            updateTotal(); validateAddBtn();
+        });
+    }
+
+    function updateMlLivePrice() {
+        var el = document.getElementById('ml-live-price');
+        if (!el) return;
+        var ml = parseFloat((document.getElementById('ml-custom-input') || {}).value) || 0;
+        if (ml > 0 && state.bottle && state.bottle.price_per_ml) {
+            var total = ml * state.bottle.price_per_ml;
+            el.textContent = '= {{ tenant("currency_symbol") }} ' + nf(total);
+        } else {
+            el.textContent = '';
+        }
+    }
 
     document.getElementById('price-input').addEventListener('input', function () {
         state.price = parseFloat(this.value) || 0;
@@ -1434,6 +1502,8 @@
         var warn = document.getElementById('floor-warn');
         var show = state.bargainable && state.floorPrice && state.price > 0 && state.price < state.floorPrice;
         warn.style.display = show ? 'block' : 'none';
+        var valEl = document.getElementById('floor-warn-val');
+        if (valEl && state.floorPrice) valEl.textContent = nf(state.floorPrice);
     }
 
     function updateTotal() {
@@ -1449,6 +1519,7 @@
         if (state.productType === 'variant' && !state.variantId)  ok = false;
         if (state.productType === 'measured' && state.qty <= 0)   ok = false;
         if (state.price <= 0) ok = false;
+        if (state.bargainable && state.floorPrice && state.price > 0 && state.price < state.floorPrice) ok = false;
         var btn = document.getElementById('btn-add-to-cart');
         if (btn && !btn.classList.contains('oos')) btn.disabled = !ok;
     }
@@ -1763,7 +1834,7 @@
         lines.push('');
         lines.push('Total: {{ tenant("currency_symbol") }} ' + nf(data.total));
         var pm = data.payment_type === 'mpesa' ? 'M-Pesa'
-               : data.payment_type === 'credit' ? 'Credit'
+               : data.payment_type === 'credit' ? 'Deposit'
                : 'Cash';
         lines.push('Paid by: ' + pm + ' \u2713');
 
@@ -1784,7 +1855,7 @@
         document.getElementById('ro-amount').textContent =
             '{{ tenant("currency_symbol") }} ' + nf(data.total);
         var pm = data.payment_type === 'mpesa' ? 'M-Pesa'
-               : data.payment_type === 'credit' ? 'Credit'
+               : data.payment_type === 'credit' ? 'Deposit'
                : 'Cash';
         document.getElementById('ro-payment-label').textContent = pm;
 
@@ -1835,6 +1906,7 @@
         var label = document.getElementById('ro-summary').textContent;
         showToast('\u2713 Sale complete \u2014 ' + label);
     }
+    window.closeReceiptOverlay = closeReceiptOverlay;
 
     function updateCardStock(upd) {
         var badge = document.getElementById('stock-' + upd.product_id);

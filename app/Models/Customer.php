@@ -31,4 +31,9 @@ class Customer extends Model
     {
         return $this->hasMany(CreditLedger::class)->where('status', 'open');
     }
+
+    public function credits()
+    {
+        return $this->hasMany(CreditLedger::class);
+    }
 }

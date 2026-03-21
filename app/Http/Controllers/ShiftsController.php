@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Console\Commands\DemoReset;
+use App\Models\CreditPayment;
 use App\Models\Sale;
 use App\Models\Shift;
 use Illuminate\Http\Request;
@@ -27,7 +28,9 @@ class ShiftsController extends Controller
         $openCount   = $shifts->where('status', 'open')->count();
         $closedCount = $shifts->where('status', 'closed')->count();
 
-        return view('shifts.index', compact('shifts', 'openCount', 'closedCount'));
+        $staffCount = \App\Models\User::where('role', 'staff')->count();
+
+        return view('shifts.index', compact('shifts', 'openCount', 'closedCount', 'staffCount'));
     }
 
     public function show(Shift $shift)
@@ -60,25 +63,37 @@ class ShiftsController extends Controller
 
     public function open(Request $request)
     {
+        $isOwner = session('auth_role') === 'owner';
         $request->validate([
-            'opening_float' => ['required', 'numeric', 'min:0'],
+            'opening_float' => $isOwner ? ['nullable','numeric','min:0'] : ['required','numeric','min:0'],
         ]);
 
         if (session('shift_id')) {
             return redirect()->route('sales.index');
         }
 
+        // Prevent duplicate shifts: reuse if this user already has one open in DB.
+        // Critical for demo where multiple browser sessions share the same account.
+        $existing = Shift::where('staff_id', session('auth_user'))
+            ->where('status', 'open')
+            ->latest('opened_at')
+            ->first();
+
+        if ($existing) {
+            session(['shift_id' => $existing->id]);
+            return redirect()->route('sales.index');
+        }
+
         $shift = Shift::create([
             'staff_id'      => session('auth_user'),
             'opened_at'     => now(),
-            'opening_float' => $request->input('opening_float', 0),
+            'opening_float' => $request->input('opening_float', 0) ?? 0,
             'mpesa_total'   => 0,
             'status'        => 'open',
         ]);
 
         session(['shift_id' => $shift->id]);
 
-        // On demo tenant, restore stock so every session starts with full shelves
         if (tenant('id') === 'demo') {
             DemoReset::restoreStock();
         }
@@ -112,21 +127,31 @@ class ShiftsController extends Controller
                 $creditSales  = (float) $sales->where('payment_type', 'credit')->sum('total');
                 $totalSales   = (float) $sales->sum('total');
                 $saleCount    = $sales->count();
-                $expectedCash = round((float) $shift->opening_float + $cashSales, 2);
+                $depositCash  = (float) CreditPayment::where('shift_id', $shiftId)->where('payment_type', 'cash')->sum('amount');
+                $depositMpesa = (float) CreditPayment::where('shift_id', $shiftId)->where('payment_type', 'mpesa')->sum('amount');
+                $expectedCash = round((float) $shift->opening_float + $cashSales + $depositCash, 2);
             }
         }
+
+        // Owner with no float = no till to count — simplified close
+        $isOwnerClose = $shift
+            && session('auth_role') === 'owner'
+            && (float) $shift->opening_float === 0.0;
 
         return view('sales.close', compact(
             'shift',
             'totalSales', 'cashSales', 'mpesaSales', 'creditSales',
-            'saleCount', 'expectedCash'
+            'saleCount', 'expectedCash',
+            'depositCash', 'depositMpesa',
+            'isOwnerClose'
         ));
     }
 
     public function close(Request $request)
     {
+        $isOwner = session('auth_role') === 'owner';
         $request->validate([
-            'cash_counted' => ['required', 'numeric', 'min:0'],
+            'cash_counted' => $isOwner ? ['nullable', 'numeric', 'min:0'] : ['required', 'numeric', 'min:0'],
         ]);
 
         $shiftId = session('shift_id');
@@ -145,12 +170,21 @@ class ShiftsController extends Controller
             return redirect()->route('sales.index');
         }
 
-        $cashCounted  = round((float) $request->input('cash_counted'), 2);
         $sales        = $shift->activeSales;
         $cashSales    = (float) $sales->where('payment_type', 'cash')->sum('total');
         $mpesaSales   = (float) $sales->where('payment_type', 'mpesa')->sum('total');
-        $expectedCash = round((float) $shift->opening_float + $cashSales, 2);
-        $discrepancy  = round($cashCounted - $expectedCash, 2);
+        $depositCash  = (float) CreditPayment::where('shift_id', $shiftId)->where('payment_type', 'cash')->sum('amount');
+        $expectedCash = round((float) $shift->opening_float + $cashSales + $depositCash, 2);
+
+        // Owner with no float: auto-balance, no counting step
+        $isOwnerClose = session('auth_role') === 'owner' && (float) $shift->opening_float === 0.0;
+        if ($isOwnerClose) {
+            $cashCounted = $expectedCash;
+            $discrepancy = 0;
+        } else {
+            $cashCounted = round((float) $request->input('cash_counted'), 2);
+            $discrepancy = round($cashCounted - $expectedCash, 2);
+        }
 
         $shift->update([
             'cash_counted'     => $cashCounted,

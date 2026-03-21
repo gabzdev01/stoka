@@ -39,8 +39,10 @@
     }
     .type-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
     .type-card.selected { border-color: var(--terracotta); background: var(--parchment); }
+    .type-card-icon { color: var(--muted); margin-bottom: 4px; transition: color 0.15s; flex-shrink: 0; }
+    .type-card.selected .type-card-icon { color: var(--terracotta); }
     .type-card-name { font-size: 13.5px; font-weight: 600; color: var(--espresso); display: block; }
-    .type-card-desc { font-size: 12px; color: var(--muted); line-height: 1.4; display: block; }
+    .type-card-desc { font-size: 11.5px; color: var(--muted); line-height: 1.4; display: block; }
 
     /* ── Measured hint box ───────────────────────────────── */
     .measured-hint {
@@ -184,6 +186,30 @@
         line-height: 1.4;
     }
     .chip-add:hover { border-color: var(--terracotta); color: var(--terracotta); }
+
+    /* ── Size group presets ─────────────────────────────────────────────────────── */
+    .size-group-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+    .size-group-btn {
+        padding: 7px 14px;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        background: var(--surface);
+        cursor: pointer;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        letter-spacing: 0.02em;
+        transition: border-color 0.13s, color 0.13s, background 0.13s;
+        white-space: nowrap;
+    }
+    .size-group-btn:hover { border-color: var(--espresso); color: var(--espresso); background: var(--parchment); }
+    .size-group-btn.applied { border-color: var(--terracotta); color: var(--terracotta); background: #FDF3E8; }
 
     /* ML chips are single-select */
     .ml-chips .chip.active { background: #4A6741; border-color: #4A6741; }
@@ -329,14 +355,94 @@
         .type-cards { grid-template-columns: 1fr; }
         .form-grid-2 { grid-template-columns: 1fr; }
     }
+
+    /* ── Toggle switch ──────────────────────────────── */
+    .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+        position: absolute; cursor: pointer; inset: 0;
+        background: var(--border); border-radius: 24px; transition: background 0.2s;
+    }
+    .toggle-slider:before {
+        content: ''; position: absolute;
+        width: 18px; height: 18px; border-radius: 50%;
+        left: 3px; bottom: 3px; background: white;
+        transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle-switch input:checked + .toggle-slider { background: var(--terracotta); }
+    .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+    /* ── Photo upload ────────────────────────────────── */
+    .photo-upload-area {
+        position: relative; cursor: pointer;
+        border: 2px dashed var(--border); border-radius: 12px;
+        overflow: hidden; background: var(--surface);
+        min-height: 160px; display: flex; align-items: center; justify-content: center;
+        transition: border-color 0.15s;
+    }
+    .photo-upload-area:hover { border-color: var(--terracotta); }
+    .photo-placeholder {
+        display: flex; flex-direction: column; align-items: center; gap: 8px;
+        color: var(--muted); font-size: 13px; padding: 24px;
+    }
+    .photo-hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .photo-preview { width: 100%; height: 200px; object-fit: cover; display: block; }
+    .photo-preview.hidden { display: none; }
+    .photo-overlay {
+        position: absolute; inset: 0; background: rgba(28,24,20,0.45);
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 6px; color: white; font-size: 12px; font-weight: 600; opacity: 0;
+        transition: opacity 0.15s;
+    }
+    .photo-upload-area:hover .photo-overlay { opacity: 1; }
+    /* Custom file button */
+    .photo-file-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 10px;
+        padding: 8px 16px;
+        background: var(--espresso);
+        color: var(--parchment);
+        border-radius: var(--radius-md);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition: opacity 0.13s;
+        border: none;
+        user-select: none;
+    }
+    .photo-file-btn:hover { opacity: 0.82; }
+    .photo-file-name {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 5px;
+        padding-left: 2px;
+    }
+    /* Demo upload notice */
+    .demo-photo-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: #F5F0E8;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        color: var(--muted);
+        font-size: 12.5px;
+        line-height: 1.55;
+    }
+    .demo-photo-notice svg { flex-shrink: 0; margin-top: 1px; color: var(--terracotta); }
 </style>
 @endsection
 
 @section('content')
 @php
     $isEdit      = isset($product);
-    $currentType = old('type', $isEdit ? $product->type : 'unit');
-    $currentCat  = old('category', $isEdit ? ($product->category ?? '') : '');
+    $pre         = $prefill ?? [];
+    $currentType = old('type', $isEdit ? $product->type : ($pre['type'] ?? 'variant'));
+    $currentCat  = old('category', $isEdit ? ($product->category ?? '') : ($pre['category'] ?? ''));
 
     $allCats = [
         'Dresses', 'Tops & Blouses', 'Trousers & Shorts', 'Shirts',
@@ -378,6 +484,14 @@
     $catIsOther = $currentCat && !in_array($currentCat, $allCats);
 @endphp
 
+@if(session('added'))
+<div style="display:flex; align-items:center; gap:10px; background:#F0F7EE; border:1px solid #C3DFC0; border-radius:10px; padding:12px 16px; margin-bottom:20px;">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="color:#4A6741; flex-shrink:0;"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span style="font-size:13px; color:#3A5432; font-weight:600;">{{ session('added') }} added.</span>
+    <span style="font-size:12px; color:#5A7452; margin-left:2px;">What are you adding next?</span>
+</div>
+@endif
+
 @if($errors->any())
 <div class="error-banner">
     <p style="font-size:13px; font-weight:600; color:var(--clay); margin-bottom:6px;">Please fix the following:</p>
@@ -389,7 +503,8 @@
 
 <form method="POST"
       action="{{ $isEdit ? route('products.update', $product) : route('products.store') }}"
-      id="product-form">
+      id="product-form"
+      enctype="multipart/form-data">
     @csrf
     @if($isEdit) @method('PUT') @endif
 
@@ -400,20 +515,23 @@
     <div class="form-card">
         <p class="section-title" style="margin-bottom:14px;">What are you selling?</p>
         <div class="type-cards">
+            <label class="type-card {{ $currentType === 'variant' ? 'selected' : '' }}" data-type="variant">
+                <input type="radio" name="type" value="variant" {{ $currentType === 'variant' ? 'checked' : '' }}>
+                <svg class="type-card-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>
+                <span class="type-card-name">Sized items</span>
+                <span class="type-card-desc">Shirts, trousers, dresses, shoes, boxers — comes in sizes or colours</span>
+            </label>
             <label class="type-card {{ $currentType === 'unit' ? 'selected' : '' }}" data-type="unit">
                 <input type="radio" name="type" value="unit" {{ $currentType === 'unit' ? 'checked' : '' }}>
-                <span class="type-card-name">By the piece</span>
-                <span class="type-card-desc">A bag, a cap, a sealed perfume bottle, an empty bottle</span>
+                <svg class="type-card-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <span class="type-card-name">Single item</span>
+                <span class="type-card-desc">A bag, a cap, a sealed perfume bottle — one price, one count</span>
             </label>
             <label class="type-card {{ $currentType === 'measured' ? 'selected' : '' }}" data-type="measured">
                 <input type="radio" name="type" value="measured" {{ $currentType === 'measured' ? 'checked' : '' }}>
-                <span class="type-card-name">By ml — bulk / decant</span>
-                <span class="type-card-desc">You pour from your supply into the customer's bottle</span>
-            </label>
-            <label class="type-card {{ $currentType === 'variant' ? 'selected' : '' }}" data-type="variant">
-                <input type="radio" name="type" value="variant" {{ $currentType === 'variant' ? 'checked' : '' }}>
-                <span class="type-card-name">Comes in sizes or colours</span>
-                <span class="type-card-desc">A dress in S, M, L — or shoes in different colours</span>
+                <svg class="type-card-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v8L8.5 12A4 4 0 0 0 8 14a4 4 0 0 0 8 0 4 4 0 0 0-.5-2L14 10V2"/><line x1="8.5" y1="2" x2="15.5" y2="2"/></svg>
+                <span class="type-card-name">Sold by ml</span>
+                <span class="type-card-desc">Perfume you pour per customer — you track what's left in the bottle</span>
             </label>
         </div>
         @error('type') <span class="field-error" style="margin-top:10px; display:block;">{{ $message }}</span> @enderror
@@ -479,7 +597,7 @@
             <div class="form-group">
                 <label class="form-label">Supplier</label>
                 @php
-                    $selSuppId   = (int) old('supplier_id', $isEdit ? ($product->supplier_id ?? 0) : 0);
+                    $selSuppId   = (int) old('supplier_id', $isEdit ? ($product->supplier_id ?? 0) : ($pre['supplier_id'] ?? 0));
                     $selSuppName = '— No supplier —';
                     foreach ($suppliers as $_s) {
                         if ((int)$_s->id === $selSuppId && $selSuppId > 0) { $selSuppName = $_s->name; break; }
@@ -675,8 +793,17 @@
             Select the sizes and colours you stock. Each one you pick up gets its own stock count.
         </p>
 
+        {{-- Size group presets --}}
+        <span class="subsection-label">Quick select</span>
+        <div class="size-group-row" id="size-group-row">
+            <button type="button" class="size-group-btn" data-group="tops" onclick="applySizeGroup('tops')">Tops XS–XL</button>
+            <button type="button" class="size-group-btn" data-group="tops-sml" onclick="applySizeGroup('tops-sml')">Tops S–L</button>
+            <button type="button" class="size-group-btn" data-group="trousers" onclick="applySizeGroup('trousers')">Trousers 28–36</button>
+            <button type="button" class="size-group-btn" data-group="shoes" onclick="applySizeGroup('shoes')">Shoes 36–44</button>
+        </div>
+
         {{-- Sizes --}}
-        <span class="subsection-label">Sizes</span>
+        <span class="subsection-label" style="margin-top:18px;">Or pick individually</span>
         <div class="chip-group" id="size-chips">
             @foreach($presetSizes as $sz)
             <button type="button"
@@ -764,12 +891,96 @@
         </div>
     </div>
 
+    {{-- ── Online Shop ──────────────────────────────────── --}}
+    <div class="form-card" id="shop-card">
+        <p class="section-title">Online Shop</p>
+
+        {{-- Photo upload --}}
+        <div class="form-group">
+            <label class="form-label">Product Photo</label>
+            @php $isDemo = tenant()->id === 'demo'; @endphp
+            @if($isDemo)
+                <div class="demo-photo-notice">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>Photo uploads are not available in the demo. On your own account you can upload product photos — they get auto-compressed for fast loading.</span>
+                </div>
+            @else
+                <div class="photo-upload-area" id="photoArea" onclick="document.getElementById('photo-input').click()">
+                    @if($isEdit && $product->photo)
+                        <img src="{{ asset('storage/' . $product->photo) }}" class="photo-preview" id="photoPreview" alt="">
+                        <div class="photo-overlay">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M14.5 3.5l2 2-10 10-2.5.5.5-2.5 10-10z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            Change photo
+                        </div>
+                    @else
+                        <div class="photo-placeholder" id="photoPlaceholder">
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="2" y="5" width="24" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="14" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M9 5l1.5-3h7L19 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            <span>No photo yet</span>
+                        </div>
+                        <img src="" class="photo-preview hidden" id="photoPreview" alt="">
+                    @endif
+                </div>
+                <input type="file" id="photo-input" name="photo" accept="image/*" class="hidden" onchange="handlePhotoChange(this)">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px;">
+                    <label class="photo-file-btn" for="photo-input">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Choose photo
+                    </label>
+                    <span class="photo-file-name" id="photo-file-name">No file chosen</span>
+                </div>
+                @if($isEdit && $product->photo)
+                    <div style="margin-top:8px;">
+                        <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--clay); cursor:pointer; font-weight:500;">
+                            <input type="checkbox" name="remove_photo" value="1" id="remove-photo-cb" style="accent-color:var(--clay);">
+                            Remove photo
+                        </label>
+                    </div>
+                @endif
+            @endif
+            @error('photo')<div class="form-error">{{ $message }}</div>@enderror
+        </div>
+
+        {{-- Description --}}
+        <div class="form-group">
+            <label class="form-label">Shop Description <span class="form-label-hint">Optional · shown to customers</span></label>
+            <textarea name="description" id="f-description" maxlength="200" rows="2"
+                      class="form-input" style="resize:vertical; min-height:72px; line-height:1.5;"
+                      placeholder="e.g. Floral ankara dress, perfect for events. Available in S–XL.">{{ old('description', $isEdit ? $product->description : '') }}</textarea>
+            <div style="display:flex; justify-content:space-between; margin-top:4px;">
+                <div></div>
+                <div class="form-label-hint" id="desc-counter">0 / 200</div>
+            </div>
+            @error('description')<div class="form-error">{{ $message }}</div>@enderror
+        </div>
+
+        {{-- Shop visible toggle --}}
+        <div class="form-group" style="margin-bottom:0;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:var(--surface); border-radius:10px; border:1.5px solid var(--border);">
+                <div>
+                    <div style="font-size:14px; font-weight:600; color:var(--espresso);">Show in my shop</div>
+                    <div style="font-size:12px; color:var(--muted); margin-top:2px;">Customers can see this product at your shop link</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" name="shop_visible" id="f-shop-visible" value="1"
+                           {{ old('shop_visible', $isEdit && $product->shop_visible ? true : false) ? 'checked' : '' }}>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
     {{-- ── Actions ──────────────────────────────────────── --}}
+    <input type="hidden" name="add_another" id="f-add-another" value="0">
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" onclick="document.getElementById('f-add-another').value='0'">
             {{ $isEdit ? 'Save Changes' : 'Add Product' }}
         </button>
-        <a href="{{ route('products.index') }}" class="btn btn-secondary">Cancel</a>
+        @if(!$isEdit)
+        <button type="submit" class="btn btn-secondary" style="color:var(--terracotta); border-color:var(--terracotta);" onclick="document.getElementById('f-add-another').value='1'">
+            Save &amp; add another
+        </button>
+        @endif
+        <a href="{{ route('products.index') }}" class="btn btn-secondary" style="margin-left:auto;">Cancel</a>
     </div>
 
 </form>
@@ -1053,6 +1264,50 @@ document.getElementById('product-form').addEventListener('submit', function() {
 });
 
 // ── Custom select (dropdown) ──────────────────────────────
+// ── Size group presets ──────────────────────────
+var SIZE_GROUPS = {
+    'tops':      ['XS','S','M','L','XL','XXL'],
+    'tops-sml':  ['S','M','L'],
+    'trousers':  ['28','30','32','34','36'],
+    'shoes':     ['36','37','38','39','40','41','42','43','44']
+};
+
+function applySizeGroup(group) {
+    var sizes = SIZE_GROUPS[group];
+    if (!sizes) return;
+
+    // Clear all current size selections + stock rows
+    document.querySelectorAll('#size-chips .chip.active').forEach(function(c) { c.classList.remove('active'); });
+    document.getElementById('size-stocks').innerHTML = '';
+
+    sizes.forEach(function(sz) {
+        var existingChip = document.querySelector('#size-chips .chip[data-value="' + sz + '"]');
+        if (!existingChip) {
+            var container = document.getElementById('size-chips');
+            var addBtn    = document.getElementById('size-custom-btn');
+            var chip = document.createElement('button');
+            chip.type          = 'button';
+            chip.className     = 'chip size-chip active';
+            chip.dataset.value = sz;
+            chip.textContent   = sz;
+            chip.onclick       = function() { toggleSizeChip(this); };
+            container.insertBefore(chip, addBtn);
+        } else {
+            existingChip.classList.add('active');
+        }
+        addStockRow('size', sz, slugify(sz), 0);
+    });
+
+    // Mark applied group button
+    document.querySelectorAll('.size-group-btn').forEach(function(b) { b.classList.remove('applied'); });
+    var activeBtn = document.querySelector('.size-group-btn[data-group="' + group + '"]');
+    if (activeBtn) activeBtn.classList.add('applied');
+
+    // Focus first stock input
+    var first = document.querySelector('#size-stocks .chip-stock-input');
+    if (first) setTimeout(function() { first.focus(); }, 30);
+}
+
 function csToggle(id) {
     var cs = document.getElementById(id);
     var trigger  = cs.querySelector('.cs-trigger');
@@ -1137,6 +1392,34 @@ function toggleGender(btn) {
         document.getElementById('f-gender').value = val;
     }
 }
+
+// ── Photo upload preview ─────────────────────────────────
+window.handlePhotoChange = function(input) {
+    if (!input.files || !input.files[0]) return;
+    var nameEl = document.getElementById('photo-file-name');
+    if (nameEl) nameEl.textContent = input.files[0].name;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var preview   = document.getElementById('photoPreview');
+        var placeholder = document.getElementById('photoPlaceholder');
+        if (preview) {
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+        }
+        if (placeholder) placeholder.style.display = 'none';
+    };
+    reader.readAsDataURL(input.files[0]);
+};
+
+// ── Description counter ──────────────────────────────────
+(function() {
+    var ta = document.getElementById('f-description');
+    var counter = document.getElementById('desc-counter');
+    if (!ta || !counter) return;
+    function update() { counter.textContent = ta.value.length + ' / 200'; }
+    ta.addEventListener('input', update);
+    update();
+})();
 
 // ── Boot ────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {

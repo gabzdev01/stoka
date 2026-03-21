@@ -51,6 +51,128 @@
 
 @section('styles')
 <style>
+/* ── Suggest prompt card ────────────────────────── */
+.suggest-prompt {
+    position: relative;
+    margin-bottom: 32px;
+    padding: 30px 32px;
+    background: var(--espresso);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+.suggest-prompt::after {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(193,127,74,0.18) 0%, transparent 70%);
+    pointer-events: none;
+}
+.suggest-prompt-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+}
+.suggest-prompt-icon {
+    width: 40px; height: 40px;
+    flex-shrink: 0;
+    background: rgba(193,127,74,0.15);
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    color: #C17F4A;
+}
+.suggest-prompt-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.suggest-prompt-headline {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #FAF7F2;
+    line-height: 1.15;
+    letter-spacing: 0.01em;
+}
+.suggest-prompt-sub {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(250,247,242,0.5);
+}
+.suggest-prompt-btn {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    height: 42px;
+    padding: 0 22px;
+    background: #C17F4A;
+    color: #FAF7F2;
+    border: none;
+    border-radius: 10px;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: opacity 0.14s, transform 0.14s;
+    white-space: nowrap;
+    box-shadow: 0 2px 12px rgba(193,127,74,0.35);
+}
+.suggest-prompt-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.suggest-prompt-btn:active { opacity: 0.78; transform: translateY(0); }
+@media (max-width: 540px) {
+    .suggest-prompt { padding: 22px 20px; }
+    .suggest-prompt-headline { font-size: 19px; }
+    .suggest-prompt-btn { width: 100%; justify-content: center; display: flex; align-items: center; }
+}
+
+/* ── Stock summary strip (replaces legend) ───────── */
+.stock-strip {
+    display: flex;
+    gap: 0;
+    margin-bottom: 24px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.stock-strip-item {
+    flex: 1;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+}
+.stock-strip-item + .stock-strip-item { border-left: 1px solid var(--border); }
+.strip-count {
+    font-family: "DM Mono", monospace;
+    font-size: 20px;
+    font-weight: 500;
+}
+.strip-count.out   { color: var(--clay); }
+.strip-count.low   { color: var(--terracotta); }
+.strip-count.ok    { color: var(--forest); }
+.strip-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* ── Suggest hidden state ───────────────────────── */
+.suggest-hidden .sl-suggest-col,
+.suggest-hidden .h-suggest { display: none; }
+
 /* ── Legend ─────────────────────────────────────── */
 .legend {
     display: flex;
@@ -251,12 +373,38 @@
 
 @section('content')
 
-{{-- Legend + column headers --}}
-<div class="legend">
-    <span class="legend-item"><span class="leg-dot leg-out"></span>Sold out</span>
-    <span class="legend-item"><span class="leg-dot leg-low"></span>Running low</span>
-    <span class="legend-item"><span class="leg-dot leg-ok"></span>Healthy</span>
-    <span style="font-size:12px;color:var(--muted);">· Suggested qty based on last 30 days sales</span>
+{{-- Suggest reveal prompt --}}
+<div id="suggest-prompt" class="suggest-prompt">
+    <div class="suggest-prompt-body">
+        <div class="suggest-prompt-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+        </div>
+        <div class="suggest-prompt-copy">
+            <span class="suggest-prompt-headline">Your stock, analyzed.</span>
+            <span class="suggest-prompt-sub">Ready to show what needs restocking based on the last 30 days of sales.</span>
+        </div>
+    </div>
+    <button class="suggest-prompt-btn" onclick="revealSuggest()">Show suggestions &rarr;</button>
+</div>
+
+<div id="shopping-wrap" class="suggest-hidden">
+
+{{-- Stock summary strip --}}
+<div class="stock-strip">
+    <div class="stock-strip-item">
+        <span class="strip-count out">{{ $outCount }}</span>
+        <span class="strip-label">Sold out</span>
+    </div>
+    <div class="stock-strip-item">
+        <span class="strip-count low">{{ $lowCount }}</span>
+        <span class="strip-label">Running low</span>
+    </div>
+    <div class="stock-strip-item">
+        <span class="strip-count ok">{{ $products->count() - $outCount - $lowCount }}</span>
+        <span class="strip-label">Healthy</span>
+    </div>
 </div>
 
 @foreach($byCategory as $category => $catProducts)
@@ -403,6 +551,8 @@
 </div>
 @endforeach
 
+</div>{{-- /shopping-wrap --}}
+
 @endsection
 
 @section('scripts')
@@ -425,6 +575,18 @@ function filterSupplier(suppId) {
         var anyVisible = sec.querySelectorAll('[data-supplier]:not(.hidden)').length > 0;
         sec.style.display = anyVisible ? '' : 'none';
     });
+}
+function revealSuggest() {
+    var wrap   = document.getElementById('shopping-wrap');
+    var prompt = document.getElementById('suggest-prompt');
+    if (wrap) wrap.classList.remove('suggest-hidden');
+    if (prompt) prompt.style.display = 'none';
+    try { sessionStorage.setItem('stoka_suggest_revealed', '1'); } catch(e) {}
+}
+
+// Auto-reveal if previously shown in this session
+if (sessionStorage.getItem('stoka_suggest_revealed') === '1') {
+    revealSuggest();
 }
 </script>
 @endsection

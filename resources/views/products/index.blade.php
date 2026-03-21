@@ -233,7 +233,7 @@
                     @endphp
                     <tr>
                         <td>
-                            <div class="product-name">{{ $product->name }}</div>
+                            <div class="product-name" @if(in_array($product->id, $deadStockIds)) style="opacity:0.5" title="No sales in 30+ days" @endif>{{ $product->name }}</div>
                             @if($product->category)
                                 <div class="product-category">{{ $product->category }}</div>
                             @endif
@@ -289,7 +289,7 @@
                 {{-- Name + status --}}
                 <div class="m-card-header">
                     <div>
-                        <div class="m-card-name">{{ $product->name }}</div>
+                        <div class="m-card-name" @if(in_array($product->id, $deadStockIds)) style="opacity:0.5" @endif>{{ $product->name }}</div>
                         @if($product->category)
                             <div class="m-card-category">{{ $product->category }}</div>
                         @endif

@@ -31,7 +31,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'receipt_print',
             'receipt_footer',
             'notify_shift_close',
-            'notify_low_stock',
+            'shop_enabled', 'notify_low_stock',
             'notify_credit_overdue',
             'password_reset_token',
             'password_reset_expires_at',

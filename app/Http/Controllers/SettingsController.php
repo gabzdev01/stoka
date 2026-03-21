@@ -15,9 +15,14 @@ class SettingsController extends Controller
     public function index()
     {
         $t     = $this->tenant();
-        $staff = User::where('role', 'staff')->orderBy('name')->get();
         $owner = User::find(session('auth_user'));
-        return view('settings.index', compact('t', 'staff', 'owner'));
+        return view('settings.index', compact('t', 'owner'));
+    }
+
+    public function staffPage()
+    {
+        $staff = User::where('role', 'staff')->orderBy('name')->get();
+        return view('settings.staff', compact('staff'));
     }
 
     // ── Section 1: Account ────────────────────────────────────────────────────
@@ -76,6 +81,13 @@ class SettingsController extends Controller
             ->with('ok_shop', 'Shop details saved.');
     }
 
+    public function toggleShop(Request $request)
+    {
+        $tenant = $this->tenant();
+        $tenant->update(['shop_enabled' => !$tenant->shop_enabled]);
+        return back()->with('ok_shop', $tenant->shop_enabled ? 'Your shop is now live.' : 'Your shop is now paused.');
+    }
+
     // ── Section 3: Staff ──────────────────────────────────────────────────────
 
     public function addStaff(Request $request)
@@ -96,7 +108,7 @@ class SettingsController extends Controller
             'active' => true,
         ]);
 
-        return redirect(route('settings.index') . '#staff')
+        return redirect(route('staff.index'))
             ->with('ok_add_staff', [
                 'name' => $user->name,
                 'pin'  => $pin,
@@ -106,7 +118,7 @@ class SettingsController extends Controller
     public function toggleStaffStatus(User $user)
     {
         $user->update(['active' => !$user->active]);
-        return redirect(route('settings.index') . '#staff');
+        return redirect(route('staff.index'));
     }
 
     public function resetStaffPin(User $user)
@@ -114,7 +126,7 @@ class SettingsController extends Controller
         $pin = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
         $user->update(['pin' => $pin]);
 
-        return redirect(route('settings.index') . '#staff')
+        return redirect(route('staff.index'))
             ->with('ok_reset_pin', [
                 'user_id' => $user->id,
                 'name'    => $user->name,
@@ -125,7 +137,7 @@ class SettingsController extends Controller
     public function removeStaff(User $user)
     {
         $user->update(['active' => false]);
-        return redirect(route('settings.index') . '#staff')
+        return redirect(route('staff.index'))
             ->with('ok_remove', $user->name . ' has been removed.');
     }
 

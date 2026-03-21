@@ -90,6 +90,13 @@
 
 @section('content')
 
+@if($staffCount === 0)
+<p style="font-size:13px; color:var(--muted); margin-bottom:20px;">
+    No staff accounts yet.
+    <a href="{{ route('settings.index') }}" style="color:var(--terracotta); font-weight:600; text-decoration:none;">Add a staff member →</a>
+</p>
+@endif
+
 @if($shifts->isEmpty())
 <div class="empty-state">No shifts recorded yet.</div>
 @else

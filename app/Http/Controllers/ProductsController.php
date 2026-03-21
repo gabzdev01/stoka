@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ProductsController extends Controller
 {
@@ -12,18 +16,41 @@ class ProductsController extends Controller
         $products = Product::with(['supplier', 'variants', 'bottles'])
             ->orderBy('name')
             ->get();
-        return view('products.index', compact('products'));
+
+        // Dead stock: products with no sale in the last 30 days
+        $recentlySoldIds = DB::table('sales')
+            ->whereNull('voided_at')
+            ->where('created_at', '>=', now()->subDays(30))
+            ->pluck('product_id')
+            ->unique()
+            ->toArray();
+        $deadStockIds = Product::where('status', 'active')
+            ->whereNotIn('id', $recentlySoldIds)
+            ->pluck('id')
+            ->toArray();
+
+        return view('products.index', compact('products', 'deadStockIds'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $suppliers = Supplier::orderBy('name')->get();
-        return view('products.form', compact('suppliers'));
+        $suppliers  = Supplier::orderBy('name')->get();
+        $prefill    = [
+            'type'        => $request->input('prefill_type',     'variant'),
+            'category'    => $request->input('prefill_category', ''),
+            'supplier_id' => $request->input('prefill_supplier', ''),
+        ];
+        return view('products.form', compact('suppliers', 'prefill'));
     }
 
     public function store(Request $request)
     {
         $validated = $this->validateProduct($request);
+
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $this->processAndStorePhoto($request->file('photo'), tenant('id'));
+        }
 
         $product = Product::create([
             'supplier_id'         => $validated['supplier_id'] ?? null,
@@ -38,10 +65,21 @@ class ProductsController extends Controller
             'stock'               => $validated['stock'] ?? 0,
             'low_stock_threshold' => $validated['low_stock_threshold'] ?? 5,
             'status'              => 'active',
+            'photo'               => $photoPath,
+            'description'         => $validated['description'] ?? null,
+            'shop_visible'        => $request->boolean('shop_visible'),
         ]);
 
         $this->syncVariants($product, $request);
         $this->syncBottle($product, $request);
+
+        if ($request->input('add_another') === '1') {
+            return redirect()->route('products.create', [
+                'prefill_type'     => $validated['type'],
+                'prefill_category' => $validated['category'] ?? '',
+                'prefill_supplier' => $validated['supplier_id'] ?? '',
+            ])->with('added', $product->name);
+        }
 
         return redirect()->route('products.index')
             ->with('success', 'Product added.');
@@ -58,6 +96,19 @@ class ProductsController extends Controller
     {
         $validated = $this->validateProduct($request);
 
+        $photoPath = $product->photo;
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($product->photo) {
+                Storage::disk('public')->delete($product->photo);
+            }
+            $photoPath = $this->processAndStorePhoto($request->file('photo'), tenant('id'));
+        }
+        if ($request->input('remove_photo') === '1' && $product->photo) {
+            Storage::disk('public')->delete($product->photo);
+            $photoPath = null;
+        }
+
         $product->update([
             'supplier_id'         => $validated['supplier_id'] ?? null,
             'name'                => $validated['name'],
@@ -70,6 +121,9 @@ class ProductsController extends Controller
             'track_stock'         => $request->boolean('track_stock'),
             'stock'               => $validated['stock'] ?? 0,
             'low_stock_threshold' => $validated['low_stock_threshold'] ?? 5,
+            'photo'               => $photoPath,
+            'description'         => $validated['description'] ?? null,
+            'shop_visible'        => $request->boolean('shop_visible'),
         ]);
 
         $this->syncVariants($product, $request);
@@ -107,6 +161,8 @@ class ProductsController extends Controller
             'variants.*.size'       => 'nullable|string|max:50',
             'variants.*.colour'     => 'nullable|string|max:50',
             'variants.*.stock'      => 'nullable|integer|min:0',
+            'photo'                 => 'nullable|image|max:4096',
+            'description'           => 'nullable|string|max:200',
         ]);
     }
 
@@ -148,5 +204,27 @@ class ProductsController extends Controller
                 'active'       => true,
             ]);
         }
+    }
+
+    /**
+     * Resize, strip metadata, and compress a product photo.
+     * Outputs JPEG at max 1200px wide, quality 82.
+     */
+    private function processAndStorePhoto($file, string $tenantId): string
+    {
+        $manager  = new ImageManager(new Driver());
+        $image    = $manager->read($file->getRealPath());
+
+        // Downscale only if wider than 1200px — never upscale
+        if ($image->width() > 1200) {
+            $image->scaleDown(width: 1200);
+        }
+
+        $compressed = $image->toJpeg(quality: 82)->toString();
+
+        $filename  = 'products/' . $tenantId . '/' . uniqid('p_', true) . '.jpg';
+        Storage::disk('public')->put($filename, $compressed);
+
+        return $filename;
     }
 }

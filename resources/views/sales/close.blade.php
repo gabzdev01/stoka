@@ -1,4 +1,5 @@
 @extends('layouts.staff')
+@section('no-search', true)
 
 @section('title', 'Close Shift')
 
@@ -114,8 +115,8 @@
     margin-left: 6px;
 }
 
-/* ── Till input ─────────────────────────────────── */
-.till-label {
+/* ── Counter input ─────────────────────────────────── */
+.counter-label {
     display: block;
     font-size: 12px;
     font-weight: 700;
@@ -124,7 +125,7 @@
     letter-spacing: 0.08em;
     margin-bottom: 10px;
 }
-.till-input-wrap {
+.counter-input-wrap {
     display: flex;
     align-items: center;
     background: var(--bg);
@@ -133,10 +134,10 @@
     overflow: hidden;
     transition: border-color 0.15s;
 }
-.till-input-wrap:focus-within {
+.counter-input-wrap:focus-within {
     border-color: var(--espresso);
 }
-.till-prefix {
+.counter-prefix {
     padding: 0 14px 0 16px;
     font-family: "DM Mono", monospace;
     font-size: 15px;
@@ -150,7 +151,7 @@
     flex-shrink: 0;
     background: var(--surface);
 }
-.till-input {
+.counter-input {
     flex: 1;
     height: 56px;
     border: none;
@@ -165,10 +166,10 @@
     -webkit-appearance: none;
     appearance: none;
 }
-.till-input::placeholder { color: var(--border); }
-.till-input::-webkit-outer-spin-button,
-.till-input::-webkit-inner-spin-button { -webkit-appearance: none; }
-.till-input[type=number] { -moz-appearance: textfield; }
+.counter-input::placeholder { color: var(--border); }
+.counter-input::-webkit-outer-spin-button,
+.counter-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.counter-input[type=number] { -moz-appearance: textfield; }
 
 /* ── Live reconciliation ────────────────────────── */
 .recon-section {
@@ -218,6 +219,49 @@
     color: var(--muted);
     text-align: center;
     line-height: 1.4;
+}
+
+/* ── Owner close (no till count) ───────────────── */
+.owner-close-note {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    text-align: center;
+    padding: 4px 0;
+}
+.owner-totals {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+.ot-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 11px 14px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+}
+.ot-row:last-child { border-bottom: none; }
+.ot-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+}
+.ot-value {
+    font-family: "DM Mono", monospace;
+    font-size: 15px;
+    color: var(--espresso);
+}
+.ot-value.ot-total {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--forest);
 }
 
 /* ── Submit button ──────────────────────────────── */
@@ -301,25 +345,51 @@
             <span class="ss-value">{{ tenant('currency_symbol') }} {{ number_format((int)$cashSales) }}</span>
         </div>
         <div class="ss-row">
-            <span class="ss-label">Opening float</span>
+            <span class="ss-label">Opening counter float</span>
             <span class="ss-value">{{ tenant('currency_symbol') }} {{ number_format((int)$shift->opening_float) }}</span>
         </div>
         <div class="ss-row ss-row-expected">
-            <span class="ss-label">Expected in till</span>
+            <span class="ss-label">Expected in counter</span>
             <span class="ss-value">{{ tenant('currency_symbol') }} {{ number_format((int)$expectedCash) }}</span>
         </div>
     </div>
 
-    {{-- Till count input --}}
+    @if($isOwnerClose)
+    {{-- Owner close: no till to count, just a summary --}}
+    <div class="owner-totals">
+        @if($cashSales > 0)
+        <div class="ot-row">
+            <span class="ot-label">Cash received</span>
+            <span class="ot-value">{{ tenant('currency_symbol') }} {{ number_format((int)$cashSales) }}</span>
+        </div>
+        @endif
+        @if($mpesaSales > 0)
+        <div class="ot-row">
+            <span class="ot-label">M-Pesa received</span>
+            <span class="ot-value">{{ tenant('currency_symbol') }} {{ number_format((int)$mpesaSales) }}</span>
+        </div>
+        @endif
+        <div class="ot-row">
+            <span class="ot-label">Total</span>
+            <span class="ot-value ot-total">{{ tenant('currency_symbol') }} {{ number_format((int)$totalSales) }}</span>
+        </div>
+    </div>
+    <p class="owner-close-note">Your session will be recorded and visible in shift history.</p>
+    <button type="submit" class="close-btn btn-balanced" id="close-btn">
+        End Session
+    </button>
+
+    @else
+    {{-- Staff close: count the till --}}
     <div>
-        <label class="till-label" for="cash-counted">How much cash is in the till right now?</label>
-        <div class="till-input-wrap">
-            <span class="till-prefix">{{ tenant('currency_symbol') }}</span>
+        <label class="counter-label" for="cash-counted">Cash in the Counter</label>
+        <div class="counter-input-wrap">
+            <span class="counter-prefix">{{ tenant('currency_symbol') }}</span>
             <input
                 type="number"
                 name="cash_counted"
                 id="cash-counted"
-                class="till-input"
+                class="counter-input"
                 min="0"
                 step="1"
                 placeholder="0"
@@ -349,6 +419,7 @@
     <button type="submit" class="close-btn" id="close-btn" disabled>
         Close Shift
     </button>
+    @endif
 
 </div>
 </form>

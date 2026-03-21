@@ -211,6 +211,22 @@
 .pay-cash  { background: #E8F0E6; color: var(--forest); }
 .pay-mpesa { background: #E8F0E6; color: var(--forest); }
 .pay-credit{ background: #F5E0D8; color: var(--clay); }
+.exchange-btn-sm {
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 3px 9px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.13s, color 0.13s;
+}
+.exchange-btn-sm:active { color: var(--terracotta); border-color: var(--terracotta); }
 .voided-badge {
     font-size: 10px;
     font-weight: 700;
@@ -330,6 +346,9 @@
                         <span class="voided-badge">VOIDED</span>
                     @else
                         <span class="pay-badge pay-{{ $sale->payment_type }}">{{ strtoupper($sale->payment_type) }}</span>
+                        @if(session('shift_id'))
+                        <a href="{{ route('exchange.create', $sale) }}" class="exchange-btn-sm">Exchange</a>
+                        @endif
                     @endif
                 </div>
             </div>

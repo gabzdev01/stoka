@@ -34,17 +34,47 @@
     display: block; margin-bottom: 14px;
 }
 
-/* ── Supplier select ───────────────────────────── */
-.sup-select {
-    width: 100%; max-width: 360px; height: 44px; padding: 0 14px;
-    border: 1.5px solid var(--border); border-radius: 10px;
-    font-family: "Plus Jakarta Sans", sans-serif; font-size: 14px;
-    color: var(--espresso); background: #fff; appearance: none; -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238C7B6E' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 14px center;
-    cursor: pointer; transition: border-color 0.15s;
+/* ── Supplier chips ────────────────────────────── */
+.sup-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
-.sup-select:focus { outline: none; border-color: var(--espresso); }
+.sup-chip {
+    position: relative;
+}
+.sup-chip input[type="radio"] {
+    position: absolute; opacity: 0; width: 0; height: 0;
+}
+.sup-chip label {
+    display: flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--muted);
+    background: var(--surface);
+    cursor: pointer;
+    transition: border-color 0.14s, color 0.14s, background 0.14s;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.sup-chip label:hover {
+    border-color: var(--espresso);
+    color: var(--espresso);
+}
+.sup-chip input[type="radio"]:checked + label {
+    background: var(--espresso);
+    border-color: var(--espresso);
+    color: #fff;
+}
+/* Keep hidden select for form submission */
+.sup-select-hidden { display: none; }
 
 /* ── Category filter pills ─────────────────────── */
 .cat-filter {
@@ -87,10 +117,10 @@
 
 /* ── Qty / cost inputs ─────────────────────────── */
 .qty-input, .cost-input {
-    width: 90px; height: 36px;
+    width: 80px; height: 36px;
     border: 1.5px solid var(--border); border-radius: 8px;
     font-family: "DM Mono", monospace; font-size: 14px;
-    color: var(--espresso); padding: 0 10px; outline: none;
+    color: var(--espresso); padding: 0 8px; outline: none;
     text-align: right; -webkit-appearance: none; transition: border-color 0.15s;
 }
 .qty-input:focus, .cost-input:focus { border-color: var(--espresso); }
@@ -98,6 +128,20 @@
 .cost-input::-webkit-outer-spin-button, .cost-input::-webkit-inner-spin-button { -webkit-appearance: none; }
 .qty-input[type=number], .cost-input[type=number] { -moz-appearance: textfield; }
 .qty-input.has-value { border-color: var(--terracotta); background: #FDFAF7; }
+/* On mobile, hide In Stock column — stock badge shown inline in product name */
+@media (max-width: 640px) {
+    .col-stock { display: none; }
+    .products-table th:nth-child(1) { min-width: 120px; }
+}
+.prod-stock-inline {
+    display: none;
+    font-family: "DM Mono", monospace; font-size: 12px;
+    margin-left: 6px;
+}
+.prod-stock-inline.out { color: var(--clay); font-weight: 600; }
+.prod-stock-inline.low { color: var(--terracotta); }
+.prod-stock-inline.ok  { color: var(--forest); }
+@media (max-width: 640px) { .prod-stock-inline { display: inline; } }
 
 /* Category header row */
 .cat-header-row td {
@@ -196,14 +240,27 @@ $uniqueCats = $products->pluck('category')->filter()->unique()->sort()->values()
     {{-- Supplier --}}
     <div class="restock-section">
         <span class="section-label">Supplier</span>
-        <select name="supplier_id" id="supplier-select" class="sup-select">
-            <option value="">No supplier / direct purchase</option>
+        {{-- Hidden select for form submission --}}
+        <select name="supplier_id" id="supplier-select" class="sup-select-hidden">
+            <option value=""></option>
             @foreach($suppliers as $sup)
-            <option value="{{ $sup->id }}" {{ old('supplier_id') == $sup->id ? 'selected' : '' }}>
-                {{ $sup->name }}
-            </option>
+            <option value="{{ $sup->id }}">{{ $sup->name }}</option>
             @endforeach
         </select>
+
+        {{-- Visual chip radios --}}
+        <div class="sup-chips" id="sup-chips">
+            <div class="sup-chip">
+                <input type="radio" name="_sup_chip" id="sup-chip-0" value="" checked>
+                <label for="sup-chip-0">No supplier</label>
+            </div>
+            @foreach($suppliers as $sup)
+            <div class="sup-chip">
+                <input type="radio" name="_sup_chip" id="sup-chip-{{ $sup->id }}" value="{{ $sup->id }}" {{ old('supplier_id') == $sup->id ? 'checked' : '' }}>
+                <label for="sup-chip-{{ $sup->id }}">{{ $sup->name }}</label>
+            </div>
+            @endforeach
+        </div>
     </div>
 
     {{-- Category filter pills --}}
@@ -222,7 +279,7 @@ $uniqueCats = $products->pluck('category')->filter()->unique()->sort()->values()
             <thead>
                 <tr>
                     <th style="padding-left:20px; min-width:160px;">Product</th>
-                    <th>In stock</th>
+                    <th class="col-stock">In stock</th>
                     <th>Add qty</th>
                     <th>Cost / unit</th>
                 </tr>
@@ -255,12 +312,13 @@ $uniqueCats = $products->pluck('category')->filter()->unique()->sort()->values()
                 <tr class="variant-child" data-cat="{{ $product->category }}" data-supplier="{{ $product->supplier_id ?? '' }}">
                     <td>
                         {{ $variant->size }}{{ $variant->colour ? ' · ' . $variant->colour : '' }}
+                        <span class="prod-stock-inline {{ $vstatus }}">{{ $vstatus === 'out' ? '· Out' : '· '.$vstock }}</span>
                         <input type="hidden" name="items[v{{ $variant->id }}][product_id]" value="{{ $product->id }}">
                         <input type="hidden" name="items[v{{ $variant->id }}][variant_id]" value="{{ $variant->id }}">
                     </td>
-                    <td><span class="prod-stock {{ $vstatus }}">{{ $vstatus === 'out' ? 'Out' : $vstock }}</span></td>
+                    <td class="col-stock"><span class="prod-stock {{ $vstatus }}">{{ $vstatus === 'out' ? 'Out' : $vstock }}</span></td>
                     <td><input type="number" min="0" step="1" placeholder="0" name="items[v{{ $variant->id }}][qty]" class="qty-input" oninput="onQtyChange(this)" autocomplete="off"></td>
-                    <td><input type="number" min="0" step="0.01" placeholder="—" name="items[v{{ $variant->id }}][cost]" class="cost-input" oninput="recalcTotal()" autocomplete="off"></td>
+                    <td><input type="number" min="0" step="0.01" placeholder="—" name="items[v{{ $variant->id }}][cost]" class="cost-input" oninput="recalcTotal()" autocomplete="off" placeholder="{{ isset($lastCosts['v'.$variant->id]) ? number_format((float)$lastCosts['v'.$variant->id], 0) : '—' }}"></td>
                 </tr>
                 @endforeach
                 @endif
@@ -276,12 +334,13 @@ $uniqueCats = $products->pluck('category')->filter()->unique()->sort()->values()
                     <td>
                         <span style="font-weight:500;">{{ $product->name }}</span>
                         @if($product->supplier)<span style="font-size:11.5px;color:var(--muted);margin-left:6px;">{{ $product->supplier->name }}</span>@endif
+                        <span class="prod-stock-inline {{ $mstatus }}">{{ !$bottle ? '· Out' : '· '.number_format((float)$bottle->remaining_ml, 0).'ml' }}</span>
                         <input type="hidden" name="items[m{{ $product->id }}][product_id]" value="{{ $product->id }}">
                         <input type="hidden" name="items[m{{ $product->id }}][measured]" value="1">
                     </td>
-                    <td><span class="prod-stock {{ $mstatus }}">{{ !$bottle ? 'Out' : number_format((float)$bottle->remaining_ml, 0).'ml' }}</span></td>
+                    <td class="col-stock"><span class="prod-stock {{ $mstatus }}">{{ !$bottle ? 'Out' : number_format((float)$bottle->remaining_ml, 0).'ml' }}</span></td>
                     <td><input type="number" min="0" step="1" placeholder="0 ml" name="items[m{{ $product->id }}][qty]" class="qty-input" oninput="onQtyChange(this)" autocomplete="off" title="Volume of new bottle in ml"></td>
-                    <td><input type="number" min="0" step="0.01" placeholder="—" name="items[m{{ $product->id }}][cost]" class="cost-input" oninput="recalcTotal()" autocomplete="off"></td>
+                    <td><input type="number" min="0" step="0.01" placeholder="—" name="items[m{{ $product->id }}][cost]" class="cost-input" oninput="recalcTotal()" autocomplete="off" placeholder="{{ isset($lastCosts['u'.$product->id]) ? number_format((float)$lastCosts['u'.$product->id], 0) : '—' }}"></td>
                 </tr>
                 @endif
 
@@ -295,11 +354,12 @@ $uniqueCats = $products->pluck('category')->filter()->unique()->sort()->values()
                     <td>
                         <span style="font-weight:500;">{{ $product->name }}</span>
                         @if($product->supplier)<span style="font-size:11.5px;color:var(--muted);margin-left:6px;">{{ $product->supplier->name }}</span>@endif
+                        <span class="prod-stock-inline {{ $ustatus }}">{{ $ustatus === 'out' ? '· Out' : '· '.$ustock }}</span>
                         <input type="hidden" name="items[u{{ $product->id }}][product_id]" value="{{ $product->id }}">
                     </td>
-                    <td><span class="prod-stock {{ $ustatus }}">{{ $ustatus === 'out' ? 'Out' : $ustock }}</span></td>
+                    <td class="col-stock"><span class="prod-stock {{ $ustatus }}">{{ $ustatus === 'out' ? 'Out' : $ustock }}</span></td>
                     <td><input type="number" min="0" step="1" placeholder="0" name="items[u{{ $product->id }}][qty]" class="qty-input" oninput="onQtyChange(this)" autocomplete="off"></td>
-                    <td><input type="number" min="0" step="0.01" placeholder="—" name="items[u{{ $product->id }}][cost]" class="cost-input" oninput="recalcTotal()" autocomplete="off"></td>
+                    <td><input type="number" min="0" step="0.01" placeholder="—" name="items[u{{ $product->id }}][cost]" class="cost-input" oninput="recalcTotal()" autocomplete="off" placeholder="{{ isset($lastCosts['u'.$product->id]) ? number_format((float)$lastCosts['u'.$product->id], 0) : '—' }}"></td>
                 </tr>
                 @endif
 

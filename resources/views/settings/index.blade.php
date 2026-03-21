@@ -25,12 +25,11 @@
     padding: 28px;
 }
 .s-card-title {
-    font-size: 11px;
+    font-size: 16px;
     font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+    color: var(--espresso);
     margin-bottom: 22px;
+    letter-spacing: 0;
 }
 .s-divider {
     height: 1px;
@@ -346,32 +345,36 @@ input:checked + .toggle-slider::before { transform: translateX(20px); }
 }
 .add-staff-form.visible { display: block; }
 
-/* ── Hours row ─────────────────────────────────────────── */
-.hours-row {
+/* ── Hours select ──────────────────────────────────────── */
+.hours-select-row {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px;
 }
-.hours-sep {
-    font-size: 13px;
+.hours-select-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.hours-mini-label {
+    font-size: 11px;
+    font-weight: 700;
     color: var(--muted);
-    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
 }
-.hours-input {
-    width: 120px;
-    height: 44px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--parchment);
-    font-family: "DM Mono", monospace;
-    font-size: 15px;
-    color: var(--espresso);
-    padding: 0 12px;
-    outline: none;
-    transition: border-color 0.15s;
+.hours-arrow {
+    font-size: 18px;
+    color: var(--border);
+    padding-bottom: 11px;
+    flex-shrink: 0;
+    line-height: 1;
 }
-.hours-input:focus { border-color: var(--espresso); }
+@media (max-width: 480px) {
+    .hours-select-row { flex-direction: column; gap: 10px; }
+    .hours-arrow { display: none; }
+}
 
 /* ── Currency select ───────────────────────────────────── */
 .s-select {
@@ -386,13 +389,18 @@ input:checked + .toggle-slider::before { transform: translateX(20px); }
     padding: 0 14px;
     outline: none;
     cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 5l4 4 4-4' stroke='%238C7B6E' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 14px center;
     padding-right: 36px;
+    transition: border-color 0.15s;
+    -webkit-text-fill-color: var(--espresso);
 }
-.s-select:focus { border-color: var(--espresso); }
+.s-select:focus { border-color: var(--espresso); outline: none; }
+.s-select option { background: #FAF7F2; color: #1C1814; }
 
 /* ── Plan line ─────────────────────────────────────────── */
 .plan-line {
@@ -485,6 +493,17 @@ input:checked + .toggle-slider::before { transform: translateX(20px); }
     color: var(--muted);
     line-height: 1.6;
     margin-top: 16px;
+}
+
+/* ── Mobile ────────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .s-card { padding: 20px 18px; }
+    .s-save { width: 100%; justify-content: center; }
+    .export-card { flex-direction: column; align-items: flex-start; }
+    .export-btn { width: 100%; justify-content: center; }
+}
+@media (max-width: 520px) {
+    .s-grid-2 { grid-template-columns: 1fr; }
 }
 </style>
 @endsection
@@ -599,22 +618,60 @@ input:checked + .toggle-slider::before { transform: translateX(20px); }
             <span class="s-helper">Shown on your public shop page</span>
         </div>
         <div class="s-field">
-            <label class="s-label">About your shop</label>
-            <textarea name="shop_description" class="s-textarea"
+            <label class="s-label">About your shop <span style="color:var(--muted);font-weight:400;font-size:11px;">(optional)</span></label>
+            <textarea name="shop_description" class="s-textarea" id="shop-desc-input"
                       maxlength="200"
-                      placeholder="e.g. Fashion boutique specialising in African prints and accessories">{{ old('shop_description', $t->shop_description) }}</textarea>
-            <span class="s-helper">Shown on your public shop page &middot; Max 200 characters</span>
+                      placeholder="e.g. Nairobi's favourite stop for African prints, occasion wear and accessories. We ship nationwide.">{{ old('shop_description', $t->shop_description) }}</textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:5px;">
+                <span class="s-helper" style="margin-top:0;">A line your customers see at the top of your shop</span>
+                <span id="shop-desc-count" style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;">{{ strlen(old('shop_description', $t->shop_description ?? '')) }}/200</span>
+            </div>
         </div>
 
         <div class="s-field">
             <label class="s-label">Opening hours</label>
-            <div class="hours-row">
-                <span class="hours-sep">Open from</span>
-                <input type="time" name="operating_hours_open" class="hours-input"
-                       value="{{ old('operating_hours_open', $t->operating_hours_open ?? '09:00') }}">
-                <span class="hours-sep">to</span>
-                <input type="time" name="operating_hours_close" class="hours-input"
-                       value="{{ old('operating_hours_close', $t->operating_hours_close ?? '18:00') }}">
+            @php
+                $openVal  = old('operating_hours_open',  $t->operating_hours_open  ?? '09:00');
+                $closeVal = old('operating_hours_close', $t->operating_hours_close ?? '18:00');
+                $times = [];
+                for ($h = 5; $h <= 23; $h++) {
+                    foreach ([0, 30] as $m) {
+                        $times[] = sprintf('%02d:%02d', $h, $m);
+                    }
+                }
+            @endphp
+            <div class="hours-select-row">
+                <div class="hours-select-wrap">
+                    <span class="hours-mini-label">Opens</span>
+                    <select name="operating_hours_open" class="s-select">
+                        @foreach($times as $time)
+                            @php
+                                [$hh, $mm] = explode(':', $time);
+                                $h12 = (int)$hh % 12 ?: 12;
+                                $ampm = (int)$hh < 12 ? 'AM' : 'PM';
+                            @endphp
+                            <option value="{{ $time }}" {{ $openVal === $time ? 'selected' : '' }}>
+                                {{ $h12 }}:{{ $mm }} {{ $ampm }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="hours-arrow">&#8594;</div>
+                <div class="hours-select-wrap">
+                    <span class="hours-mini-label">Closes</span>
+                    <select name="operating_hours_close" class="s-select">
+                        @foreach($times as $time)
+                            @php
+                                [$hh, $mm] = explode(':', $time);
+                                $h12 = (int)$hh % 12 ?: 12;
+                                $ampm = (int)$hh < 12 ? 'AM' : 'PM';
+                            @endphp
+                            <option value="{{ $time }}" {{ $closeVal === $time ? 'selected' : '' }}>
+                                {{ $h12 }}:{{ $mm }} {{ $ampm }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
             <span class="s-helper">Used in shift reports to flag unusual hours</span>
         </div>
@@ -645,133 +702,44 @@ input:checked + .toggle-slider::before { transform: translateX(20px); }
         <button type="submit" class="s-save">Save shop details</button>
     </form>
 
+    {{-- ── My Shop link ──────────────────────────────── --}}
+    @php
+        $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+        $shopUrl = request()->getScheme() . '://' . tenant('id') . '.' . $appHost . '/shop';
+    @endphp
+    <div style="margin-top:20px; padding:16px; background:var(--surface); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;">My Shop Link</div>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:0; font-size:12px; font-family:'DM Mono',monospace; color:var(--espresso); background:white; border:1px solid var(--border); border-radius:8px; padding:9px 12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ $shopUrl }}</div>
+            <button onclick="navigator.clipboard.writeText('{{ $shopUrl }}').then(function(){var b=document.getElementById('copy-shop-btn');b.textContent='Copied!';setTimeout(function(){b.textContent='Copy';},2000);})" id="copy-shop-btn" style="padding:9px 14px; background:var(--espresso); color:white; border:none; border-radius:8px; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;">Copy</button>
+            <a href="{{ $shopUrl }}" target="_blank" style="padding:9px 14px; border:1.5px solid var(--border); border-radius:8px; font-size:12px; font-weight:600; color:var(--muted); text-decoration:none; white-space:nowrap;">Preview</a>
+        </div>
+        <div style="margin-top:14px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <div>
+                <div style="font-size:14px; font-weight:600; color:var(--espresso);">Shop is {{ tenant()->shop_enabled ? 'live' : 'not yet active' }}</div>
+                <div style="font-size:12px; color:var(--muted); margin-top:2px;">{{ tenant()->shop_enabled ? 'Customers can browse your shop.' : 'Your shop will be activated by the Stoka team.' }}</div>
+            </div>
+            @if(tenant()->id === 'demo')
+            <form method="POST" action="{{ route('settings.shop.toggle') }}" style="display:inline; flex-shrink:0;">
+                @csrf
+                <button type="submit" style="padding:9px 16px; background:{{ tenant()->shop_enabled ? '#F8E8E4' : '#DFF0DD' }}; color:{{ tenant()->shop_enabled ? '#B85C38' : '#4A6741' }}; border:none; border-radius:8px; font-family:inherit; font-size:12px; font-weight:700; cursor:pointer;">
+                    {{ tenant()->shop_enabled ? 'Pause shop' : 'Go live' }}
+                </button>
+            </form>
+            @else
+            @if(!tenant()->shop_enabled)
+            <a href="https://wa.me/254741641925?text={{ urlencode('Hi! I would like to activate my shop on Stoka. My shop is ' . tenant('name') . '.') }}" target="_blank" style="padding:9px 16px; background:#FDF3E8; color:var(--terracotta); border-radius:8px; font-size:12px; font-weight:600; text-decoration:none; white-space:nowrap; flex-shrink:0;">Activate my shop →</a>
+            @endif
+            @endif
+        </div>
+    </div>
+
     <div class="plan-line">
         You are on the <strong>{{ ucfirst($t->plan ?? 'Basic') }}</strong> plan &middot;
         <a href="https://stoka.co.ke" target="_blank" style="color:var(--terracotta);">stoka.co.ke</a>
     </div>
 </div>
 
-{{-- ════════════════════════════════════════════════════════
-     SECTION 3 — MY STAFF
-     ════════════════════════════════════════════════════════ --}}
-<div class="s-card" id="staff">
-    <div class="s-card-title" style="display:flex; align-items:center; justify-content:space-between;">
-        <span>My staff</span>
-        <span style="font-size:11px; font-weight:600; color:var(--muted); text-transform:none; letter-spacing:0;">
-            {{ $staff->count() }} {{ $staff->count() === 1 ? 'member' : 'members' }}
-        </span>
-    </div>
-
-    @if(session('ok_remove'))
-        <div class="flash-ok">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            {{ session('ok_remove') }}
-        </div>
-    @endif
-    @if(session('ok_add_staff'))
-        @php $addedStaff = session('ok_add_staff'); @endphp
-        <div class="new-pin-card" style="margin-bottom:18px;">
-            <div class="new-pin-name">{{ $addedStaff['name'] }} has been added to {{ tenant('name') }}.</div>
-            <div style="font-size:12px; color:var(--forest); margin-top:2px;">Their PIN is</div>
-            <span class="new-pin-number">{{ $addedStaff['pin'] }}</span>
-            <div style="font-size:11px; color:var(--forest); margin-top:6px; opacity:0.75;">Save this — you can always reset it from here.</div>
-        </div>
-    @endif
-
-    @php $resetPin = session('ok_reset_pin'); @endphp
-
-    <div class="staff-list">
-        @forelse($staff as $member)
-        <div>
-            <div class="staff-row">
-                <div class="staff-info">
-                    <span class="staff-name">{{ $member->name }}</span>
-                    <span class="staff-phone">{{ $member->phone }}</span>
-                </div>
-                <div class="staff-pin-wrap">
-                    <span class="staff-pin" id="pin-{{ $member->id }}">&#9679;&#9679;&#9679;&#9679;</span>
-                    <button type="button" class="pin-show-btn"
-                            onclick="togglePin({{ $member->id }}, '{{ $member->pin }}')"
-                            id="pin-btn-{{ $member->id }}">Show</button>
-                </div>
-                <form method="POST" action="{{ route('settings.staff.toggle', $member) }}" style="margin:0;">
-                    @csrf
-                    <button type="submit" class="status-pill {{ $member->active ? 'active' : 'inactive' }}">
-                        {{ $member->active ? 'Active' : 'Inactive' }}
-                    </button>
-                </form>
-                <div class="staff-actions">
-                    <form method="POST" action="{{ route('settings.staff.reset-pin', $member) }}" style="margin:0;">
-                        @csrf
-                        <button type="submit" class="s-link">Reset PIN</button>
-                    </form>
-                    <button type="button" class="s-link s-link-danger"
-                            onclick="showRemoveConfirm({{ $member->id }})">Remove</button>
-                </div>
-            </div>
-
-            {{-- New PIN after reset --}}
-            @if($resetPin && $resetPin['user_id'] == $member->id)
-            <div class="new-pin-card" style="margin-bottom:12px;">
-                <div class="new-pin-name">{{ $resetPin['name'] }}'s new PIN is</div>
-                <span class="new-pin-number">{{ $resetPin['pin'] }}</span>
-            </div>
-            @endif
-
-            {{-- Remove confirm --}}
-            <div class="remove-confirm" id="remove-{{ $member->id }}">
-                <span class="confirm-text">Remove {{ $member->name }}? Their shift history will be kept.</span>
-                <form method="POST" action="{{ route('settings.staff.remove', $member) }}" style="margin:0;">
-                    @csrf
-                    <button type="submit" class="s-save" style="background:var(--clay); height:34px; padding:0 14px; font-size:12px;">Confirm</button>
-                </form>
-                <button type="button" class="s-link" onclick="hideRemoveConfirm({{ $member->id }})">Cancel</button>
-            </div>
-        </div>
-        @empty
-        <p style="color:var(--muted); font-size:14px; padding:16px 0;">No staff members yet. Add your first one below.</p>
-        @endforelse
-    </div>
-
-    {{-- Add staff --}}
-    <button type="button" class="add-staff-toggle" onclick="toggleAddStaff()" id="add-staff-btn">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        Add staff member
-    </button>
-
-    <div class="add-staff-form" id="add-staff-form">
-        <div class="s-sub-title" style="margin-bottom:16px;">New staff member</div>
-        @if($errors->has('name') || $errors->has('phone') || $errors->has('pin'))
-            <div class="flash-err" style="margin-bottom:14px;">
-                {{ $errors->first('name') ?: ($errors->first('phone') ?: $errors->first('pin')) }}
-            </div>
-        @endif
-        <form method="POST" action="{{ route('settings.staff.add') }}">
-            @csrf
-            <div class="s-grid-2">
-                <div class="s-field">
-                    <label class="s-label">Name</label>
-                    <input type="text" name="name" class="s-input"
-                           value="{{ old('name') }}" required placeholder="e.g. Grace Otieno">
-                </div>
-                <div class="s-field">
-                    <label class="s-label">Phone</label>
-                    <input type="tel" name="phone" class="s-input"
-                           value="{{ old('phone') }}" required placeholder="0712 345 678">
-                </div>
-                <div class="s-field">
-                    <label class="s-label">PIN <span style="font-weight:400; color:var(--muted);">(optional)</span></label>
-                    <input type="text" name="pin" class="s-input" inputmode="numeric"
-                           maxlength="6" placeholder="Leave blank to auto-generate">
-                    <span class="s-helper">Leave blank to auto-generate a 4-digit PIN</span>
-                </div>
-            </div>
-            <button type="submit" class="s-save">Add staff member</button>
-        </form>
-    </div>
-</div>
 
 {{-- ════════════════════════════════════════════════════════
      SECTION 4 — RECEIPTS
@@ -923,6 +891,17 @@ input:checked + .toggle-slider::before { transform: translateX(20px); }
 
 @section('scripts')
 <script>
+// ── Shop description character counter ────────────────────────────────────
+(function() {
+    var ta = document.getElementById('shop-desc-input');
+    var ct = document.getElementById('shop-desc-count');
+    if (!ta || !ct) return;
+    ta.addEventListener('input', function() {
+        ct.textContent = ta.value.length + '/200';
+        ct.style.color = ta.value.length > 180 ? '#B85C38' : '';
+    });
+})();
+
 // ── PIN show/hide ──────────────────────────────────────────────────────────
 function togglePin(id, pin) {
     var el  = document.getElementById('pin-' + id);
@@ -971,11 +950,6 @@ function toggleAddStaff() {
 @if(session('ok_shop'))
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-@endif
-@if(session('ok_add_staff') || session('ok_reset_pin') || session('ok_remove'))
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('staff')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 @endif
 @if(session('ok_receipts'))

@@ -36,7 +36,20 @@ class RestocksController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('restocks.create', compact('suppliers', 'products'));
+        // Last cost price paid per product/variant for ghost placeholder
+        $lastCostsRaw = DB::table('restock_items')
+            ->select('product_id', 'variant_id', DB::raw('MAX(id) as last_id'))
+            ->groupBy('product_id', 'variant_id')
+            ->get();
+
+        $lastCosts = [];
+        foreach ($lastCostsRaw as $row) {
+            $cost = DB::table('restock_items')->where('id', $row->last_id)->value('cost_price');
+            $key  = $row->variant_id ? 'v' . $row->variant_id : 'u' . $row->product_id;
+            $lastCosts[$key] = $cost;
+        }
+
+        return view('restocks.create', compact('suppliers', 'products', 'lastCosts'));
     }
 
     public function store(Request $request)

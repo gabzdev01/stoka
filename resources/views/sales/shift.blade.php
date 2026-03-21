@@ -181,6 +181,25 @@
     color: var(--muted);
 }
 
+/* ── Exchange button ────────────────────────────── */
+.exchange-btn {
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color 0.13s, color 0.13s;
+    white-space: nowrap;
+}
+.exchange-btn:active { color: var(--terracotta); border-color: var(--terracotta); }
+
 /* ── Payment badge ──────────────────────────────── */
 .pay-badge {
     font-size: 10px;
@@ -191,7 +210,8 @@
 }
 .pay-cash   { background: #E8F0E6; color: var(--forest); }
 .pay-mpesa  { background: #E8F0E6; color: var(--forest); }
-.pay-credit { background: #F5E0D8; color: var(--clay); }
+.pay-credit   { background: #F5E0D8; color: var(--clay); }
+.pay-exchange { background: #EBE3D8; color: var(--muted); }
 .voided-badge {
     font-size: 10px;
     font-weight: 700;
@@ -274,6 +294,13 @@
 
 @section('content')
 <div class="myshift-wrap">
+
+@if(session('success'))
+<div style="margin:14px 16px; padding:11px 15px; background:#DFF0DD; color:var(--forest); border-radius:10px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px;">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    {{ session('success') }}
+</div>
+@endif
 
 @if(!$shift)
 
@@ -359,6 +386,10 @@
                             id="void-btn-{{ $sale->id }}">
                         Void
                     </button>
+                    <a href="{{ route('exchange.create', $sale) }}"
+                       class="exchange-btn">
+                        Exchange
+                    </a>
                 @endif
             </div>
         </div>

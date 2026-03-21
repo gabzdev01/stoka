@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receipt — {{ tenant('name') }}</title>
+    <title>Receipt — {{ shop_name() }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -50,7 +50,7 @@
 </head>
 <body>
 
-<div class="r-shop">{{ tenant('name') }}</div>
+<div class="r-shop">{{ shop_name() }}</div>
 <div class="r-sub">
     @if(tenant('shop_location')){{ tenant('shop_location') }} · @endif
     {{ now()->format('D j M Y · H:i') }}

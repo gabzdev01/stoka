@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\CreditLedger;
+use App\Models\CreditPayment;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\Shift;
@@ -22,8 +23,21 @@ class SalesController extends Controller
                 default    => 'Good evening',
             };
 
+            // Owner with staff: skip float entry — they don't count the till
+            $isOwner    = session('auth_role') === 'owner';
+            $staffCount = \App\Models\User::where('role', 'staff')->count();
+            $showFloat  = !$isOwner || $staffCount === 0;
+
+            // Pre-fill opening float with last closed shift's cash_counted (staff use only)
+            $lastShift = \App\Models\Shift::where('status', 'closed')
+                ->orderByDesc('closed_at')
+                ->first();
+            $lastFloat = $lastShift ? (int) $lastShift->cash_counted : null;
+
             return view('sales.open-shift', [
-                'greeting' => $greeting,
+                'greeting'  => $greeting,
+                'lastFloat' => $lastFloat,
+                'showFloat' => $showFloat,
             ]);
         }
 
@@ -71,6 +85,11 @@ class SalesController extends Controller
         $qty     = (float) $data['quantity_or_ml'];
         $price   = (float) $data['actual_price'];
         $total   = round($qty * $price, 2);
+
+        // Hard block: staff cannot sell bargainable items below floor price
+        if ($product->floor_price && $price < (float) $product->floor_price) {
+            return response()->json(['error' => 'Price cannot be below the floor price of ' . tenant('currency_symbol') . ' ' . number_format($product->floor_price, 0) . '.'], 422);
+        }
 
         try {
             $result = DB::transaction(function () use ($data, $product, $shift, $staffId, $qty, $price, $total) {
@@ -509,6 +528,70 @@ class SalesController extends Controller
             'name'  => $customer->name,
             'phone' => $customer->phone,
         ]);
+    }
+
+    public function depositsIndex()
+    {
+        $customers = \App\Models\Customer::whereHas('openCredit')
+            ->with(['openCredit' => fn($q) => $q->orderBy('created_at')])
+            ->get()
+            ->map(function ($c) {
+                $balance  = $c->openCredit->sum('balance');
+                $oldest   = $c->openCredit->min('created_at');
+                $ageDays  = $oldest ? (int) abs(now()->diffInDays(\Carbon\Carbon::parse($oldest))) : 0;
+                return (object)[
+                    'id'       => $c->id,
+                    'name'     => $c->name,
+                    'phone'    => $c->phone,
+                    'balance'  => $balance,
+                    'age_days' => $ageDays,
+                ];
+            })
+            ->sortByDesc('age_days')
+            ->values();
+
+        return view('sales.deposits', compact('customers'));
+    }
+
+    public function depositPay(Request $request, \App\Models\Customer $customer)
+    {
+        $request->validate([
+            'amount'       => ['required', 'numeric', 'min:0.01'],
+            'payment_type' => ['required', 'in:cash,mpesa'],
+        ]);
+
+        $payment     = (float) $request->input('amount');
+        $paymentType = $request->input('payment_type', 'cash');
+        $remaining   = $payment;
+
+        $entries = $customer->openCredit()->orderBy('created_at')->get();
+        foreach ($entries as $entry) {
+            if ($remaining <= 0) break;
+            $toApply    = min($remaining, (float) $entry->balance);
+            $newBalance = round((float) $entry->balance - $toApply, 2);
+            $entry->update([
+                'paid'            => (float) $entry->paid + $toApply,
+                'balance'         => $newBalance,
+                'status'          => $newBalance <= 0 ? 'settled' : 'open',
+                'last_payment_at' => now(),
+            ]);
+            $remaining = round($remaining - $toApply, 2);
+        }
+
+        $outstanding = CreditLedger::where('customer_id', $customer->id)
+            ->where('status', 'open')->sum('balance');
+        $customer->update(['total_outstanding' => $outstanding]);
+
+        // Record payment against shift so it appears in reconciliation
+        CreditPayment::create([
+            'customer_id'  => $customer->id,
+            'shift_id'     => session('shift_id'),
+            'amount'       => $payment,
+            'payment_type' => $paymentType,
+        ]);
+
+        $label = $paymentType === 'mpesa' ? 'M-Pesa' : 'Cash';
+        return back()->with('success', $customer->name . ' — ' . tenant('currency_symbol') . ' ' . number_format($payment, 0) . ' collected (' . $label . ')');
     }
 
     public function receipt(string $ids)
