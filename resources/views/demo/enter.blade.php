@@ -86,6 +86,24 @@ function selectRole(r){
   });
   document.getElementById('role-input').value=r;
 }
+
+// Pre-select role from URL ?role= param
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var role = params.get('role');
+  if(role === 'staff' || role === 'owner') selectRole(role);
+})();
+
+// Live shop name preview in headline
+(function(){
+  var input = document.getElementById('shop_name');
+  var em = document.querySelector('.headline em');
+  var base = 'your';
+  input.addEventListener('input', function(){
+    var val = this.value.trim();
+    em.textContent = val ? val : base;
+  });
+})();
 </script>
 <script>
 if ('serviceWorker' in navigator) {
