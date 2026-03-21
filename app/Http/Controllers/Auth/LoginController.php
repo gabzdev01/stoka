@@ -15,6 +15,9 @@ class LoginController extends Controller
         if (session()->has("auth_user")) {
             return redirect()->route("dashboard");
         }
+        if (tenant() !== null && tenant()->id === 'demo') {
+            return redirect()->route('demo.landing');
+        }
         return view("auth.login");
     }
 
