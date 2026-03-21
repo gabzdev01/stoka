@@ -51,6 +51,21 @@
             -webkit-font-smoothing: antialiased;
             -webkit-tap-highlight-color: transparent;
         }
+        /* Espresso-to-parchment transition */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: #1C1814;
+            opacity: 1;
+            z-index: 9999;
+            pointer-events: none;
+            animation: dawnIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.05s forwards;
+        }
+        @keyframes dawnIn {
+            0%   { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
 
         a { color: inherit; text-decoration: none; }
 
@@ -363,6 +378,7 @@
     @yield('head')
 </head>
 <body>
+<div id="page-curtain" style="position:fixed;inset:0;background:#1C1814;opacity:1;z-index:9998;pointer-events:none;transition:opacity 0.55s ease;"></div>
 
 {{-- ── TOP BAR ──────────────────────────────────── --}}
 <header class="top-bar">
@@ -564,6 +580,18 @@
             if (btn) btn.classList.add('has-items');
         }
     } catch (e) {}
+}());
+</script>
+<script>
+(function(){
+  var curtain=document.getElementById('page-curtain');
+  if(!curtain)return;
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      curtain.style.opacity='0';
+      setTimeout(function(){curtain.remove();},600);
+    });
+  });
 }());
 </script>
 

@@ -42,6 +42,21 @@
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
+        /* Espresso-to-parchment transition — continues the demo form's dark background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: #1C1814;
+            opacity: 1;
+            z-index: 9999;
+            pointer-events: none;
+            animation: dawnIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.05s forwards;
+        }
+        @keyframes dawnIn {
+            0%   { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
 
         a { color: inherit; text-decoration: none; }
 
@@ -627,6 +642,5 @@
 
 
 @yield('scripts')
-
 </body>
 </html>
