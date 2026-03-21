@@ -23,8 +23,13 @@ Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.logi
 Route::post('/admin/logout',[AdminController::class, 'logout'])->name('admin.logout');
 
 Route::middleware(SuperAdminAuth::class)->group(function () {
-    Route::get('/admin',                    [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::get('/admin/tenants/create',     [AdminController::class, 'createForm'])->name('admin.tenants.create');
-    Route::post('/admin/tenants',           [AdminController::class, 'store'])->name('admin.tenants.store');
-    Route::post('/admin/tenants/{id}/toggle', [AdminController::class, 'toggle'])->name('admin.tenants.toggle');
+    Route::get('/admin',                              [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/admin/tenants/create',               [AdminController::class, 'createForm'])->name('admin.tenants.create');
+    Route::post('/admin/tenants',                     [AdminController::class, 'store'])->name('admin.tenants.store');
+    Route::post('/admin/tenants/{id}/toggle',         [AdminController::class, 'toggle'])->name('admin.tenants.toggle');
+    Route::get('/admin/inquiries',                    [AdminController::class, 'inquiries'])->name('admin.inquiries');
+    Route::get('/admin/demo-visits',                  [AdminController::class, 'demoVisits'])->name('admin.demo-visits');
+    Route::get('/admin/tenants/{id}/detail',          [AdminController::class, 'tenantDetail'])->name('admin.tenant.detail');
+    Route::post('/admin/tenants/{id}/shop-toggle',    [AdminController::class, 'shopToggle'])->name('admin.tenants.shop-toggle');
+    Route::post('/admin/tenants/{id}/reset-password', [AdminController::class, 'resetPassword'])->name('admin.tenants.reset-password');
 });
