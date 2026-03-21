@@ -8,6 +8,12 @@
 <meta property="og:title" content="{{ $article['title'] }}">
 <meta property="og:description" content="{{ $article['preview'] }}">
 <meta property="og:type" content="article">
+<meta property="og:url" content="{{ url()->current() }}">
+<meta property="og:site_name" content="Stoka">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $article['title'] }}">
+<meta name="twitter:description" content="{{ $article['preview'] }}">
+<link rel="canonical" href="{{ url()->current() }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -98,16 +104,16 @@ a{text-decoration:none;color:inherit;}
 .wa-icon{width:22px;height:22px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .wa-icon svg{width:13px;height:13px;}
 @media(max-width:480px){.wa-float{bottom:18px;right:14px;padding:11px 15px;font-size:12px;}}
-.footer{background:var(--espresso);padding:52px 32px 36px;}
-.footer-inner{max-width:780px;margin:0 auto;display:flex;gap:48px;flex-wrap:wrap;justify-content:space-between;}
+.footer{background:var(--espresso);padding:52px 28px 36px;}
+.footer-inner{max-width:1080px;margin:0 auto;display:flex;justify-content:space-between;gap:48px;flex-wrap:wrap;align-items:flex-start;}
 .footer-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--parchment);letter-spacing:-0.02em;}
 .footer-logo-dot{color:var(--terracotta);}
-.footer-built{font-size:12px;color:rgba(250,247,242,0.35);margin-top:6px;}
-.footer-col-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,247,242,0.3);margin-bottom:12px;}
-.footer-links{display:flex;flex-direction:column;}
-.footer-links a{font-size:13px;color:rgba(250,247,242,0.6);line-height:2.2;transition:color 0.15s;}
-.footer-links a:hover{color:var(--parchment);}
-.footer-bottom{max-width:780px;margin:28px auto 0;padding-top:20px;border-top:1px solid rgba(250,247,242,0.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.footer-tagline{font-size:12px;color:rgba(250,247,242,0.35);margin-top:8px;max-width:200px;line-height:1.6;}
+.footer-col{display:flex;flex-direction:column;gap:5px;}
+.footer-col-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,247,242,0.3);margin-bottom:8px;}
+.footer-link{font-size:13px;color:rgba(250,247,242,0.6);line-height:2.0;transition:color 0.15s;}
+.footer-link:hover{color:var(--parchment);}
+.footer-bottom{max-width:1080px;margin:36px auto 0;padding:20px 28px 0;border-top:1px solid rgba(250,247,242,0.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
 .footer-copy{font-size:11px;color:rgba(250,247,242,0.25);}
 .footer-wa{font-size:12px;font-weight:600;color:var(--terracotta);}
 .fade-in{opacity:0;transform:translateY(14px);transition:opacity 0.55s ease,transform 0.55s ease;}
@@ -143,9 +149,9 @@ a{text-decoration:none;color:inherit;}
   <div class="article-body" id="article-body">
     <div class="share-row">
       <span class="share-label">Share</span>
-      <a href="https://wa.me/?text={{ urlencode($article['title'] . ' — ' . url()->current()) }}" target="_blank" class="share-btn">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-        WhatsApp
+      <a href="https://twitter.com/intent/tweet?text={{ urlencode($article['title']) }}&url={{ urlencode(url()->current()) }}&via=stokaapp" target="_blank" rel="noopener" class="share-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.622 5.9-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Share on X
       </a>
       <button class="share-btn" onclick="copyLink(this)">Copy link</button>
       <button class="like-mobile" id="like-mobile" onclick="toggleLike()">
@@ -168,11 +174,11 @@ a{text-decoration:none;color:inherit;}
       <span class="sa-label" id="like-count">24</span>
     </div>
     <div class="sa-divider"></div>
-    <a href="https://wa.me/?text={{ urlencode($article['title'] . ' — ' . url()->current()) }}" target="_blank" class="sa">
+    <a href="https://twitter.com/intent/tweet?text={{ urlencode($article['title']) }}&url={{ urlencode(url()->current()) }}&via=stokaapp" target="_blank" rel="noopener" class="sa">
       <div class="sa-icon">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.622 5.9-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
       </div>
-      <span class="sa-label">Share</span>
+      <span class="sa-label">X</span>
     </a>
     <div class="sa-divider"></div>
     <div class="sa" onclick="copyLink()">
@@ -220,24 +226,19 @@ a{text-decoration:none;color:inherit;}
   <div class="footer-inner">
     <div>
       <div class="footer-logo">stoka<span class="footer-logo-dot">&middot;</span></div>
-      <div class="footer-built">Built in Kenya &middot; 2026</div>
+      <div class="footer-tagline">Boutique intelligence.<br>Built in Kenya.</div>
     </div>
-    <div>
-      <div class="footer-col-label">Insights</div>
-      <div class="footer-links">
-        <a href="/insights/the-notebook">The notebook is not the problem</a>
-        <a href="/insights/last-tuesday">How much did you actually make last Thursday?</a>
-        <a href="/insights/buying-on-instinct">The real cost of buying on instinct</a>
-        <a href="/insights/the-staff-problem">The staff problem that is not a staff problem</a>
-        <a href="/insights/end-of-day-summary">What your end-of-day summary is not telling you</a>
-      </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Product</div>
+      <a href="https://tempforest.com/#section-pricing" class="footer-link">Pricing</a>
+      <a href="https://demo.tempforest.com/demo" class="footer-link">Live Demo</a>
+      <a href="https://tempforest.com/register" class="footer-link">Get Started</a>
+      <a href="/insights" class="footer-link">Insights</a>
     </div>
-    <div>
+    <div class="footer-col">
       <div class="footer-col-label">Contact</div>
-      <div class="footer-links">
-        <a href="https://wa.me/254741641925">WhatsApp &rarr;</a>
-        <a href="/register">Get started</a>
-      </div>
+      <a href="https://wa.me/254741641925" class="footer-link">WhatsApp &rarr;</a>
+      <a href="https://wa.me/254741641925?text=Hi%2C+I+have+a+question+about+Stoka." class="footer-link">Ask a question</a>
     </div>
   </div>
   <div class="footer-bottom">

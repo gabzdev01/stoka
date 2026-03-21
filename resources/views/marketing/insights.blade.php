@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Insights — Stoka</title>
 <meta name="description" content="Honest examinations of the real economics of running a boutique in East Africa.">
+<meta property="og:title" content="Insights — Stoka">
+<meta property="og:description" content="Honest examinations of the real economics of running a boutique in East Africa.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ url()->current() }}">
+<meta property="og:site_name" content="Stoka">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Insights — Stoka">
+<meta name="twitter:description" content="Honest examinations of the real economics of running a boutique.">
+<link rel="canonical" href="{{ url()->current() }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -104,16 +113,16 @@ a{text-decoration:none;color:inherit;}
 @media(max-width:480px){.wa-float{bottom:18px;right:14px;padding:11px 15px;font-size:12px;}}
 
 /* FOOTER */
-.footer{background:var(--espresso);padding:52px 32px 36px;}
-.footer-inner{max-width:880px;margin:0 auto;display:flex;gap:48px;flex-wrap:wrap;justify-content:space-between;}
+.footer{background:var(--espresso);padding:52px 28px 36px;}
+.footer-inner{max-width:1080px;margin:0 auto;display:flex;justify-content:space-between;gap:48px;flex-wrap:wrap;align-items:flex-start;}
 .footer-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--parchment);letter-spacing:-0.02em;}
 .footer-logo-dot{color:var(--terracotta);}
-.footer-built{font-size:12px;color:rgba(250,247,242,0.35);margin-top:6px;}
-.footer-col-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,247,242,0.3);margin-bottom:12px;}
-.footer-links{display:flex;flex-direction:column;}
-.footer-links a{font-size:13px;color:rgba(250,247,242,0.6);line-height:2.2;transition:color 0.15s;}
-.footer-links a:hover{color:var(--parchment);}
-.footer-bottom{max-width:880px;margin:28px auto 0;padding-top:20px;border-top:1px solid rgba(250,247,242,0.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.footer-tagline{font-size:12px;color:rgba(250,247,242,0.35);margin-top:8px;max-width:200px;line-height:1.6;}
+.footer-col{display:flex;flex-direction:column;gap:5px;}
+.footer-col-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,247,242,0.3);margin-bottom:8px;}
+.footer-link{font-size:13px;color:rgba(250,247,242,0.6);line-height:2.0;transition:color 0.15s;}
+.footer-link:hover{color:var(--parchment);}
+.footer-bottom{max-width:1080px;margin:36px auto 0;padding:20px 28px 0;border-top:1px solid rgba(250,247,242,0.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
 .footer-copy{font-size:11px;color:rgba(250,247,242,0.25);}
 .footer-wa{font-size:12px;font-weight:600;color:var(--terracotta);}
 
@@ -194,24 +203,19 @@ a{text-decoration:none;color:inherit;}
   <div class="footer-inner">
     <div>
       <div class="footer-logo">stoka<span class="footer-logo-dot">&middot;</span></div>
-      <div class="footer-built">Built in Kenya &middot; 2026</div>
+      <div class="footer-tagline">Boutique intelligence.<br>Built in Kenya.</div>
     </div>
-    <div>
-      <div class="footer-col-label">Insights</div>
-      <div class="footer-links">
-        <a href="/insights/the-notebook">The notebook is not the problem</a>
-        <a href="/insights/last-tuesday">How much did you actually make last Thursday?</a>
-        <a href="/insights/buying-on-instinct">The real cost of buying on instinct</a>
-        <a href="/insights/the-staff-problem">The staff problem that is not a staff problem</a>
-        <a href="/insights/end-of-day-summary">What your end-of-day summary is not telling you</a>
-      </div>
+    <div class="footer-col">
+      <div class="footer-col-label">Product</div>
+      <a href="https://tempforest.com/#section-pricing" class="footer-link">Pricing</a>
+      <a href="https://demo.tempforest.com/demo" class="footer-link">Live Demo</a>
+      <a href="https://tempforest.com/register" class="footer-link">Get Started</a>
+      <a href="/insights" class="footer-link">Insights</a>
     </div>
-    <div>
+    <div class="footer-col">
       <div class="footer-col-label">Contact</div>
-      <div class="footer-links">
-        <a href="https://wa.me/254741641925">WhatsApp &rarr;</a>
-        <a href="/register">Get started</a>
-      </div>
+      <a href="https://wa.me/254741641925" class="footer-link">WhatsApp &rarr;</a>
+      <a href="https://wa.me/254741641925?text=Hi%2C+I+have+a+question+about+Stoka." class="footer-link">Ask a question</a>
     </div>
   </div>
   <div class="footer-bottom">
