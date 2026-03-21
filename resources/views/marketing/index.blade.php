@@ -794,7 +794,7 @@ details[open] summary{color:var(--terracotta);}
   <div class="footer-inner">
     <div>
       <div class="footer-logo">stoka<span class="footer-logo-dot">&middot;</span></div>
-      <div class="footer-tagline">Boutique intelligence.<br>Built in Kenya.</div>
+      <div class="footer-tagline">Boutique management,<br>aware by design.</div>
     </div>
     <div class="footer-col">
       <div class="footer-col-label">Product</div>
