@@ -51,6 +51,21 @@
             -webkit-font-smoothing: antialiased;
             -webkit-tap-highlight-color: transparent;
         }
+        /* Territory transition — warmer tone than dashboard signals the shop floor */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: #F5F0E8;
+            opacity: 1;
+            z-index: 9999;
+            pointer-events: none;
+            animation: territoryIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.05s forwards;
+        }
+        @keyframes territoryIn {
+            0%   { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
         /* Espresso-to-parchment transition */
         body::before {
             content: '';
@@ -593,6 +608,17 @@
     });
   });
 }());
+</script>
+<script>
+(function(){
+    @if(session('threshold_enter'))
+    sessionStorage.setItem('stoka_threshold','1');
+    @endif
+    if(sessionStorage.getItem('stoka_threshold')){
+        sessionStorage.removeItem('stoka_threshold');
+        document.body.classList.add('threshold-enter');
+    }
+})();
 </script>
 
 </body>

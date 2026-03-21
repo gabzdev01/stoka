@@ -1232,6 +1232,26 @@ $bestShiftPerStaff = \App\Models\Shift::where('status', 'closed')
 @section('scripts')
 <script>
 (function () {
+    // Warm exit flash when navigating to the sales floor
+    var startBtn = document.querySelector('.btn-start-selling');
+    if (startBtn) {
+        startBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var dest = this.href;
+            var flash = document.createElement('div');
+            flash.style.cssText = 'position:fixed;inset:0;background:#F5F0E8;opacity:0;z-index:9999;pointer-events:none;transition:opacity 0.3s ease;';
+            document.body.appendChild(flash);
+            requestAnimationFrame(function(){
+                requestAnimationFrame(function(){
+                    flash.style.opacity = '1';
+                    setTimeout(function(){ window.location = dest; }, 280);
+                });
+            });
+        });
+    }
+})();
+
+(function () {
     window.toggleHero = function () {
         document.body.classList.toggle('hero-revealed');
         var hint = document.getElementById('hero-hint');

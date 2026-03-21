@@ -642,5 +642,16 @@
 
 
 @yield('scripts')
+<script>
+(function(){
+    @if(session('threshold_enter'))
+    sessionStorage.setItem('stoka_threshold','1');
+    @endif
+    if(sessionStorage.getItem('stoka_threshold')){
+        sessionStorage.removeItem('stoka_threshold');
+        document.body.classList.add('threshold-enter');
+    }
+})();
+</script>
 </body>
 </html>
