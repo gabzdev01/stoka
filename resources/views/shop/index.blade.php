@@ -67,6 +67,80 @@ body {
     .shop-header { padding: 22px 40px 18px; }
 }
 
+/* ── Search & Sort Bar ───────────────────────────────────── */
+.search-bar-wrap {
+    background: var(--parchment);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.search-form {
+    flex: 1;
+    min-width: 0;
+}
+.search-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.search-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--muted);
+    pointer-events: none;
+}
+.search-input {
+    width: 100%;
+    padding: 10px 14px 10px 38px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    color: var(--espresso);
+    background: white;
+    transition: border-color 0.15s;
+}
+.search-input:focus {
+    outline: none;
+    border-color: var(--espresso);
+}
+.search-input::placeholder {
+    color: var(--muted);
+    opacity: 0.5;
+}
+.search-clear {
+    position: absolute;
+    right: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 16px;
+    padding: 4px;
+    transition: color 0.12s;
+}
+.search-clear:hover { color: var(--espresso); }
+.sort-select {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    color: var(--espresso);
+    background: white;
+    cursor: pointer;
+    min-width: 140px;
+    flex-shrink: 0;
+}
+.sort-select:focus {
+    outline: none;
+    border-color: var(--espresso);
+}
+@media (max-width: 560px) {
+    .search-bar-wrap { flex-direction: column; gap: 8px; }
+    .sort-select { width: 100%; min-width: 0; }
+}
+
 /* ── Category chips ──────────────────────────────────────── */
 .cat-bar-outer {
     background: var(--parchment);
@@ -411,6 +485,38 @@ body {
     @endif
 </div>
 
+{{-- ── Search & Filter Bar ──────────────────────────────────────────── --}}
+<div class="search-bar-wrap">
+    <form action="{{ route('shop.index') }}" method="GET" class="search-form">
+        <div class="search-input-wrap">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" name="q" value="{{ request('q') }}" 
+                   placeholder="Search products..." 
+                   class="search-input"
+                   autocomplete="off">
+            @if(request('q'))
+            <a href="{{ route('shop.index') }}" class="search-clear">✕</a>
+            @endif
+        </div>
+        @if(request('cat'))
+        <input type="hidden" name="cat" value="{{ request('cat') }}">
+        @endif
+    </form>
+    
+    @if($products->count() > 3)
+    <select class="sort-select" onchange="window.location.href=updateSort(this.value)">
+        <option value="">Sort by</option>
+        <option value="category" {{ request('sort') === 'category' ? 'selected' : '' }}>Category</option>
+        <option value="price-asc" {{ request('sort') === 'price-asc' ? 'selected' : '' }}>Price: Low to High</option>
+        <option value="price-desc" {{ request('sort') === 'price-desc' ? 'selected' : '' }}>Price: High to Low</option>
+        <option value="newest" {{ request('sort') === 'newest' ? 'selected' : '' }}>Newest First</option>
+        <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>Alphabetical</option>
+    </select>
+    @endif
+</div>
+
 {{-- ── Category chips ──────────────────────────────────────────────── --}}
 @if($categories->count() > 1)
 <div class="cat-bar-outer">
@@ -590,6 +696,14 @@ body {
     var skipBtn = document.getElementById('boutique-skip');
     if (skipBtn) skipBtn.addEventListener('click', skipDemo);
 })();
+</script>
+<script>
+function updateSort(sort) {
+    var url = new URL(window.location.href);
+    if (sort) url.searchParams.set('sort', sort);
+    else url.searchParams.delete('sort');
+    return url.toString();
+}
 </script>
 <script>
 (function() {

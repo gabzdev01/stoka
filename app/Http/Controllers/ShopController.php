@@ -15,13 +15,32 @@ class ShopController extends Controller
             return view('shop.closed', compact('tenant'));
         }
 
-        $products = Product::where('shop_visible', true)
+        // Base query
+        $query = Product::where('shop_visible', true)
             ->where('status', 'active')
-            ->with(['variants', 'bottles' => fn($q) => $q->where('active', true)->orderByDesc('id')->limit(1)])
-            ->orderBy('category')
-            ->orderBy('name')
-            ->get();
+            ->with(['variants', 'bottles' => fn($q) => $q->where('active', true)->orderByDesc('id')->limit(1)]);
 
+        // Search filter
+        $searchTerm = $request->query('q');
+        if ($searchTerm) {
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('category', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        // Sorting
+        $sort = $request->query('sort', 'category');
+        match($sort) {
+            'price-asc'  => $query->orderBy('shelf_price', 'asc'),
+            'price-desc' => $query->orderBy('shelf_price', 'desc'),
+            'newest'     => $query->orderBy('created_at', 'desc'),
+            'name'       => $query->orderBy('name', 'asc'),
+            default      => $query->orderBy('category')->orderBy('name'),
+        };
+
+        $products   = $query->get();
         $categories = $products->pluck('category')->filter()->unique()->sort()->values();
         $filterCat  = $request->query('cat');
         $isDemo     = $tenant->id === 'demo';
