@@ -22,14 +22,11 @@ html{scroll-behavior:smooth;}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--parchment);color:var(--espresso);min-height:100vh;-webkit-font-smoothing:antialiased;}
 a{color:inherit;text-decoration:none;}
 
-/* ── Demo bar ─────────────────────────────────────────── */
-.demo-bar{background:var(--dark-wood);padding:9px 20px;font-size:11px;text-align:center;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;}
-.demo-bar-text{color:rgba(250,247,242,0.45);letter-spacing:0.02em;}
-.demo-bar-link{color:var(--terracotta);font-weight:600;transition:opacity 0.15s;}
-.demo-bar-link:hover{opacity:0.75;}
-.demo-preview-name{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--terracotta);}
-.demo-bar-back{color:rgba(250,247,242,0.25);font-size:10px;transition:color 0.15s;}
-.demo-bar-back:hover{color:rgba(250,247,242,0.6);}
+/* ── Demo float ───────────────────────────────────────── */
+.demo-float{position:fixed;bottom:24px;right:20px;z-index:200;display:flex;flex-direction:column;align-items:flex-end;gap:8px;opacity:0;transform:translateY(10px);transition:opacity 0.3s,transform 0.3s;pointer-events:none;}
+.demo-float.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
+.demo-float-btn{display:inline-flex;align-items:center;gap:9px;padding:12px 18px;background:var(--terracotta);color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;border-radius:0;box-shadow:0 4px 20px rgba(193,127,74,0.35);transition:opacity 0.15s;white-space:nowrap;}
+.demo-float-btn:hover{opacity:0.88;}
 
 /* ── App banner (owner/staff) ─────────────────────────── */
 .app-banner{background:var(--espresso);display:flex;align-items:center;justify-content:center;gap:20px;padding:0 20px;height:40px;font-size:11px;border-bottom:1px solid rgba(250,247,242,0.06);}
@@ -113,22 +110,16 @@ a{color:inherit;text-decoration:none;}
 @if($isDemo)
 @php
     $previewName = request('preview') ? htmlspecialchars(request('preview'), ENT_QUOTES) : null;
-    $refBack     = request('back') ? 'https://' . htmlspecialchars(request('back'), ENT_QUOTES) . '/dashboard' : null;
     $waPhone     = '254741641925';
     $waMsg       = $previewName
-        ? urlencode('Hi! I just browsed a shop preview on Stoka for ' . $previewName . ' and I am interested in getting my boutique online. Can we talk?')
+        ? urlencode('Hi! I browsed a shop preview on Stoka for ' . $previewName . ' and I am interested in setting up my boutique. Can we talk?')
         : urlencode('Hi! I would like to get my boutique on Stoka. Can you tell me more?');
 @endphp
-<div class="demo-bar">
-    <span class="demo-bar-text">
-        @if($previewName)
-            Exploring <span class="demo-preview-name">{{ $previewName }}</span> on Stoka
-        @else
-            You're exploring a demo shop
-        @endif
-    </span>
-    <a href="https://wa.me/{{ $waPhone }}?text={{ $waMsg }}" target="_blank" class="demo-bar-link">Get your own →</a>
-    @if($refBack)<a href="{{ $refBack }}" class="demo-bar-back">← Back</a>@endif
+<div class="demo-float" id="demoFloat">
+    <a href="https://wa.me/{{ $waPhone }}?text={{ $waMsg }}" target="_blank" class="demo-float-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        Get your own shop
+    </a>
 </div>
 @endif
 
@@ -214,6 +205,12 @@ a{color:inherit;text-decoration:none;}
 </div>
 
 <script>
+// Show demo float after brief delay
+setTimeout(function() {
+    var f = document.getElementById('demoFloat');
+    if (f) f.classList.add('visible');
+}, 1500);
+
 function selectSize(el) {
     document.querySelectorAll('.size-chip').forEach(function(c) { c.classList.remove('selected'); });
     el.classList.add('selected');
