@@ -39,6 +39,8 @@ body {
     color: var(--espresso);
     min-height: 100vh;
 }
+a { color: inherit; text-decoration: none; }
+a { color: inherit; text-decoration: none; }
         100% { opacity: 0; visibility: hidden; }
     }
 
@@ -263,7 +265,7 @@ body {
     width: 100%;
     aspect-ratio: 3 / 4;
     overflow: hidden;
-    background: #ffffff;
+    background: var(--surface);
     position: relative;
     border: 2px solid transparent;
     border-radius: 4px;
@@ -353,8 +355,8 @@ body {
 }
 .prod-name {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(15px, 3.5vw, 17px);
-    font-weight: 400;
+    font-size: clamp(15px, 3.5vw, 18px);
+    font-weight: 500;
     line-height: 1.25;
     color: var(--espresso);
     margin-bottom: 5px;
@@ -543,6 +545,24 @@ body {
 </div>
 @endif
 
+{{-- ── Shop Header ───────────────────────────────────────────────────── --}}
+@if(!$isDemo)
+<div class="shop-header">
+    <div class="shop-header-name">{{ $tenant->name }}</div>
+    @if($tenant->shop_location)
+    <div class="shop-header-location">{{ $tenant->shop_location }}</div>
+    @endif
+    @if($tenant->shop_description)
+    <div class="shop-header-desc">{{ $tenant->shop_description }}</div>
+    @endif
+    @if($isOpen)
+    <div style="display:flex;justify-content:center;margin-top:10px;">
+        <span class="open-now"><span class="open-now-dot"></span>Open now</span>
+    </div>
+    @endif
+</div>
+@endif
+
 {{-- ── Search & Filter Bar ──────────────────────────────────────────── --}}
 <div class="search-bar-wrap">
     <form action="{{ route('shop.index') }}" method="GET" class="search-form">
@@ -631,7 +651,7 @@ body {
 
 {{-- ── Footer ───────────────────────────────────────────────────────── --}}
 <div class="shop-footer">
-    Powered by <a href="https://getstoka.com" target="_blank" rel="noopener">Stoka</a>
+    <a href="https://tempforest.com" target="_blank" rel="noopener" style="color:var(--muted);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.55;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.55'">Powered by Stoka</a>
 </div>
 
 
