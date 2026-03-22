@@ -598,11 +598,16 @@ body {
 
 {{-- ── Shop hero ──────────────────────────────────────────────────────── --}}
 <div class="shop-hero">
+    {{-- Owner floating back button --}}
     @if(session('auth_role') === 'owner')
-    <a href="{{ route('dashboard') }}" class="shop-hero-dash">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Dashboard
-    </a>
+    <div class="owner-float">
+        <a href="{{ route('dashboard') }}" class="owner-back-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>Dashboard</span>
+        </a>
+    </div>
     @endif
     <div class="shop-hero-inner">
         <div class="shop-hero-name">{{ session('demo_shop_name', $tenant->name) }}</div>
