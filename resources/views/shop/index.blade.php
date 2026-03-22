@@ -309,10 +309,10 @@ body {
 .prod-cat-label {
     font-size: 9px;
     font-weight: 700;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #8C7B6E;
-    margin-bottom: 5px;
+    color: var(--muted);
+    margin-bottom: 6px;
 }
 .prod-name {
     font-family: 'Cormorant Garamond', serif;
@@ -333,16 +333,17 @@ body {
     color: var(--muted);
 }
 .prod-price-unit {
-    font-size: 10px;
-    color: var(--border);
-    margin-left: 1px;
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 2px;
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .prod-sizes {
-    font-size: 10px;
-    color: var(--border);
-    margin-top: 3px;
-    letter-spacing: 0.04em;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+    font-weight: 500;
 }
 
 /* ── Empty ────────────────────────────────────────────────── */

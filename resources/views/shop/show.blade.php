@@ -98,14 +98,26 @@ body {
     width: 100%;
     height: 56vh;
     overflow: hidden;
-    background: var(--surface);
+    background: white;
     position: relative;
+    cursor: zoom-in;
+}
+.img-col.zoomed {
+    cursor: zoom-out;
+}
+.img-col.zoomed .hero-photo {
+    object-fit: cover;
+    cursor: grab;
+}
+.img-col.zoomed .hero-photo:active {
+    cursor: grabbing;
 }
 .hero-photo {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
+    background: white;
 }
 .hero-placeholder {
     width: 100%;
@@ -545,13 +557,16 @@ body {
     {{-- Right: details --}}
     <div class="detail-col">
 
-        {{-- Desktop back link --}}
-        <a href="{{ route('shop.index') }}" class="detail-back">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            All products
-        </a>
+        {{-- Breadcrumbs --}}
+        <div class="breadcrumbs">
+            <a href="{{ route('shop.index') }}">Shop</a>
+            <span class="breadcrumb-sep">›</span>
+            @if($product->category)
+            <a href="{{ route('shop.index', ['cat' => $product->category]) }}">{{ $product->category }}</a>
+            <span class="breadcrumb-sep">›</span>
+            @endif
+            <span class="breadcrumb-current">{{ $product->name }}</span>
+        </div>
 
         @if($product->category)
         <div class="prod-category">{{ $product->category }}</div>
@@ -688,6 +703,17 @@ updateWaBtns();
         });
         document.title = document.title.replace(/^.*?—/, preview + ' —');
     }
+})();
+
+// Image zoom on click (mobile & desktop)
+(function() {
+    var imgCol = document.querySelector('.img-col');
+    var heroPhoto = document.querySelector('.hero-photo');
+    if (!imgCol || !heroPhoto) return;
+    
+    imgCol.addEventListener('click', function() {
+        imgCol.classList.toggle('zoomed');
+    });
 })();
 </script>
 </body>
