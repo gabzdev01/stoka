@@ -11,8 +11,8 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="alternate icon" href="/favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ $tenant->name }}</title>
-<meta name="description" content="Browse {{ $tenant->name }} — shop online and enquire via WhatsApp.">
+<title>{{ session('demo_shop_name', $tenant->name) }}</title>
+<meta name="description" content="Browse {{ session('demo_shop_name', $tenant->name) }} — shop online and enquire via WhatsApp.">
 <meta property="og:title" content="{{ $tenant->name }}">
 <meta property="og:description" content="Browse {{ $tenant->name }} — shop online and enquire via WhatsApp.">
 <meta property="og:type" content="website">
@@ -42,31 +42,39 @@ body {
         100% { opacity: 0; visibility: hidden; }
     }
 
-/* ── Owner Navigation ────────────────────────────────────── */
-.owner-nav {
-    background: var(--dark-wood);
-    padding: 0 20px;
-    height: 48px;
-    display: flex;
-    align-items: center;
+/* ── Owner Floating Back Button ──────────────────────────── */
+.owner-float {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 900;
 }
-.back-to-dash {
+.owner-back-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    color: rgba(250, 247, 242, 0.6);
+    padding: 10px 18px;
+    background: var(--espresso);
+    color: var(--parchment);
     text-decoration: none;
     font-size: 13px;
     font-weight: 500;
-    letter-spacing: 0.01em;
-    transition: color 0.2s;
-    padding: 8px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(28, 24, 20, 0.15);
+    transition: all 0.2s;
 }
-.back-to-dash:hover {
-    color: var(--parchment);
+.owner-back-btn:hover {
+    background: var(--forest);
+    box-shadow: 0 6px 16px rgba(28, 24, 20, 0.25);
+    transform: translateY(-1px);
 }
-.back-to-dash svg {
+.owner-back-btn svg {
     flex-shrink: 0;
+}
+@media (max-width: 640px) {
+    .owner-float { top: 12px; right: 12px; }
+    .owner-back-btn { padding: 8px 14px; font-size: 12px; }
+    .owner-back-btn span { display: none; }
 }
 
 /* ── Elegant Search & Filter ─────────────────────────────── */
@@ -452,33 +460,52 @@ body {
 .demo-bar-back:hover { color: rgba(250,247,242,0.7); }
 
 
-/* ── Floating WhatsApp ───────────────────────────────── */
+/* ── Floating WhatsApp (Smart Conversion Button) ──────── */
 .wa-float {
     position: fixed;
     bottom: 24px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+    right: 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border-radius: 50px;
     background: #25D366;
     color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.22);
     text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
     z-index: 200;
     opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.3s ease, transform 0.3s ease, background 0.15s;
+    transform: translateY(10px) scale(0.9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
 }
 .wa-float.visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
     pointer-events: auto;
 }
-.wa-float:hover { background: #1ebe5d; }
+.wa-float:hover {
+    background: #1ebe5d;
+    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.5);
+    transform: translateY(-2px) scale(1);
+}
+.wa-float svg {
+    flex-shrink: 0;
+}
+.wa-float-text {
+    white-space: nowrap;
+}
+@media (max-width: 640px) {
+    .wa-float {
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 16px;
+        font-size: 13px;
+    }
+}
 </style>
 </head>
 <body>
@@ -610,13 +637,17 @@ body {
 
 
 @if(!$isDemo && ($tenant->owner_whatsapp || $tenant->owner_phone))
-@php $waFloatPhone = preg_replace('/[^0-9]/', '', $tenant->owner_whatsapp ?? $tenant->owner_phone); @endphp
-<a href="https://wa.me/{{ $waFloatPhone }}?text={{ urlencode('Hi, I would like to enquire about something from your shop.') }}"
-   id="wa-float" class="wa-float" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+@php 
+$waFloatPhone = preg_replace('/[^0-9]/', '', $tenant->owner_whatsapp ?? $tenant->owner_phone);
+$shopDisplayName = session('demo_shop_name', $tenant->name ?? 'this shop');
+@endphp
+<a href="https://wa.me/{{ $waFloatPhone }}?text={{ urlencode('Hi! I saw your shop online and would like to know more.') }}"
+   id="wa-float" class="wa-float" target="_blank" rel="noopener">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
         <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.956-1.418A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" fill="none" stroke="currentColor" stroke-width="1.5"/>
     </svg>
+    <span class="wa-float-text">Chat with us</span>
 </a>
 @endif
 <script>
@@ -719,12 +750,33 @@ body {
 </script>
 
 <script>
+// Smart WhatsApp float (appears after scrolling past 2 products)
 (function() {
     var btn = document.getElementById('wa-float');
     if (!btn) return;
-    window.addEventListener('scroll', function() {
-        btn.classList.toggle('visible', window.scrollY > 300);
-    }, { passive: true });
+    
+    var lastScrollY = 0;
+    var showThreshold = 400; // Show after scrolling ~400px
+    
+    function updateButtonVisibility() {
+        var scrollY = window.scrollY;
+        var scrollingDown = scrollY > lastScrollY;
+        
+        // Show when scrolled past threshold and scrolling down
+        if (scrollY > showThreshold) {
+            btn.classList.add('visible');
+        }
+        
+        // Hide when scrolling back up near top
+        if (scrollY < 200) {
+            btn.classList.remove('visible');
+        }
+        
+        lastScrollY = scrollY;
+    }
+    
+    window.addEventListener('scroll', updateButtonVisibility, { passive: true });
+    updateButtonVisibility(); // Check initial position
 })();
 </script>
 
