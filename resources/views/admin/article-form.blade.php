@@ -93,7 +93,11 @@ a{color:inherit;text-decoration:none;}
             <label class="check-row"><input type="checkbox" name="published" value="1" {{ old('published', $article->published ?? 1) ? 'checked' : '' }}> Published (visible on site)</label>
           </div>
         </div>
-        <button type="submit" class="btn-primary">@if($article) Save changes @else Publish article @endif</button>
+        @if($article)
+        <button type="submit" class="btn-primary">Save changes</button>
+        @else
+        <button type="submit" class="btn-primary">Publish article</button>
+        @endif
       </div>
     </form>
   </div>

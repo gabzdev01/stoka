@@ -77,7 +77,11 @@ a{color:inherit;text-decoration:none;}
         <div class="field">
           <label class="check-row"><input type="checkbox" name="published" value="1" {{ old('published', $testimonial->published ?? 1) ? 'checked' : '' }}> Published (appears on homepage)</label>
         </div>
-        <button type="submit" class="btn-primary">@if($testimonial) Save changes @else Add testimonial @endif</button>
+        @if($testimonial)
+        <button type="submit" class="btn-primary">Save changes</button>
+        @else
+        <button type="submit" class="btn-primary">Add testimonial</button>
+        @endif
       </div>
     </form>
   </div>
