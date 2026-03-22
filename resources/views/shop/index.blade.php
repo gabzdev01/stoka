@@ -60,7 +60,7 @@ body {
     text-decoration: none;
     font-size: 13px;
     font-weight: 500;
-    border-radius: 8px;
+    border-radius: 0;
     box-shadow: 0 4px 12px rgba(28, 24, 20, 0.15);
     transition: all 0.2s;
 }
@@ -112,7 +112,7 @@ body {
     width: 100%;
     padding: 13px 18px 13px 44px;
     border: 1.5px solid var(--border);
-    border-radius: 10px;
+    border-radius: 0;
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 14px;
     color: var(--espresso);
@@ -151,7 +151,7 @@ body {
 .sort-select {
     padding: 13px 18px;
     border: 1.5px solid var(--border);
-    border-radius: 10px;
+    border-radius: 0;
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 14px;
     color: var(--espresso);
@@ -175,9 +175,55 @@ body {
     .sort-select { width: 100%; min-width: 0; }
 }
 
+/* ── Shop hero ──────────────────────────────────────────── */
+.shop-hero {
+    background: var(--parchment);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    padding: 28px 24px 20px;
+    text-align: center;
+}
+.shop-hero-inner { position: relative; z-index: 1; }
+.shop-hero-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 400;
+    color: var(--espresso);
+    letter-spacing: 0.06em;
+    line-height: 1;
+}
+.shop-hero-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    line-height: 1.6;
+    max-width: 340px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.shop-hero-dash {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.15s;
+    z-index: 2;
+}
+.shop-hero-dash:hover { color: var(--espresso); }
+@media (min-width: 768px) {
+    .shop-hero { padding: 24px 40px 20px; }
+}
+
 /* ── Minimalist Category Tabs ────────────────────────────── */
 .cat-bar-outer {
     background: white;
+    padding-top: 4px;
     border-bottom: 1px solid var(--border);
     padding: 0 20px 16px;
 }
@@ -192,7 +238,7 @@ body {
 .cat-chip {
     flex-shrink: 0;
     padding: 9px 24px;
-    border-radius: 6px;
+    border-radius: 0;
     font-size: 12px;
     font-weight: 500;
     letter-spacing: 0.02em;
@@ -267,7 +313,7 @@ body {
     background: #ffffff;
     position: relative;
     border: 2px solid transparent;
-    border-radius: 4px;
+    border-radius: 0;
     transition: border-color 0.3s;
 }
 .prod-card:hover .prod-photo-wrap {
@@ -507,6 +553,24 @@ body {
         font-size: 13px;
     }
 }
+.owner-nav {
+    background: var(--espresso);
+    border-top: 1px solid rgba(250,247,242,0.08);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.back-to-dash {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(250,247,242,0.5) !important;
+    font-size: 12px;
+    text-decoration: none !important;
+    transition: color 0.15s;
+}
+.back-to-dash:hover { color: var(--parchment) !important; }
 </style>
 </head>
 <body>
@@ -532,25 +596,22 @@ body {
 
 
 
-{{-- ── Shop name header ──────────────────────────────────────────────── --}}
-<div class="shop-name-header">
-    <div class="shop-name-header-title">{{ session('demo_shop_name', $tenant->name) }}</div>
-    @if($tenant->shop_location)
-    <div class="shop-name-header-location">{{ $tenant->shop_location }}</div>
-    @endif
-</div>
-
-{{-- ── Header (Owner only - Back to Dashboard) ──────────────────────── --}}
-@if(session('auth_role') === 'owner')
-<div class="owner-nav">
-    <a href="{{ route('dashboard') }}" class="back-to-dash">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
-        <span>Dashboard</span>
+{{-- ── Shop hero ──────────────────────────────────────────────────────── --}}
+<div class="shop-hero">
+    @if(session('auth_role') === 'owner')
+    <a href="{{ route('dashboard') }}" class="shop-hero-dash">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Dashboard
     </a>
+    @endif
+    <div class="shop-hero-inner">
+        <div class="shop-hero-name">{{ session('demo_shop_name', $tenant->name) }}</div>
+
+        @if($tenant->shop_description)
+        <div class="shop-hero-desc">{{ $tenant->shop_description }}</div>
+        @endif
+    </div>
 </div>
-@endif
 
 {{-- ── Search & Filter Bar ──────────────────────────────────────────── --}}
 <div class="search-bar-wrap">
