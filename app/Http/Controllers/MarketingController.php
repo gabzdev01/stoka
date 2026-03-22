@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Artisan;
+use App\Mail\TenantWelcome;
+use Illuminate\Support\Facades\Mail;
 
 class MarketingController extends Controller
 {
@@ -137,6 +139,19 @@ class MarketingController extends Controller
             tenancy()->end();
 
             $provisioned = true;
+
+            // Send welcome email (only if email provided and provisioned successfully)
+            if ($request->email) {
+                try {
+                    Mail::to($request->email)->send(
+                        new TenantWelcome($request->shop_name, $request->owner_name, $shopUrl, $request->phone, $password)
+                    );
+                } catch (\Exception $e) {
+                    // Non-blocking - log but don't fail registration
+                    \Illuminate\Support\Facades\Log::error('Welcome email failed', ['error' => $e->getMessage()]);
+                }
+            }
+
         } catch (\Exception $e) {
             try { tenancy()->end(); } catch (\Exception $e2) {}
             $provisioned = false;
