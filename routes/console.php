@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Reset demo tenant daily at midnight
 Schedule::command('demo:reset')->dailyAt('00:00');
+
+// Auto-close shifts that have been open for more than 24 hours
+Schedule::command('shifts:close-stale')->daily();
