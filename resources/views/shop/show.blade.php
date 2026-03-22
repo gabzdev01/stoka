@@ -520,16 +520,19 @@ body {
 </div>
 @endif
 
-{{-- Nav --}}
-<div class="nav">
-    <a href="{{ route('shop.index') }}" class="nav-back">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Shop
-    </a>
-    <div class="nav-shop-name">{{ $tenant->name }}</div>
-    <div style="width:42px"></div>
+{{-- Clean Header with Breadcrumbs --}}
+<div class="product-header">
+    <div class="header-inner">
+        <div class="breadcrumbs">
+            <a href="{{ route('shop.index') }}">Shop</a>
+            <span class="breadcrumb-sep">›</span>
+            @if($product->category)
+            <a href="{{ route('shop.index', ['cat' => $product->category]) }}">{{ $product->category }}</a>
+            <span class="breadcrumb-sep">›</span>
+            @endif
+            <span class="breadcrumb-current">{{ $product->name }}</span>
+        </div>
+    </div>
 </div>
 
 {{-- Product page --}}
@@ -551,16 +554,7 @@ body {
     {{-- Right: details --}}
     <div class="detail-col">
 
-        {{-- Breadcrumbs --}}
-        <div class="breadcrumbs">
-            <a href="{{ route('shop.index') }}">Shop</a>
-            <span class="breadcrumb-sep">›</span>
-            @if($product->category)
-            <a href="{{ route('shop.index', ['cat' => $product->category]) }}">{{ $product->category }}</a>
-            <span class="breadcrumb-sep">›</span>
-            @endif
-            <span class="breadcrumb-current">{{ $product->name }}</span>
-        </div>
+
 
         @if($product->category)
         <div class="prod-category">{{ $product->category }}</div>
