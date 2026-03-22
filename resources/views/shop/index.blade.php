@@ -69,44 +69,51 @@ body {
     flex-shrink: 0;
 }
 
-/* ── Search & Sort Bar ───────────────────────────────────── */
+/* ── Elegant Search & Filter ─────────────────────────────── */
 .search-bar-wrap {
-    background: var(--parchment);
+    background: white;
     border-bottom: 1px solid var(--border);
-    padding: 14px 20px 12px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
+    padding: 18px 20px;
 }
 .search-form {
-    flex: 1;
-    min-width: 0;
+    max-width: 1020px;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
 .search-input-wrap {
     position: relative;
-    display: flex;
-    align-items: center;
+    flex: 1;
+    min-width: 0;
 }
 .search-icon {
     position: absolute;
-    left: 12px;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--muted);
     pointer-events: none;
+    transition: color 0.3s;
+}
+.search-input-wrap.active .search-icon {
+    color: var(--forest);
 }
 .search-input {
     width: 100%;
-    padding: 10px 14px 10px 38px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    padding: 13px 18px 13px 44px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 14px;
     color: var(--espresso);
     background: white;
-    transition: border-color 0.15s;
+    transition: all 0.3s;
 }
 .search-input:focus {
     outline: none;
-    border-color: var(--espresso);
+    border-color: var(--forest);
+    box-shadow: 0 0 0 4px rgba(74, 103, 65, 0.06);
 }
 .search-input::placeholder {
     color: var(--muted);
@@ -114,72 +121,94 @@ body {
 }
 .search-clear {
     position: absolute;
-    right: 12px;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
     color: var(--muted);
-    text-decoration: none;
-    font-size: 16px;
-    padding: 4px;
-    transition: color 0.12s;
+    cursor: pointer;
+    padding: 6px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
 }
-.search-clear:hover { color: var(--espresso); }
+.search-clear:hover {
+    background: var(--surface);
+    color: var(--espresso);
+}
 .sort-select {
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    padding: 13px 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--espresso);
     background: white;
     cursor: pointer;
-    min-width: 140px;
+    min-width: 180px;
     flex-shrink: 0;
+    transition: all 0.3s;
 }
 .sort-select:focus {
     outline: none;
-    border-color: var(--espresso);
+    border-color: var(--forest);
+    box-shadow: 0 0 0 4px rgba(74, 103, 65, 0.06);
 }
-@media (max-width: 560px) {
-    .search-bar-wrap { flex-direction: column; gap: 8px; }
+.sort-select:hover {
+    border-color: var(--forest);
+}
+@media (max-width: 640px) {
+    .search-bar-wrap { padding: 14px 16px; }
+    .search-form { flex-direction: column; gap: 10px; }
     .sort-select { width: 100%; min-width: 0; }
 }
 
-/* ── Category chips ──────────────────────────────────────── */
+/* ── Minimalist Category Tabs ────────────────────────────── */
 .cat-bar-outer {
-    background: var(--parchment);
+    background: white;
     border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    padding: 0 20px 16px;
 }
 .cat-bar {
     display: flex;
-    gap: 8px;
-    padding: 11px 20px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
     max-width: 1020px;
     margin: 0 auto;
 }
-.cat-bar::-webkit-scrollbar { display: none; }
 .cat-chip {
     flex-shrink: 0;
-    padding: 6px 16px;
-    border-radius: 50px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.07em;
+    padding: 9px 24px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
     cursor: pointer;
     text-decoration: none;
     border: 1px solid var(--border);
     background: transparent;
     color: var(--muted);
-    transition: all 0.12s;
+    transition: border-color 0.2s, color 0.2s;
     white-space: nowrap;
 }
-.cat-chip:hover { border-color: var(--espresso); color: var(--espresso); }
-.cat-chip.active { background: var(--espresso); border-color: var(--espresso); color: var(--parchment); }
+.cat-chip:hover {
+    border-color: var(--forest);
+    color: var(--espresso);
+}
+.cat-chip.active {
+    border-color: var(--forest);
+    color: var(--espresso);
+}
+@media (max-width: 640px) {
+    .cat-bar-outer { padding: 0 16px 14px; }
+    .cat-bar { justify-content: flex-start; gap: 8px; }
+    .cat-chip { padding: 8px 20px; font-size: 11px; }
+}
 
 /* ── Grid ────────────────────────────────────────────────── */
 .grid-wrap {
@@ -506,17 +535,6 @@ body {
         <input type="hidden" name="cat" value="{{ request('cat') }}">
         @endif
     </form>
-    
-    @if($products->count() > 3)
-    <select class="sort-select" onchange="window.location.href=updateSort(this.value)">
-        <option value="">Sort by</option>
-        <option value="category" {{ request('sort') === 'category' ? 'selected' : '' }}>Category</option>
-        <option value="price-asc" {{ request('sort') === 'price-asc' ? 'selected' : '' }}>Price: Low to High</option>
-        <option value="price-desc" {{ request('sort') === 'price-desc' ? 'selected' : '' }}>Price: High to Low</option>
-        <option value="newest" {{ request('sort') === 'newest' ? 'selected' : '' }}>Newest First</option>
-        <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>Alphabetical</option>
-    </select>
-    @endif
 </div>
 
 {{-- ── Category chips ──────────────────────────────────────────────── --}}
@@ -699,14 +717,7 @@ body {
     if (skipBtn) skipBtn.addEventListener('click', skipDemo);
 })();
 </script>
-<script>
-function updateSort(sort) {
-    var url = new URL(window.location.href);
-    if (sort) url.searchParams.set('sort', sort);
-    else url.searchParams.delete('sort');
-    return url.toString();
-}
-</script>
+
 <script>
 (function() {
     var btn = document.getElementById('wa-float');
@@ -851,6 +862,85 @@ function updateSort(sort) {
     else if (y > lastY + 10) el.classList.add('pwa-visible');
     lastY = y;
   }, { passive: true });
+})();
+</script>
+
+
+<script>
+// Real-time search (as-you-type)
+(function() {
+    var searchInput = document.querySelector('.search-input');
+    var searchWrap = document.querySelector('.search-input-wrap');
+    var clearBtn = document.querySelector('.search-clear');
+    var allProducts = Array.from(document.querySelectorAll('.prod-card'));
+    var emptyState = document.querySelector('.empty');
+    var debounceTimer;
+    
+    if (!searchInput) return;
+    
+    function performSearch(query) {
+        var visibleCount = 0;
+        
+        allProducts.forEach(function(card) {
+            var name = card.querySelector('.prod-name').textContent.toLowerCase();
+            var cat = card.querySelector('.prod-cat-label');
+            var category = cat ? cat.textContent.toLowerCase() : '';
+            var sizes = card.querySelector('.prod-sizes');
+            var sizeText = sizes ? sizes.textContent.toLowerCase() : '';
+            
+            var matches = name.includes(query) || category.includes(query) || sizeText.includes(query);
+            
+            if (matches) {
+                card.style.display = '';
+                card.style.opacity = '1';
+                visibleCount++;
+            } else {
+                card.style.opacity = '0';
+                setTimeout(function() {
+                    card.style.display = 'none';
+                }, 150);
+            }
+        });
+        
+        if (emptyState) {
+            emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+            if (visibleCount === 0 && query) {
+                emptyState.textContent = 'No products match "' + query + '"';
+            } else if (visibleCount === 0) {
+                emptyState.textContent = 'Nothing in this category yet.';
+            }
+        }
+    }
+    
+    searchInput.addEventListener('input', function() {
+        var query = this.value.toLowerCase().trim();
+        
+        if (searchWrap) searchWrap.classList.toggle('active', query.length > 0);
+        if (clearBtn) clearBtn.style.display = query ? 'flex' : 'none';
+        
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function() {
+            performSearch(query);
+        }, 150);
+    });
+    
+    searchInput.addEventListener('focus', function() {
+        if (searchWrap) searchWrap.classList.add('active');
+    });
+    
+    searchInput.addEventListener('blur', function() {
+        if (searchWrap && !this.value) searchWrap.classList.remove('active');
+    });
+    
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            clearBtn.style.display = 'none';
+            if (searchWrap) searchWrap.classList.remove('active');
+            performSearch('');
+            searchInput.focus();
+        });
+    }
 })();
 </script>
 
