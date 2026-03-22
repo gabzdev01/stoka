@@ -291,13 +291,7 @@ body {
     pointer-events: none;
 }
 .btn-wa-desktop svg { flex-shrink: 0; }
-.wa-reassurance {
-    margin-top: 11px;
-    text-align: center;
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.01em;
-}
+
 
 /* ── Mobile sticky CTA ────────────────────────────────── */
 .mobile-cta {
@@ -617,7 +611,6 @@ body {
             @else
             <div class="btn-wa-desktop unavail">{{ $oos ? 'Currently unavailable' : 'Chat unavailable' }}</div>
             @endif
-            <p class="wa-reassurance">Responds on WhatsApp &middot; Usually within an hour</p>
         </div>
 
     </div>
@@ -625,7 +618,7 @@ body {
 
 {{-- Footer (desktop only) --}}
 <div class="shop-footer">
-    A <a href="https://getstoka.com" target="_blank" rel="noopener">Stoka</a> shop
+    Powered by <a href="https://getstoka.com" target="_blank" rel="noopener">Stoka</a>
 </div>
 
 {{-- Mobile sticky CTA --}}
@@ -711,8 +704,16 @@ updateWaBtns();
     var heroPhoto = document.querySelector('.hero-photo');
     if (!imgCol || !heroPhoto) return;
     
-    imgCol.addEventListener('click', function() {
+    imgCol.addEventListener('click', function(e) {
+        e.preventDefault();
         imgCol.classList.toggle('zoomed');
+        
+        // If zoomed, change to cover and allow dragging
+        if (imgCol.classList.contains('zoomed')) {
+            heroPhoto.style.objectFit = 'cover';
+        } else {
+            heroPhoto.style.objectFit = 'contain';
+        }
     });
 })();
 </script>
