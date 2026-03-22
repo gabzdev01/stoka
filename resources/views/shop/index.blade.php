@@ -33,6 +33,7 @@
     --clay:       #B85C38;
 }
 html { scroll-behavior: smooth; }
+a { color: inherit; text-decoration: none; }
 body {
     font-family: 'Plus Jakarta Sans', sans-serif;
     background: var(--parchment);
@@ -530,6 +531,14 @@ body {
 
 
 
+
+{{-- ── Shop name header ──────────────────────────────────────────────── --}}
+<div class="shop-name-header">
+    <div class="shop-name-header-title">{{ session('demo_shop_name', $tenant->name) }}</div>
+    @if($tenant->shop_location)
+    <div class="shop-name-header-location">{{ $tenant->shop_location }}</div>
+    @endif
+</div>
 
 {{-- ── Header (Owner only - Back to Dashboard) ──────────────────────── --}}
 @if(session('auth_role') === 'owner')
