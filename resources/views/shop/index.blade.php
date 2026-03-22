@@ -121,8 +121,8 @@ body {
 }
 .search-input:focus {
     outline: none;
-    border-color: var(--forest);
-    box-shadow: 0 0 0 4px rgba(74, 103, 65, 0.06);
+    border-color: var(--terracotta);
+    box-shadow: 0 0 0 3px rgba(193, 127, 74, 0.06);
 }
 .search-input::placeholder {
     color: var(--muted);
@@ -163,8 +163,8 @@ body {
 }
 .sort-select:focus {
     outline: none;
-    border-color: var(--forest);
-    box-shadow: 0 0 0 4px rgba(74, 103, 65, 0.06);
+    border-color: var(--terracotta);
+    box-shadow: 0 0 0 3px rgba(193, 127, 74, 0.06);
 }
 .sort-select:hover {
     border-color: var(--forest);
@@ -256,8 +256,8 @@ body {
     color: var(--espresso);
 }
 .cat-chip.active {
-    border-color: var(--forest);
-    color: var(--espresso);
+    border-color: var(--terracotta);
+    color: var(--terracotta);
 }
 @media (max-width: 640px) {
     .cat-bar-outer { padding: 0 16px 14px; }
