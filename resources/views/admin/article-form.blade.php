@@ -55,14 +55,14 @@ a{color:inherit;text-decoration:none;}
 <div class="main">
   <div class="page-header">
     <div>
-      <h1 class="page-title">@if($article) Edit Article @else New Article @endif</h1>
+      <h1 class="page-title">{{ $article ? 'Edit Article' : 'New Article' }}</h1>
       <p class="page-sub">Plain paragraphs separated by a blank line. No HTML needed.</p>
     </div>
     <a href="/admin/articles" class="btn-ghost">← Back</a>
   </div>
   <div class="page-content">
     @if($errors->any())<div style="background:#F8E8E4;border-left:3px solid var(--clay);border-radius:var(--radius-default);padding:12px 18px;margin-bottom:20px;font-size:13px;color:var(--clay);">{{ implode(', ', $errors->all()) }}</div>@endif
-    <form method="POST" action="@if($article)/admin/articles/{{ $article->id }}@else/admin/articles@endif">
+    <form method="POST" action="{{ $article ? '/admin/articles/'.$article->id : '/admin/articles' }}">
       @csrf
       <div class="form-card">
         @if(!$article)
