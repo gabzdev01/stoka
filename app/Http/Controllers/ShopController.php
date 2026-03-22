@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 
 class ShopController extends Controller
@@ -46,15 +45,7 @@ class ShopController extends Controller
         $filterCat  = $request->query('cat');
         $isDemo     = $tenant->id === 'demo';
 
-        // Open now — check if there is an active shift
-        $isOpen = false;
-        try {
-            $isOpen = \Illuminate\Support\Facades\DB::table('shifts')
-                ->where('status', 'open')
-                ->exists();
-        } catch (\Exception $e) {}
-
-        return view('shop.index', compact('tenant', 'products', 'categories', 'filterCat', 'isDemo', 'isOpen'));
+        return view('shop.index', compact('tenant', 'products', 'categories', 'filterCat', 'isDemo'));
     }
 
     public function show(Product $product)
