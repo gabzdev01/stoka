@@ -715,12 +715,14 @@ details[open] summary{color:var(--terracotta);}
 <section class="section-testimonial" id="section-testimonial">
   <div class="section-inner">
     <div class="t-wrap fade-up">
-      <div class="t-pull">&ldquo;I used to call James at 7pm to find out how the day went. Now I read it on my phone before he&rsquo;s finished closing.&rdquo;</div>
-      <p class="t-body">I have two staff members and I&rsquo;m rarely in the shop myself. Before Stoka, I knew roughly how each week went &mdash; roughly. Now I see every shift within minutes of it closing. The discrepancy report was uncomfortable the first time I saw it. It was also the first honest picture I had ever had of what was actually happening in my shop.</p>
+      @if($testimonial)
+      <div class="t-pull">&ldquo;{{ $testimonial->pull_quote }}&rdquo;</div>
+      <p class="t-body">{{ $testimonial->body }}</p>
       <div class="t-footer">
-        <div class="t-avatar">W</div>
-        <div><div class="t-name">Wanjiku M.</div><div class="t-loc">Zawadi Boutique &middot; Nairobi</div></div>
+        <div class="t-avatar">{{ substr($testimonial->name, 0, 1) }}</div>
+        <div><div class="t-name">{{ $testimonial->name }}</div><div class="t-loc">{{ $testimonial->location }}</div></div>
       </div>
+      @endif
     </div>
   </div>
 </section>

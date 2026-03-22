@@ -204,23 +204,14 @@ body {
     .cat-bar { padding: 14px 40px; }
 }
 
-/* ── Product card (ALIVE with terracotta) ────────────────── */
+/* ── Product card ─────────────────────────────────────────── */
 .prod-card {
     display: block;
     text-decoration: none;
     color: inherit;
     position: relative;
-    transition: transform 0.25s;
 }
-.prod-card:hover {
-    transform: translateY(-2px);
-}
-.prod-card:hover .prod-photo {
-    opacity: 0.92;
-}
-.prod-card:hover .prod-name {
-    color: var(--terracotta);
-}
+.prod-card:hover { opacity: 0.87; }
 
 .prod-photo-wrap {
     width: 100%;
@@ -228,12 +219,6 @@ body {
     overflow: hidden;
     background: #ffffff;
     position: relative;
-    border: 2px solid transparent;
-    border-radius: 4px;
-    transition: border-color 0.3s;
-}
-.prod-card:hover .prod-photo-wrap {
-    border-color: rgba(193, 127, 74, 0.2);
 }
 .prod-photo {
     width: 100%;
@@ -267,15 +252,9 @@ body {
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 50px;
     z-index: 2;
-    box-shadow: 0 2px 8px rgba(193, 127, 74, 0.3);
-    animation: badge-pulse 2s ease-in-out infinite;
-}
-@keyframes badge-pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
 }
 .badge-oos {
     position: absolute;
@@ -301,10 +280,6 @@ body {
 /* ── Product info ─────────────────────────────────────────── */
 .prod-info {
     padding: 12px 4px 20px;
-}
-.prod-card {
-    opacity: 1;
-    transition: opacity 0.25s, transform 0.25s;
 }
 .prod-cat-label {
     font-size: 9px;

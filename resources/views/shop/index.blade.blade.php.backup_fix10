@@ -42,105 +42,29 @@ body {
         100% { opacity: 0; visibility: hidden; }
     }
 
-/* ── Owner Navigation ────────────────────────────────────── */
-.owner-nav {
-    background: var(--dark-wood);
-    padding: 0 20px;
-    height: 48px;
-    display: flex;
-    align-items: center;
+/* ── Header ─────────────────────────────────────────────── */
+.shop-header {
+    background: var(--espresso);
+    padding: 20px 24px 16px;
+    text-align: center;
 }
-.back-to-dash {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: rgba(250, 247, 242, 0.6);
-    text-decoration: none;
-    font-size: 13px;
+.shop-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(26px, 5vw, 40px);
     font-weight: 500;
-    letter-spacing: 0.01em;
-    transition: color 0.2s;
-    padding: 8px 0;
-}
-.back-to-dash:hover {
     color: var(--parchment);
+    letter-spacing: 0.08em;
+    line-height: 1.05;
 }
-.back-to-dash svg {
-    flex-shrink: 0;
+.shop-location {
+    font-size: 10px;
+    color: #5A524C;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-top: 7px;
 }
-
-/* ── Search & Sort Bar ───────────────────────────────────── */
-.search-bar-wrap {
-    background: var(--parchment);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 20px 12px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-.search-form {
-    flex: 1;
-    min-width: 0;
-}
-.search-input-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-.search-icon {
-    position: absolute;
-    left: 12px;
-    color: var(--muted);
-    pointer-events: none;
-}
-.search-input {
-    width: 100%;
-    padding: 10px 14px 10px 38px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px;
-    color: var(--espresso);
-    background: white;
-    transition: border-color 0.15s;
-}
-.search-input:focus {
-    outline: none;
-    border-color: var(--espresso);
-}
-.search-input::placeholder {
-    color: var(--muted);
-    opacity: 0.5;
-}
-.search-clear {
-    position: absolute;
-    right: 12px;
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 16px;
-    padding: 4px;
-    transition: color 0.12s;
-}
-.search-clear:hover { color: var(--espresso); }
-.sort-select {
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 13px;
-    color: var(--espresso);
-    background: white;
-    cursor: pointer;
-    min-width: 140px;
-    flex-shrink: 0;
-}
-.sort-select:focus {
-    outline: none;
-    border-color: var(--espresso);
-}
-@media (max-width: 560px) {
-    .search-bar-wrap { flex-direction: column; gap: 8px; }
-    .sort-select { width: 100%; min-width: 0; }
+@media (min-width: 768px) {
+    .shop-header { padding: 22px 40px 18px; }
 }
 
 /* ── Category chips ──────────────────────────────────────── */
@@ -204,23 +128,14 @@ body {
     .cat-bar { padding: 14px 40px; }
 }
 
-/* ── Product card (ALIVE with terracotta) ────────────────── */
+/* ── Product card ─────────────────────────────────────────── */
 .prod-card {
     display: block;
     text-decoration: none;
     color: inherit;
     position: relative;
-    transition: transform 0.25s;
 }
-.prod-card:hover {
-    transform: translateY(-2px);
-}
-.prod-card:hover .prod-photo {
-    opacity: 0.92;
-}
-.prod-card:hover .prod-name {
-    color: var(--terracotta);
-}
+.prod-card:hover { opacity: 0.87; }
 
 .prod-photo-wrap {
     width: 100%;
@@ -228,12 +143,6 @@ body {
     overflow: hidden;
     background: #ffffff;
     position: relative;
-    border: 2px solid transparent;
-    border-radius: 4px;
-    transition: border-color 0.3s;
-}
-.prod-card:hover .prod-photo-wrap {
-    border-color: rgba(193, 127, 74, 0.2);
 }
 .prod-photo {
     width: 100%;
@@ -267,15 +176,9 @@ body {
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 50px;
     z-index: 2;
-    box-shadow: 0 2px 8px rgba(193, 127, 74, 0.3);
-    animation: badge-pulse 2s ease-in-out infinite;
-}
-@keyframes badge-pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
 }
 .badge-oos {
     position: absolute;
@@ -301,10 +204,6 @@ body {
 /* ── Product info ─────────────────────────────────────────── */
 .prod-info {
     padding: 12px 4px 20px;
-}
-.prod-card {
-    opacity: 1;
-    transition: opacity 0.25s, transform 0.25s;
 }
 .prod-cat-label {
     font-size: 9px;
@@ -453,6 +352,20 @@ body {
 </head>
 <body>
 
+{{-- ── App banner (owner / staff logged in) ──────────────────────── --}}
+@if(session('auth_role'))
+<div class="app-banner">
+    @if(session('auth_role') === 'owner')
+        <a href="{{ route('dashboard') }}">← Dashboard</a>
+        <span class="sep">·</span>
+        <a href="{{ route('settings.index') }}">Manage shop</a>
+    @else
+        <a href="{{ url('/') }}">← Back to POS</a>
+    @endif
+</div>
+@endif
+
+
 @if($isDemo)
 @php
     $refBack = request('back') ? 'https://' . htmlspecialchars(request('back'), ENT_QUOTES) . '/dashboard' : null;
@@ -472,49 +385,29 @@ body {
 @endif
 
 
+{{-- ── App banner CSS (inline to avoid adding to <style>) ─────────── --}}
+<style>
+.app-banner {
+    background: #2C1F14;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 0 20px;
+    height: 34px;
+    font-size: 11px;
+    letter-spacing: 0.03em;
+}
+.app-banner a { color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.12s; }
+.app-banner a:hover { color: rgba(255,255,255,0.85); }
+.app-banner .sep { color: rgba(255,255,255,0.15); }
+</style>
 
-
-{{-- ── Header (Owner only - Back to Dashboard) ──────────────────────── --}}
-@if(session('auth_role') === 'owner')
-<div class="owner-nav">
-    <a href="{{ route('dashboard') }}" class="back-to-dash">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
-        <span>Dashboard</span>
-    </a>
-</div>
-@endif
-
-{{-- ── Search & Filter Bar ──────────────────────────────────────────── --}}
-<div class="search-bar-wrap">
-    <form action="{{ route('shop.index') }}" method="GET" class="search-form">
-        <div class="search-input-wrap">
-            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-            <input type="text" name="q" value="{{ request('q') }}" 
-                   placeholder="Search products..." 
-                   class="search-input"
-                   autocomplete="off">
-            @if(request('q'))
-            <a href="{{ route('shop.index') }}" class="search-clear">✕</a>
-            @endif
-        </div>
-        @if(request('cat'))
-        <input type="hidden" name="cat" value="{{ request('cat') }}">
-        @endif
-    </form>
-    
-    @if($products->count() > 3)
-    <select class="sort-select" onchange="window.location.href=updateSort(this.value)">
-        <option value="">Sort by</option>
-        <option value="category" {{ request('sort') === 'category' ? 'selected' : '' }}>Category</option>
-        <option value="price-asc" {{ request('sort') === 'price-asc' ? 'selected' : '' }}>Price: Low to High</option>
-        <option value="price-desc" {{ request('sort') === 'price-desc' ? 'selected' : '' }}>Price: High to Low</option>
-        <option value="newest" {{ request('sort') === 'newest' ? 'selected' : '' }}>Newest First</option>
-        <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>Alphabetical</option>
-    </select>
+{{-- ── Header ─────────────────────────────────────────────────────── --}}
+<div class="shop-header">
+    <div class="shop-name">{{ $tenant->name }}</div>
+    @if($tenant->shop_location)
+    <div class="shop-location">{{ $tenant->shop_location }}</div>
     @endif
 </div>
 
@@ -697,14 +590,6 @@ body {
     var skipBtn = document.getElementById('boutique-skip');
     if (skipBtn) skipBtn.addEventListener('click', skipDemo);
 })();
-</script>
-<script>
-function updateSort(sort) {
-    var url = new URL(window.location.href);
-    if (sort) url.searchParams.set('sort', sort);
-    else url.searchParams.delete('sort');
-    return url.toString();
-}
 </script>
 <script>
 (function() {

@@ -32,4 +32,22 @@ Route::middleware(SuperAdminAuth::class)->group(function () {
     Route::get('/admin/tenants/{id}/detail',          [AdminController::class, 'tenantDetail'])->name('admin.tenant.detail');
     Route::post('/admin/tenants/{id}/shop-toggle',    [AdminController::class, 'shopToggle'])->name('admin.tenants.shop-toggle');
     Route::post('/admin/tenants/{id}/reset-password', [AdminController::class, 'resetPassword'])->name('admin.tenants.reset-password');
+
+    // Content management
+    Route::get('/admin/articles',                    [AdminController::class, 'articles'])->name('admin.articles');
+    Route::get('/admin/articles/create',             [AdminController::class, 'articleCreate'])->name('admin.articles.create');
+    Route::post('/admin/articles',                   [AdminController::class, 'articleStore'])->name('admin.articles.store');
+    Route::get('/admin/articles/{id}/edit',          [AdminController::class, 'articleEdit'])->name('admin.articles.edit');
+    Route::post('/admin/articles/{id}',              [AdminController::class, 'articleUpdate'])->name('admin.articles.update');
+    Route::post('/admin/articles/{id}/delete',       [AdminController::class, 'articleDelete'])->name('admin.articles.delete');
+
+    Route::get('/admin/testimonials',                [AdminController::class, 'testimonials'])->name('admin.testimonials');
+    Route::get('/admin/testimonials/create',         [AdminController::class, 'testimonialCreate'])->name('admin.testimonials.create');
+    Route::post('/admin/testimonials',               [AdminController::class, 'testimonialStore'])->name('admin.testimonials.store');
+    Route::get('/admin/testimonials/{id}/edit',      [AdminController::class, 'testimonialEdit'])->name('admin.testimonials.edit');
+    Route::post('/admin/testimonials/{id}',          [AdminController::class, 'testimonialUpdate'])->name('admin.testimonials.update');
+    Route::post('/admin/testimonials/{id}/delete',   [AdminController::class, 'testimonialDelete'])->name('admin.testimonials.delete');
+
+    Route::get('/admin/demo-products',               [AdminController::class, 'demoProducts'])->name('admin.demo-products');
+    Route::post('/admin/demo-products/{id}/toggle',  [AdminController::class, 'demoProductToggle'])->name('admin.demo-products.toggle');
 });

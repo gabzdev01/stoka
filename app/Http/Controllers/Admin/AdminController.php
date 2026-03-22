@@ -397,4 +397,152 @@ class AdminController extends Controller
         ]);
         return back()->with('toggled', $tenant->name);
     }
+
+    // ── Articles ──────────────────────────────────────────────────────
+    public function articles()
+    {
+        $articles = DB::table('articles')->orderBy('sort_order')->get();
+        return view('admin.articles', compact('articles'));
+    }
+
+    public function articleCreate()
+    {
+        return view('admin.article-form', ['article' => null]);
+    }
+
+    public function articleStore(Request $request)
+    {
+        $request->validate(['slug'=>'required|unique:articles,slug','title'=>'required','preview'=>'required','body'=>'required']);
+        DB::table('articles')->insert([
+            'slug'       => $request->slug,
+            'title'      => $request->title,
+            'preview'    => $request->preview,
+            'body'       => $request->body,
+            'published'  => $request->has('published') ? 1 : 0,
+            'sort_order' => (int) $request->sort_order,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        return redirect()->route('admin.articles')->with('ok', 'Article created.');
+    }
+
+    public function articleEdit(int $id)
+    {
+        $article = DB::table('articles')->find($id);
+        if (!$article) abort(404);
+        return view('admin.article-form', compact('article'));
+    }
+
+    public function articleUpdate(Request $request, int $id)
+    {
+        $request->validate(['title'=>'required','preview'=>'required','body'=>'required']);
+        DB::table('articles')->where('id', $id)->update([
+            'title'      => $request->title,
+            'preview'    => $request->preview,
+            'body'       => $request->body,
+            'published'  => $request->has('published') ? 1 : 0,
+            'sort_order' => (int) $request->sort_order,
+            'updated_at' => now(),
+        ]);
+        return redirect()->route('admin.articles')->with('ok', 'Article updated.');
+    }
+
+    public function articleDelete(int $id)
+    {
+        DB::table('articles')->where('id', $id)->delete();
+        return redirect()->route('admin.articles')->with('ok', 'Article deleted.');
+    }
+
+    // ── Testimonials ──────────────────────────────────────────────────
+    public function testimonials()
+    {
+        $testimonials = DB::table('testimonials')->orderByDesc('created_at')->get();
+        return view('admin.testimonials', compact('testimonials'));
+    }
+
+    public function testimonialCreate()
+    {
+        return view('admin.testimonial-form', ['testimonial' => null]);
+    }
+
+    public function testimonialStore(Request $request)
+    {
+        $request->validate(['name'=>'required','location'=>'required','pull_quote'=>'required','body'=>'required']);
+        DB::table('testimonials')->insert([
+            'name'       => $request->name,
+            'location'   => $request->location,
+            'pull_quote' => $request->pull_quote,
+            'body'       => $request->body,
+            'published'  => $request->has('published') ? 1 : 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        return redirect()->route('admin.testimonials')->with('ok', 'Testimonial added.');
+    }
+
+    public function testimonialEdit(int $id)
+    {
+        $testimonial = DB::table('testimonials')->find($id);
+        if (!$testimonial) abort(404);
+        return view('admin.testimonial-form', compact('testimonial'));
+    }
+
+    public function testimonialUpdate(Request $request, int $id)
+    {
+        $request->validate(['name'=>'required','location'=>'required','pull_quote'=>'required','body'=>'required']);
+        DB::table('testimonials')->where('id', $id)->update([
+            'name'       => $request->name,
+            'location'   => $request->location,
+            'pull_quote' => $request->pull_quote,
+            'body'       => $request->body,
+            'published'  => $request->has('published') ? 1 : 0,
+            'updated_at' => now(),
+        ]);
+        return redirect()->route('admin.testimonials')->with('ok', 'Testimonial updated.');
+    }
+
+    public function testimonialDelete(int $id)
+    {
+        DB::table('testimonials')->where('id', $id)->delete();
+        return redirect()->route('admin.testimonials')->with('ok', 'Testimonial deleted.');
+    }
+
+    // ── Demo Products ─────────────────────────────────────────────────
+    public function demoProducts()
+    {
+        $products = collect();
+        try {
+            $demo = \App\Models\Tenant::find('demo');
+            if ($demo) {
+                tenancy()->initialize($demo);
+                $products = DB::table('products')->orderBy('category')->orderBy('name')->get();
+            }
+        } catch (\Exception $e) {
+        } finally {
+            try { tenancy()->end(); } catch (\Exception $e) {}
+        }
+        return view('admin.demo-products', compact('products'));
+    }
+
+    public function demoProductToggle(int $id)
+    {
+        try {
+            $demo = \App\Models\Tenant::find('demo');
+            if ($demo) {
+                tenancy()->initialize($demo);
+                $product = DB::table('products')->find($id);
+                if ($product) {
+                    DB::table('products')->where('id', $id)->update([
+                        'shop_visible' => !$product->shop_visible,
+                        'updated_at'   => now(),
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+        } finally {
+            try { tenancy()->end(); } catch (\Exception $e) {}
+        }
+        return back()->with('ok', 'Product updated.');
+    }
+
 }

@@ -69,117 +69,210 @@ body {
     flex-shrink: 0;
 }
 
-/* ── Search & Sort Bar ───────────────────────────────────── */
-.search-bar-wrap {
-    background: var(--parchment);
+/* ── Elegant Filter Bar ──────────────────────────────────── */
+.filter-wrap {
+    background: white;
     border-bottom: 1px solid var(--border);
-    padding: 14px 20px 12px;
+    padding: 20px 20px 18px;
+    transition: background 0.3s;
+}
+.filter-inner {
+    max-width: 1020px;
+    margin: 0 auto;
     display: flex;
     gap: 10px;
     align-items: center;
 }
-.search-form {
+
+/* ── Search Box (ALIVE with terracotta) ──────────────────── */
+.search-box {
     flex: 1;
-    min-width: 0;
-}
-.search-input-wrap {
     position: relative;
-    display: flex;
-    align-items: center;
+    min-width: 0;
 }
 .search-icon {
     position: absolute;
-    left: 12px;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--muted);
     pointer-events: none;
+    transition: color 0.3s;
 }
-.search-input {
+.search-box.active .search-icon {
+    color: var(--terracotta);
+}
+#shopSearch {
     width: 100%;
-    padding: 10px 14px 10px 38px;
+    padding: 11px 16px 11px 40px;
     border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px;
-    color: var(--espresso);
-    background: white;
-    transition: border-color 0.15s;
-}
-.search-input:focus {
-    outline: none;
-    border-color: var(--espresso);
-}
-.search-input::placeholder {
-    color: var(--muted);
-    opacity: 0.5;
-}
-.search-clear {
-    position: absolute;
-    right: 12px;
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 16px;
-    padding: 4px;
-    transition: color 0.12s;
-}
-.search-clear:hover { color: var(--espresso); }
-.sort-select {
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 10px;
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 13px;
     color: var(--espresso);
     background: white;
-    cursor: pointer;
-    min-width: 140px;
-    flex-shrink: 0;
+    transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
 }
-.sort-select:focus {
+#shopSearch:focus {
     outline: none;
-    border-color: var(--espresso);
+    border-color: var(--terracotta);
+    background: #FFFBF7;
+    box-shadow: 0 0 0 3px rgba(193, 127, 74, 0.08);
 }
-@media (max-width: 560px) {
-    .search-bar-wrap { flex-direction: column; gap: 8px; }
-    .sort-select { width: 100%; min-width: 0; }
+#shopSearch::placeholder {
+    color: var(--muted);
+    opacity: 0.4;
 }
 
-/* ── Category chips ──────────────────────────────────────── */
-.cat-bar-outer {
-    background: var(--parchment);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 10;
+/* ── Sort Dropdown (terracotta accents) ──────────────────── */
+.sort-box {
+    position: relative;
+    flex-shrink: 0;
 }
-.cat-bar {
+.sort-trigger {
     display: flex;
-    gap: 8px;
-    padding: 11px 20px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    align-items: center;
+    gap: 7px;
+    padding: 11px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: white;
+    color: var(--espresso);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.sort-trigger:hover {
+    border-color: var(--terracotta);
+    color: var(--terracotta);
+}
+.sort-trigger.open {
+    border-color: var(--terracotta);
+    background: #FFFBF7;
+    color: var(--terracotta);
+}
+.sort-trigger svg {
+    transition: transform 0.25s, color 0.2s;
+    flex-shrink: 0;
+}
+.sort-trigger.open svg {
+    transform: rotate(180deg);
+}
+.sort-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 200px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(28, 24, 20, 0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.25s, transform 0.25s, visibility 0.25s;
+    z-index: 100;
+    overflow: hidden;
+}
+.sort-dropdown.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.sort-option {
+    display: block;
+    width: 100%;
+    padding: 11px 16px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    color: var(--espresso);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    position: relative;
+}
+.sort-option::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--terracotta);
+    transform: scaleY(0);
+    transition: transform 0.2s;
+}
+.sort-option:hover {
+    background: var(--surface);
+}
+.sort-option.active {
+    background: #FFFBF7;
+    color: var(--terracotta);
+    font-weight: 600;
+}
+.sort-option.active::before {
+    transform: scaleY(1);
+}
+
+/* ── Minimalist Category Bar ─────────────────────────────── */
+.category-bar {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 18px 20px;
+}
+.category-inner {
     max-width: 1020px;
     margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
-.cat-bar::-webkit-scrollbar { display: none; }
-.cat-chip {
-    flex-shrink: 0;
-    padding: 6px 16px;
-    border-radius: 50px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    cursor: pointer;
-    text-decoration: none;
+.cat-btn {
+    padding: 9px 24px;
+    border-radius: 6px;
     border: 1px solid var(--border);
     background: transparent;
     color: var(--muted);
-    transition: all 0.12s;
-    white-space: nowrap;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    flex-shrink: 0;
 }
-.cat-chip:hover { border-color: var(--espresso); color: var(--espresso); }
-.cat-chip.active { background: var(--espresso); border-color: var(--espresso); color: var(--parchment); }
+.cat-btn:hover {
+    border-color: var(--forest);
+    color: var(--espresso);
+}
+.cat-btn.active {
+    border-color: var(--forest);
+    color: var(--espresso);
+}
+
+@media (max-width: 640px) {
+    .category-bar { padding: 14px 16px; }
+    .category-inner { 
+        gap: 10px;
+        justify-content: flex-start;
+    }
+    .cat-btn { 
+        padding: 8px 20px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 560px) {
+    .filter-inner { gap: 8px; }
+    .sort-trigger { padding: 10px 14px; font-size: 12px; }
+}
 
 /* ── Grid ────────────────────────────────────────────────── */
 .grid-wrap {
@@ -486,48 +579,47 @@ body {
 </div>
 @endif
 
-{{-- ── Search & Filter Bar ──────────────────────────────────────────── --}}
-<div class="search-bar-wrap">
-    <form action="{{ route('shop.index') }}" method="GET" class="search-form">
-        <div class="search-input-wrap">
-            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+{{-- ── Elegant Search & Filter Bar ──────────────────────────────────── --}}
+<div class="filter-wrap">
+    <div class="filter-inner">
+        <div class="search-box">
+            <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
             </svg>
-            <input type="text" name="q" value="{{ request('q') }}" 
-                   placeholder="Search products..." 
-                   class="search-input"
-                   autocomplete="off">
-            @if(request('q'))
-            <a href="{{ route('shop.index') }}" class="search-clear">✕</a>
-            @endif
+            <input type="text" 
+                   id="shopSearch" 
+                   placeholder="Search..." 
+                   autocomplete="off"
+                   value="{{ request('q') }}">
         </div>
-        @if(request('cat'))
-        <input type="hidden" name="cat" value="{{ request('cat') }}">
-        @endif
-    </form>
-    
-    @if($products->count() > 3)
-    <select class="sort-select" onchange="window.location.href=updateSort(this.value)">
-        <option value="">Sort by</option>
-        <option value="category" {{ request('sort') === 'category' ? 'selected' : '' }}>Category</option>
-        <option value="price-asc" {{ request('sort') === 'price-asc' ? 'selected' : '' }}>Price: Low to High</option>
-        <option value="price-desc" {{ request('sort') === 'price-desc' ? 'selected' : '' }}>Price: High to Low</option>
-        <option value="newest" {{ request('sort') === 'newest' ? 'selected' : '' }}>Newest First</option>
-        <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>Alphabetical</option>
-    </select>
-    @endif
+        
+        <div class="sort-box" id="sortBox">
+            <button type="button" class="sort-trigger" id="sortTrigger">
+                <span class="sort-label" id="sortLabel">Sort</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+            </button>
+            <div class="sort-dropdown" id="sortDropdown">
+                <button type="button" class="sort-option" data-sort="">Default</button>
+                <button type="button" class="sort-option" data-sort="price-asc">Price: Low to High</button>
+                <button type="button" class="sort-option" data-sort="price-desc">Price: High to Low</button>
+                <button type="button" class="sort-option" data-sort="newest">Newest First</button>
+                <button type="button" class="sort-option" data-sort="name">Alphabetical</button>
+            </div>
+        </div>
+    </div>
 </div>
 
-{{-- ── Category chips ──────────────────────────────────────────────── --}}
+{{-- ── Category Filter ──────────────────────────────────────────────── --}}
 @if($categories->count() > 1)
-<div class="cat-bar-outer">
-<div class="cat-bar">
-    <a href="{{ route('shop.index') }}" class="cat-chip {{ !$filterCat ? 'active' : '' }}">All</a>
-    @foreach($categories as $cat)
-    <a href="{{ route('shop.index', ['cat' => $cat]) }}"
-       class="cat-chip {{ $filterCat === $cat ? 'active' : '' }}">{{ $cat }}</a>
-    @endforeach
-</div>
+<div class="category-bar">
+    <div class="category-inner">
+        <button type="button" class="cat-btn {{ !$filterCat ? 'active' : '' }}" onclick="filterCategory('')">All</button>
+        @foreach($categories as $cat)
+        <button type="button" class="cat-btn {{ $filterCat === $cat ? 'active' : '' }}" onclick="filterCategory('{{ $cat }}')">{{ $cat }}</button>
+        @endforeach
+    </div>
 </div>
 @endif
 
@@ -699,11 +791,129 @@ body {
 })();
 </script>
 <script>
-function updateSort(sort) {
+// ── Real-time Search (with ALIVE color feedback) ─────────────
+(function() {
+    var searchInput = document.getElementById('shopSearch');
+    if (!searchInput) return;
+    
+    var searchBox = document.querySelector('.search-box');
+    var debounceTimer;
+    var allProducts = Array.from(document.querySelectorAll('.prod-card'));
+    var emptyState = document.querySelector('.empty');
+    
+    // Add active class on focus/blur
+    searchInput.addEventListener('focus', function() {
+        if (searchBox) searchBox.classList.add('active');
+    });
+    
+    searchInput.addEventListener('blur', function() {
+        if (searchBox && !this.value) searchBox.classList.remove('active');
+    });
+    
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        var query = this.value.toLowerCase().trim();
+        
+        // Keep active class while typing
+        if (searchBox) {
+            searchBox.classList.toggle('active', query.length > 0);
+        }
+        
+        debounceTimer = setTimeout(function() {
+            var visibleCount = 0;
+            
+            allProducts.forEach(function(card) {
+                var name = card.querySelector('.prod-name').textContent.toLowerCase();
+                var cat = card.querySelector('.prod-cat-label');
+                var category = cat ? cat.textContent.toLowerCase() : '';
+                
+                var matches = name.includes(query) || category.includes(query);
+                
+                // Smooth fade instead of instant hide
+                if (matches) {
+                    card.style.display = '';
+                    card.style.opacity = '1';
+                    visibleCount++;
+                } else {
+                    card.style.opacity = '0';
+                    setTimeout(function() {
+                        if (!matches) card.style.display = 'none';
+                    }, 200);
+                }
+            });
+            
+            // Show/hide empty state
+            if (emptyState) {
+                emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+                if (visibleCount === 0 && query) {
+                    emptyState.textContent = 'No products match "' + query + '"';
+                } else if (visibleCount === 0) {
+                    emptyState.textContent = 'Nothing in this category yet.';
+                }
+            }
+        }, 300);
+    });
+})();
+
+// ── Sort Dropdown ─────────────────────────────────────────────
+(function() {
+    var trigger = document.getElementById('sortTrigger');
+    var dropdown = document.getElementById('sortDropdown');
+    var label = document.getElementById('sortLabel');
+    
+    if (!trigger || !dropdown) return;
+    
+    // Toggle dropdown
+    trigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var isOpen = dropdown.classList.contains('open');
+        dropdown.classList.toggle('open', !isOpen);
+        trigger.classList.toggle('open', !isOpen);
+    });
+    
+    // Close on outside click
+    document.addEventListener('click', function() {
+        dropdown.classList.remove('open');
+        trigger.classList.remove('open');
+    });
+    
+    dropdown.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+    
+    // Sort options
+    var options = dropdown.querySelectorAll('.sort-option');
+    var currentSort = new URLSearchParams(window.location.search).get('sort') || '';
+    
+    options.forEach(function(option) {
+        var sortValue = option.dataset.sort;
+        if (sortValue === currentSort) {
+            option.classList.add('active');
+            label.textContent = option.textContent;
+        }
+        
+        option.addEventListener('click', function() {
+            var url = new URL(window.location.href);
+            if (sortValue) {
+                url.searchParams.set('sort', sortValue);
+            } else {
+                url.searchParams.delete('sort');
+            }
+            window.location.href = url.toString();
+        });
+    });
+})();
+
+// ── Category Filter ───────────────────────────────────────────
+function filterCategory(cat) {
     var url = new URL(window.location.href);
-    if (sort) url.searchParams.set('sort', sort);
-    else url.searchParams.delete('sort');
-    return url.toString();
+    if (cat) {
+        url.searchParams.set('cat', cat);
+    } else {
+        url.searchParams.delete('cat');
+    }
+    url.searchParams.delete('q'); // Clear search when changing category
+    window.location.href = url.toString();
 }
 </script>
 <script>
