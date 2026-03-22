@@ -545,4 +545,157 @@ class AdminController extends Controller
         return back()->with('ok', 'Product updated.');
     }
 
+
+    // ── Demo Product Create ───────────────────────────────────────────
+    public function demoProductCreate()
+    {
+        return view('admin.demo-product-form', ['product' => null]);
+    }
+
+    // ── Demo Product Store ────────────────────────────────────────────
+    public function demoProductStore(Request $request)
+    {
+        $request->validate([
+            'name'        => 'required|string|max:100',
+            'shelf_price' => 'required|numeric|min:0',
+            'category'    => 'nullable|string|max:60',
+            'stock'       => 'required|integer|min:0',
+            'photo'       => 'nullable|image|max:4096',
+        ]);
+
+        try {
+            $demo = \App\Models\Tenant::find('demo');
+            tenancy()->initialize($demo);
+
+            $photoPath = null;
+            if ($request->hasFile('photo')) {
+                $photoPath = $this->storeDemoPhoto($request->file('photo'));
+            }
+
+            DB::table('products')->insert([
+                'name'         => $request->name,
+                'category'     => $request->category,
+                'type'         => 'unit',
+                'shelf_price'  => $request->shelf_price,
+                'stock'        => $request->stock,
+                'shop_visible' => $request->has('shop_visible') ? 1 : 0,
+                'description'  => $request->description,
+                'photo'        => $photoPath,
+                'status'       => 'active',
+                'track_stock'  => 1,
+                'low_stock_threshold' => 3,
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ]);
+
+        } catch (\Exception $e) {
+            try { tenancy()->end(); } catch (\Exception $e2) {}
+            return back()->with('error', 'Could not create product: ' . $e->getMessage());
+        } finally {
+            try { tenancy()->end(); } catch (\Exception $e) {}
+        }
+
+        return redirect()->route('admin.demo-products')->with('ok', 'Product added.');
+    }
+
+    // ── Demo Product Edit ─────────────────────────────────────────────
+    public function demoProductEdit(int $id)
+    {
+        $product = null;
+        try {
+            $demo = \App\Models\Tenant::find('demo');
+            tenancy()->initialize($demo);
+            $product = DB::table('products')->find($id);
+        } catch (\Exception $e) {
+        } finally {
+            try { tenancy()->end(); } catch (\Exception $e) {}
+        }
+        if (!$product) abort(404);
+        return view('admin.demo-product-form', compact('product'));
+    }
+
+    // ── Demo Product Update ───────────────────────────────────────────
+    public function demoProductUpdate(Request $request, int $id)
+    {
+        $request->validate([
+            'name'        => 'required|string|max:100',
+            'shelf_price' => 'required|numeric|min:0',
+            'category'    => 'nullable|string|max:60',
+            'stock'       => 'required|integer|min:0',
+            'photo'       => 'nullable|image|max:4096',
+        ]);
+
+        try {
+            $demo = \App\Models\Tenant::find('demo');
+            tenancy()->initialize($demo);
+
+            $product   = DB::table('products')->find($id);
+            $photoPath = $product->photo ?? null;
+
+            if ($request->hasFile('photo')) {
+                // Delete old photo
+                if ($photoPath) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($photoPath);
+                }
+                $photoPath = $this->storeDemoPhoto($request->file('photo'));
+            }
+
+            if ($request->input('remove_photo') === '1' && $photoPath) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($photoPath);
+                $photoPath = null;
+            }
+
+            DB::table('products')->where('id', $id)->update([
+                'name'         => $request->name,
+                'category'     => $request->category,
+                'shelf_price'  => $request->shelf_price,
+                'stock'        => $request->stock,
+                'shop_visible' => $request->has('shop_visible') ? 1 : 0,
+                'description'  => $request->description,
+                'photo'        => $photoPath,
+                'updated_at'   => now(),
+            ]);
+
+        } catch (\Exception $e) {
+            try { tenancy()->end(); } catch (\Exception $e2) {}
+            return back()->with('error', 'Could not update: ' . $e->getMessage());
+        } finally {
+            try { tenancy()->end(); } catch (\Exception $e) {}
+        }
+
+        return redirect()->route('admin.demo-products')->with('ok', 'Product updated.');
+    }
+
+    // ── Demo Product Delete ───────────────────────────────────────────
+    public function demoProductDelete(int $id)
+    {
+        try {
+            $demo = \App\Models\Tenant::find('demo');
+            tenancy()->initialize($demo);
+            $product = DB::table('products')->find($id);
+            if ($product && $product->photo) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($product->photo);
+            }
+            DB::table('products')->where('id', $id)->delete();
+        } catch (\Exception $e) {
+        } finally {
+            try { tenancy()->end(); } catch (\Exception $e) {}
+        }
+        return redirect()->route('admin.demo-products')->with('ok', 'Product deleted.');
+    }
+
+    // ── Store demo photo (shared helper) ─────────────────────────────
+    private function storeDemoPhoto($file): string
+    {
+        $manager    = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        $image      = $manager->read($file->getRealPath());
+        if ($image->width() > 1200) {
+            $image->scaleDown(width: 1200);
+        }
+        $compressed = $image->toWebp(quality: 82)->toString();
+        $filename   = 'products/demo/' . uniqid('p_', true) . '.webp';
+        \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $compressed);
+        return $filename;
+    }
+
 }

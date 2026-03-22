@@ -50,4 +50,9 @@ Route::middleware(SuperAdminAuth::class)->group(function () {
 
     Route::get('/admin/demo-products',               [AdminController::class, 'demoProducts'])->name('admin.demo-products');
     Route::post('/admin/demo-products/{id}/toggle',  [AdminController::class, 'demoProductToggle'])->name('admin.demo-products.toggle');
+    Route::get('/admin/demo-products/create',         [AdminController::class, 'demoProductCreate'])->name('admin.demo-products.create');
+    Route::post('/admin/demo-products',               [AdminController::class, 'demoProductStore'])->name('admin.demo-products.store');
+    Route::get('/admin/demo-products/{id}/edit',      [AdminController::class, 'demoProductEdit'])->name('admin.demo-products.edit');
+    Route::post('/admin/demo-products/{id}/update',   [AdminController::class, 'demoProductUpdate'])->name('admin.demo-products.update');
+    Route::post('/admin/demo-products/{id}/delete',   [AdminController::class, 'demoProductDelete'])->name('admin.demo-products.delete');
 });
