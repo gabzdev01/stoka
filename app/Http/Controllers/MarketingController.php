@@ -28,7 +28,8 @@ class MarketingController extends Controller
 
     public function index()
     {
-        return view('marketing.index');
+        $testimonial = $this->testimonial();
+        return view('marketing.index', compact('testimonial'));
     }
 
     public function insights()
