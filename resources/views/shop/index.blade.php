@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ session('demo_shop_name', $tenant->name) }}</title>
 <meta name="description" content="Browse {{ session('demo_shop_name', $tenant->name) }} — shop online and enquire via WhatsApp.">
-<meta property="og:title" content="{{ $tenant->name }}">
+<meta property="og:title" content="{{ session('demo_shop_name', $tenant->name) }}">
 <meta property="og:description" content="Browse {{ $tenant->name }} — shop online and enquire via WhatsApp.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ url()->current() }}">
