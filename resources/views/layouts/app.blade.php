@@ -582,16 +582,16 @@
         </nav>
 
         <div class="sidebar-footer">
-            <a href="https://tempforest.com" target="_blank" style="display:block;font-size:10px;color:var(--muted);letter-spacing:0.06em;margin-bottom:12px;opacity:0.55;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.55'">Powered by Stoka</a>
-            <a href="https://tempforest.com" target="_blank" style="display:block;font-size:10px;color:var(--muted);letter-spacing:0.06em;margin-bottom:12px;opacity:0.6;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">Powered by Stoka</a>
+
             <div class="user-block">
-                <span class="user-name">{{ session('auth_name') }}</span>
+                <span class="user-name">{{ session('demo_owner_name') ?: session('auth_name') }}</span>
                 <span class="user-role">{{ session('auth_role') }}</span>
             </div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="logout-btn">Log out</button>
             </form>
+            <a href="https://tempforest.com" target="_blank" style="display:block;font-size:10px;color:var(--muted);letter-spacing:0.06em;margin-top:12px;opacity:0.4;text-decoration:none;text-align:center;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='0.4'">Powered by Stoka</a>
         </div>
 
     </aside>
