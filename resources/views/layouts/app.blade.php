@@ -100,9 +100,14 @@
             color: var(--espresso);
             letter-spacing: 0.02em;
             display: block;
-            line-height: 1;
+            line-height: 1.15;
             margin-bottom: 7px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
+        .sidebar-logo.name-medium { font-size: 21px; }
+        .sidebar-logo.name-long   { font-size: 16px; letter-spacing: 0; }
 
         .sidebar-shop {
             font-size: 11px;
@@ -434,8 +439,11 @@
     <aside class="sidebar" id="sidebar">
 
         <div class="sidebar-header">
-            <span class="sidebar-logo">Stoka</span>
-            <span class="sidebar-shop">{{ shop_name() }}</span>
+            @php
+                $__sn = shop_name();
+                $__snClass = strlen($__sn) > 25 ? 'name-long' : (strlen($__sn) > 15 ? 'name-medium' : '');
+            @endphp
+            <span class="sidebar-logo {{ $__snClass }}">{{ $__sn }}</span>
         </div>
 
         @php
@@ -574,6 +582,8 @@
         </nav>
 
         <div class="sidebar-footer">
+            <a href="https://tempforest.com" target="_blank" style="display:block;font-size:10px;color:var(--muted);letter-spacing:0.06em;margin-bottom:12px;opacity:0.55;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.55'">Powered by Stoka</a>
+            <a href="https://tempforest.com" target="_blank" style="display:block;font-size:10px;color:var(--muted);letter-spacing:0.06em;margin-bottom:12px;opacity:0.6;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">Powered by Stoka</a>
             <div class="user-block">
                 <span class="user-name">{{ session('auth_name') }}</span>
                 <span class="user-role">{{ session('auth_role') }}</span>
@@ -592,8 +602,7 @@
         {{-- Mobile topbar --}}
         <div class="topbar">
             <div>
-                <div class="topbar-logo">Stoka</div>
-                <div class="topbar-shop">{{ shop_name() }}</div>
+                <div class="topbar-logo">{{ shop_name() }}</div>
             </div>
             <button class="hamburger" id="ham-btn" onclick="toggleSidebar()" aria-label="Toggle menu">
                 <span class="ham-line"></span>
