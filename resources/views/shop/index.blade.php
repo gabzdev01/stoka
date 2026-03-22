@@ -586,7 +586,7 @@ body {
 
 {{-- ── Footer ───────────────────────────────────────────────────────── --}}
 <div class="shop-footer">
-    Powered by <a href="https://tempforest.com/register" target="_blank" rel="noopener">Stoka</a> &middot; Boutique management, aware by design.
+    Powered by <a href="https://getstoka.com" target="_blank" rel="noopener">Stoka</a>
 </div>
 
 
