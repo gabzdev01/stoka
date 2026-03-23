@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Artisan;
 use App\Mail\TenantWelcome;
+use App\Mail\RegistrationReceived;
+use App\Mail\FounderAlert;
 use Illuminate\Support\Facades\Mail;
 
 class MarketingController extends Controller
@@ -99,6 +101,24 @@ class MarketingController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // Email registrant
+        try {
+            Mail::to($request->email ?: $request->phone . '@placeholder.com')
+                ->send(new RegistrationReceived($request->shop_name, $request->owner_name));
+        } catch (\Exception $e) {}
+
+        // Alert founder
+        try {
+            Mail::to('gabzdev01@gmail.com')
+                ->send(new FounderAlert(
+                    $request->shop_name,
+                    $request->owner_name,
+                    $request->phone,
+                    $request->email,
+                    $request->city
+                ));
+        } catch (\Exception $e) {}
 
         $password = ucfirst(\Illuminate\Support\Str::random(5)) . rand(100, 999);
         $shopUrl  = 'https://' . $slug . '.stoka.co.ke';

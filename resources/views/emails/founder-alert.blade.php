@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Your Stoka account is ready</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>New registration</title>
 <style>
 body{margin:0;padding:0;background:#F2EDE6;font-family:'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;}
 table{border-collapse:collapse;}
@@ -27,26 +27,26 @@ table{border-collapse:collapse;}
 <div class="wrap">
 <div class="card">
   <div class="header">
-    <p class="header-logo">Stoka</p>
-    <p class="header-tagline">Boutique management, aware by design.</p>
+    <p class="header-logo">Stoka &nbsp;·&nbsp; New Registration</p>
   </div>
   <div class="body">
-    <h1 class="greeting">Your shop is ready, {{ $ownerName }}.</h1>
-    <p>{{ $shopName }} is live on Stoka. Everything you need to run your shop — shifts, sales, stock, reconciliation — is waiting for you.</p>
+    <h1 class="greeting">{{ $shopName }}</h1>
+    <p>A new registration just came in.</p>
     <div class="divider"></div>
-    <p class="label">Your login</p>
-    <p class="value"><a href="{{ $shopUrl }}">{{ $shopUrl }}</a></p>
-    <p class="label">Phone number</p>
-    <p class="value">{{ $phone }}</p>
-    <p class="label">Password</p>
-    <p class="value"><code>{{ $password }}</code></p>
+    <p class="label">Owner</p>
+    <p class="value">{{ $ownerName }}</p>
+    <p class="label">Phone</p>
+    <p class="value"><a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $phone) }}">{{ $phone }}</a></p>
+    @if($email)
+    <p class="label">Email</p>
+    <p class="value"><a href="mailto:{{ $email }}">{{ $email }}</a></p>
+    @endif
+    @if($city)
+    <p class="label">City</p>
+    <p class="value">{{ $city }}</p>
+    @endif
     <div class="divider"></div>
-    <p>Change your password from Settings after your first login. If you need anything — products added, staff set up, any questions at all — reply to this email or WhatsApp us.</p>
-    <br>
-    <a href="{{ $shopUrl }}" class="btn">Open your dashboard →</a>
-  </div>
-  <div class="footer">
-    <p>Stoka &nbsp;·&nbsp; <a href="https://stoka.co.ke">stoka.co.ke</a> &nbsp;·&nbsp; WhatsApp <a href="https://wa.me/254741641925">+254 741 641 925</a></p>
+    <a href="https://tempforest.com/admin" class="btn">Open admin →</a>
   </div>
 </div>
 </div>

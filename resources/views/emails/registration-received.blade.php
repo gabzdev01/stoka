@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Your Stoka account is ready</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>We received your request</title>
 <style>
 body{margin:0;padding:0;background:#F2EDE6;font-family:'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;}
 table{border-collapse:collapse;}
@@ -31,22 +31,16 @@ table{border-collapse:collapse;}
     <p class="header-tagline">Boutique management, aware by design.</p>
   </div>
   <div class="body">
-    <h1 class="greeting">Your shop is ready, {{ $ownerName }}.</h1>
-    <p>{{ $shopName }} is live on Stoka. Everything you need to run your shop — shifts, sales, stock, reconciliation — is waiting for you.</p>
+    <h1 class="greeting">We have your request, {{ $ownerName }}.</h1>
+    <p>We received your registration for <strong>{{ $shopName }}</strong>. Someone from Stoka will be in touch today — usually within a few hours.</p>
+    <p>When we reach out, we will help you get your products added and your first shift ready. You will not have to figure it out alone.</p>
     <div class="divider"></div>
-    <p class="label">Your login</p>
-    <p class="value"><a href="{{ $shopUrl }}">{{ $shopUrl }}</a></p>
-    <p class="label">Phone number</p>
-    <p class="value">{{ $phone }}</p>
-    <p class="label">Password</p>
-    <p class="value"><code>{{ $password }}</code></p>
-    <div class="divider"></div>
-    <p>Change your password from Settings after your first login. If you need anything — products added, staff set up, any questions at all — reply to this email or WhatsApp us.</p>
+    <p>In the meantime, you can explore the demo to see exactly how Stoka works from both the owner and staff side.</p>
     <br>
-    <a href="{{ $shopUrl }}" class="btn">Open your dashboard →</a>
+    <a href="https://demo.stoka.co.ke/demo" class="btn btn-terra">Explore the demo →</a>
   </div>
   <div class="footer">
-    <p>Stoka &nbsp;·&nbsp; <a href="https://stoka.co.ke">stoka.co.ke</a> &nbsp;·&nbsp; WhatsApp <a href="https://wa.me/254741641925">+254 741 641 925</a></p>
+    <p>Questions? WhatsApp us at <a href="https://wa.me/254741641925">+254 741 641 925</a> &nbsp;·&nbsp; <a href="https://stoka.co.ke">stoka.co.ke</a></p>
   </div>
 </div>
 </div>
