@@ -7,14 +7,14 @@
 <meta name="description" content="Every shift. Every shilling. Tied to a name. Stoka gives Kenyan boutique owners full visibility without being in the shop.">
 <meta name="keywords" content="boutique management Kenya, POS system Kenya, boutique software, inventory management Kenya, shop management system">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://stoka.co.ke/">
+<link rel="canonical" href="https://tempforest.com/">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://stoka.co.ke/">
+<meta property="og:url" content="https://tempforest.com/">
 <meta property="og:title" content="Stoka — Boutique management for Kenyan shops">
 <meta property="og:description" content="Every shift. Every shilling. Tied to a name. Stoka gives Kenyan boutique owners full visibility without being in the shop.">
-<meta property="og:image" content="https://stoka.co.ke/og-image.png">
+<meta property="og:image" content="https://tempforest.com/og-image.png">
 <meta property="og:site_name" content="Stoka">
 <meta property="og:locale" content="en_KE">
 
@@ -22,7 +22,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Stoka — Boutique management for Kenyan shops">
 <meta name="twitter:description" content="Every shift. Every shilling. Tied to a name. Stoka gives Kenyan boutique owners full visibility without being in the shop.">
-<meta name="twitter:image" content="https://stoka.co.ke/og-image.png">
+<meta name="twitter:image" content="https://tempforest.com/og-image.png">
 
 <!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -408,7 +408,7 @@ details[open] summary{color:var(--terracotta);}
     <a href="#section-features" class="nav-link hide-sm">Features</a>
     <a href="#section-pricing" class="nav-link hide-sm">Pricing</a>
     <a href="/insights" class="nav-link hide-sm">Insights</a>
-    <a href="https://demo.stoka.co.ke/demo" class="nav-demo hide-sm">
+    <a href="https://demo.tempforest.com/demo" class="nav-demo hide-sm">
       <span class="nav-demo-dot"></span>Live demo
     </a>
     <a href="/register" class="nav-link nav-cta">Get started</a>
@@ -427,7 +427,7 @@ details[open] summary{color:var(--terracotta);}
     <p class="hero-sub">Every shift, every sale, every number &mdash; visible from anywhere, in real time.</p>
     <div class="hero-ctas">
       <a href="/register" class="btn-primary">Start free &rarr;</a>
-      <a href="https://demo.stoka.co.ke/demo" class="btn-ghost">See the demo</a>
+      <a href="https://demo.tempforest.com/demo" class="btn-ghost">See the demo</a>
     </div>
     <div class="trial-note">
       <span class="trial-dot"></span>
@@ -705,8 +705,8 @@ details[open] summary{color:var(--terracotta);}
   <h2 class="demo-head">See a real boutique running on Stoka.</h2>
   <p class="demo-sub">No account needed. Nothing to install.</p>
   <div class="demo-btns">
-    <a href="https://demo.stoka.co.ke/demo?role=staff" class="demo-btn-s">Experience as Staff &rarr;</a>
-    <a href="https://demo.stoka.co.ke/demo?role=owner" class="demo-btn-o">Experience as Owner &rarr;</a>
+    <a href="https://demo.tempforest.com/demo?role=staff" class="demo-btn-s">Experience as Staff &rarr;</a>
+    <a href="https://demo.tempforest.com/demo?role=owner" class="demo-btn-o">Experience as Owner &rarr;</a>
   </div>
   <p class="demo-note">Staff: the till, product grid, shift close. &nbsp;&middot;&nbsp; Owner: dashboard, reconciliation, shift history.</p>
 </section>
@@ -801,7 +801,7 @@ details[open] summary{color:var(--terracotta);}
     <div class="footer-col">
       <div class="footer-col-label">Product</div>
       <a href="#section-pricing" class="footer-link">Pricing</a>
-      <a href="https://demo.stoka.co.ke/demo" class="footer-link">Live Demo</a>
+      <a href="https://demo.tempforest.com/demo" class="footer-link">Live Demo</a>
       <a href="/register" class="footer-link">Get Started</a>
       <a href="/insights" class="footer-link">Insights</a>
     </div>

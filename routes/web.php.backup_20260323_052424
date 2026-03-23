@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 // Marketing home — domain-constrained to central domain only
 // Must be registered before tenant routes (which are loaded in TenancyServiceProvider::boot)
 // Uses domain constraint so it does not conflict with the tenant GET / (dashboard) route
-Route::domain('stoka.co.ke')->middleware('web')->group(function () {
+Route::domain('tempforest.com')->middleware('web')->group(function () {
     Route::get('/', [MarketingController::class, 'index'])->name('marketing.home');
     Route::get('/register', [MarketingController::class, 'registerForm'])->name('marketing.register');
     Route::post('/register', [MarketingController::class, 'register'])->name('marketing.register.store');
