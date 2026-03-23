@@ -10,6 +10,15 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stoka — See it as your boutique</title>
+<meta name="description" content="Type your shop name. See Stoka running as your boutique. No account needed.">
+<meta property="og:title" content="Stoka — Your shop. Before you commit to anything.">
+<meta property="og:description" content="Type your shop name. See it running as yours. No account needed. Enter as owner or staff.">
+<meta property="og:image" content="https://demo.stoka.co.ke/og-demo.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Stoka — Your shop. Before you commit to anything.">
+<meta name="twitter:description" content="Type your shop name. See it running as yours. No account needed.">
+<meta name="twitter:image" content="https://demo.stoka.co.ke/og-demo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
