@@ -36,7 +36,7 @@
 :root{
   --espresso:#1C1814;--terracotta:#C17F4A;--parchment:#FAF7F2;
   --forest:#4A6741;--clay:#B85C38;--surface:#F2EDE6;
-  --muted:#8C7B6E;--border:#E5DDD4;--dark-wood:#2C1F14;
+  --muted:#6B5D51;--border:#E5DDD4;--dark-wood:#2C1F14;
   --forest-bg:#EDF2EC;--clay-bg:#F6EDE8;--terra-bg:#F8F1E8;
 }
 html{scroll-behavior:smooth;}
