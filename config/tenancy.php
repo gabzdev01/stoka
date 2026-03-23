@@ -21,6 +21,8 @@ return [
         'localhost',
         'tempforest.com',
         'www.tempforest.com',
+        'stoka.co.ke',
+        'www.stoka.co.ke',
     ],
 
     /**
