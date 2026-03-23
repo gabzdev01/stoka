@@ -14,7 +14,7 @@
 <meta property="og:url" content="https://stoka.co.ke/">
 <meta property="og:title" content="Stoka — See exactly what's happening in your shop.">
 <meta property="og:description" content="Every sale, every shift, every shilling — visible from your phone. Boutique management that works while you're away.">
-<meta property="og:image" content="https://tempforest.com/og-homepage.png">
+<meta property="og:image" content="https://stoka.co.ke/og-homepage.png">
 <meta property="og:site_name" content="Stoka">
 <meta property="og:locale" content="en_KE">
 
@@ -22,7 +22,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Stoka — Boutique management for Kenyan shops">
 <meta name="twitter:description" content="Every shift. Every shilling. Tied to a name. Stoka gives Kenyan boutique owners full visibility without being in the shop.">
-<meta name="twitter:image" content="https://tempforest.com/og-homepage.png">
+<meta name="twitter:image" content="https://stoka.co.ke/og-homepage.png">
 
 <!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
